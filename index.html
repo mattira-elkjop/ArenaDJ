@@ -190,10 +190,10 @@ nav{display:flex;align-items:center;background:var(--surface);border-bottom:1px 
 }
 
 /* PAGES */
-#page-wrap{flex:1;min-height:0;position:relative;overflow:hidden}
-.page{display:none;position:absolute;inset:0;overflow-y:auto;flex-direction:column}
+#page-wrap{flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+.page{display:none;flex:1;min-height:0;overflow-y:auto;flex-direction:column}
 .page.active{display:flex}
-#live-page{display:none;position:absolute;inset:0;flex-direction:column;overflow:hidden}
+#live-page{display:none;flex:1;min-height:0;flex-direction:column;overflow:hidden}
 #live-page.active{display:flex}
 
 /* KBD HINT */
@@ -473,9 +473,11 @@ kbd{background:var(--surface2);border:1px solid var(--border);border-radius:3px;
   .lib-filter-btn,.lib-sort-btn{width:100%;justify-content:center;padding:10px 8px;font-size:11px}
   /* Hide desktop table on mobile */
   .song-table-wrap{display:none}
-  /* Hide keyboard shortcut UI on mobile — no physical keyboard */
+  /* Hide all keyboard shortcut UI on mobile — no physical keyboard */
   .kbd-hint{display:none!important}
   .kbd-section-mobile-hide{display:none}
+  .event-kbd-badge{display:none}
+  .gnp-spacebar-btn{display:none}
   /* Song cards */
   .song-cards{display:flex;flex-direction:column;gap:8px}
   .song-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
@@ -711,11 +713,7 @@ input[type=number]{width:84px}
   </div>
 </div>
 
-<div id="server-warning">
-  <span style="color:var(--amber)">⚠</span>
-  <span class="warn-text"><strong>YouTube requires HTTP</strong> — double-click <strong>START_Arena_DJ.bat</strong>, or run <code>python -m http.server 8080</code> and open <code>http://localhost:8080/arena-dj.html</code>.</span>
-  <button id="warn-dismiss" onclick="dismissWarning()">✕</button>
-</div>
+<!-- server warning removed — obsolete for GitHub Pages deployment -->
 
 <!-- GLOBAL NOW-PLAYING BAR -->
 <div id="global-np-bar">
@@ -856,7 +854,7 @@ input[type=number]{width:84px}
     <div class="help-section">
       <div class="help-h2">What is Arena DJ?</div>
       <p>Arena DJ is a browser-based music controller designed for ice hockey (and other sports) arena environments. It lets you assign music playlists to specific game events — goals, power plays, intermissions and more — and trigger them with a single button click or keyboard shortcut, with automatic fade-in, fade-out, and shuffle between songs.</p>
-      <div class="help-tip"><strong>Tip:</strong> Always launch using <strong>START_Arena_DJ.bat</strong> (Windows). This starts a local web server required for YouTube playback. Opening the HTML file directly will not work.</div>
+
     </div>
 
     <div class="help-section">
