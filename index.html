@@ -40,11 +40,14 @@
 @media (display-mode: standalone) {
   nav { padding-top: var(--safe-top); height: calc(52px + var(--safe-top)); }
   #mobile-nav { padding-bottom: var(--safe-bottom); }
-  #app { height: 100dvh; } /* dvh = dynamic viewport height, avoids iOS bounce */
+  #app { height: 100dvh; }
+}
+@media (display-mode: standalone) and (max-width:640px) {
+  #page-wrap { padding-bottom: calc(58px + var(--safe-bottom)); }
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--font-body);overflow:hidden}
-#app{display:flex;flex-direction:column;height:100vh}
+#app{display:flex;flex-direction:column;height:100vh;height:100dvh}
 
 /* NAV */
 nav{display:flex;align-items:center;background:var(--surface);border-bottom:1px solid var(--border);padding:0 16px;height:52px;flex-shrink:0}
@@ -63,6 +66,8 @@ nav{display:flex;align-items:center;background:var(--surface);border-bottom:1px 
   #mobile-nav{
     display:flex;background:var(--surface);border-top:1px solid var(--border);
     flex-shrink:0;
+    /* Fixed to bottom — guarantees visibility regardless of 100vh/dvh quirks */
+    position:fixed;bottom:0;left:0;right:0;z-index:100;
   }
   .mobile-nav-tab{
     flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -191,6 +196,10 @@ nav{display:flex;align-items:center;background:var(--surface);border-bottom:1px 
 
 /* PAGES */
 #page-wrap{flex:1;min-height:0;display:flex;flex-direction:column}
+@media(max-width:640px){
+  /* Leave room for the fixed bottom nav (approx 58px) */
+  #page-wrap{padding-bottom:58px}
+}
 .page{display:none;flex:1;min-height:0;overflow-y:auto;flex-direction:column}
 .page.active{display:flex}
 #live-page{display:none;flex:1;min-height:0;flex-direction:column}
@@ -271,8 +280,6 @@ kbd{background:var(--surface2);border:1px solid var(--border);border-radius:3px;
     gap:8px;
     padding:10px;
     align-content:start;
-    flex:1;
-    min-height:0;
     overflow-y:auto;
     -webkit-overflow-scrolling:touch;
     flex-direction:unset;
@@ -2042,8 +2049,8 @@ function buildHelpKbdGrid(){
 // ══════════════════════════════════════════════════
 //  NAV / WARNING / TOAST
 // ══════════════════════════════════════════════════
-function dismissWarning(){document.getElementById('server-warning').classList.add('hidden');}
-function checkWarning(){if(window.location.protocol!=='file:')document.getElementById('server-warning').classList.add('hidden');}
+function dismissWarning(){const el=document.getElementById('server-warning');if(el)el.classList.add('hidden');}
+function checkWarning(){const el=document.getElementById('server-warning');if(el&&window.location.protocol!=='file:')el.classList.add('hidden');}
 
 // ── Ads Notice ─────────────────────────────────────
 function dismissAdsNotice(permanent){
