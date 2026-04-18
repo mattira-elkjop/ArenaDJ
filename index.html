@@ -6,7 +6,7 @@
 <title>ARENA DJ</title>
 
 <!-- PWA: Web App Manifest -->
-<link rel="manifest" href="manifest.json">
+<!-- PWA manifest injected dynamically by JS below to handle any deployment subdirectory -->
 
 <!-- PWA: iOS Safari standalone fullscreen support -->
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -2382,14 +2382,50 @@ function loadDefaultSongs(){
   buildKbdSettingsGrid();renderSongTable();buildEventButtons();refreshAllPeeks();
 })();
 
-// ── PWA Service Worker Registration ─────────────────
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js')
-      .then(reg => console.log('[Arena DJ] Service worker registered:', reg.scope))
-      .catch(err => console.warn('[Arena DJ] Service worker registration failed:', err));
-  });
-}
+// ── PWA: Dynamic Manifest + Service Worker ───────────
+(function setupPWA(){
+  // Derive the base URL from the current page location so this works
+  // correctly regardless of subdirectory (e.g. GitHub Pages /ArenaDJ/).
+  const base = window.location.href.replace(/[^/]*$/, '');  // directory of current page
+
+  // Build and inject the Web App Manifest as a Blob URL.
+  // Using a Blob avoids hardcoding the subdirectory path and works on any host.
+  const manifest = {
+    name: 'Arena DJ',
+    short_name: 'Arena DJ',
+    description: 'Hockey arena soundboard — trigger event music with one tap',
+    start_url: window.location.href,   // exact current URL = always correct
+    scope: base,
+    display: 'standalone',
+    orientation: 'any',
+    background_color: '#0a0c10',
+    theme_color: '#0a0c10',
+    icons: [
+      { src: base + 'icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+      { src: base + 'icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' }
+    ]
+  };
+  const blob = new Blob([JSON.stringify(manifest)], {type: 'application/manifest+json'});
+  const manifestUrl = URL.createObjectURL(blob);
+  const link = document.createElement('link');
+  link.rel = 'manifest';
+  link.href = manifestUrl;
+  document.head.appendChild(link);
+
+  // Register service worker with explicit scope matching the current directory.
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register(base + 'sw.js', { scope: base })
+        .then(reg => {
+          console.log('[Arena DJ] SW registered, scope:', reg.scope);
+        })
+        .catch(err => {
+          // SW failed — PWA install won't work but app still runs fine.
+          console.warn('[Arena DJ] SW registration failed:', err);
+        });
+    });
+  }
+})();
 </script>
 </body>
 </html>
