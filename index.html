@@ -190,10 +190,10 @@ nav{display:flex;align-items:center;background:var(--surface);border-bottom:1px 
 }
 
 /* PAGES */
-#page-wrap{flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+#page-wrap{flex:1;min-height:0;display:flex;flex-direction:column}
 .page{display:none;flex:1;min-height:0;overflow-y:auto;flex-direction:column}
 .page.active{display:flex}
-#live-page{display:none;flex:1;min-height:0;flex-direction:column;overflow:hidden}
+#live-page{display:none;flex:1;min-height:0;flex-direction:column}
 #live-page.active{display:flex}
 
 /* KBD HINT */
@@ -271,7 +271,10 @@ kbd{background:var(--surface2);border:1px solid var(--border);border-radius:3px;
     gap:8px;
     padding:10px;
     align-content:start;
+    flex:1;
+    min-height:0;
     overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
     flex-direction:unset;
   }
   .event-group{display:contents}
