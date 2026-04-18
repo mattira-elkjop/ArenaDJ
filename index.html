@@ -990,7 +990,23 @@ function extractVideoId(input){
 // ══════════════════════════════════════════════════
 function buildQueue(eid){const arr=[...songs.filter(s=>s.event===eid)];for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
 function ensureQueue(eid){if(!eventQueues[eid]||!eventQueues[eid].length){eventQueues[eid]=buildQueue(eid);eventQueuePos[eid]=0;}}
-function consumeNext(eid){ensureQueue(eid);const q=eventQueues[eid];if(!q.length)return null;const pos=eventQueuePos[eid]||0;const song=q[pos];eventQueuePos[eid]=(pos+1)%q.length;if(eventQueuePos[eid]===0)eventQueues[eid]=buildQueue(eid);return song;}
+function consumeNext(eid){
+  ensureQueue(eid);
+  const q=eventQueues[eid];if(!q.length)return null;
+  const pos=eventQueuePos[eid]||0;
+  const song=q[pos];
+  const nextPos=(pos+1)%q.length;
+  if(nextPos===0){
+    // Last item consumed — rebuild for next cycle, reset to front of new shuffle
+    eventQueues[eid]=buildQueue(eid);
+    eventQueuePos[eid]=0;
+  } else {
+    eventQueuePos[eid]=nextPos;
+  }
+  // Keep nextSong in sync so Up Next always reflects the real upcoming song
+  nextSong[eid]=eventQueues[eid][eventQueuePos[eid]]||null;
+  return song;
+}
 function peekNext(eid){ensureQueue(eid);const q=eventQueues[eid];if(!q.length){nextSong[eid]=null;return null;}const song=q[eventQueuePos[eid]||0];nextSong[eid]=song;return song;}
 function shuffleNext(eid){
   ensureQueue(eid);const q=eventQueues[eid];if(q.length<=1){showToast('Need more songs to shuffle');return;}
@@ -1075,15 +1091,15 @@ function fadeOutAndAdvance(secs,eid){
 
 function autoAdvanceToNext(eid){
   clearTimers();
-  const song=nextSong[eid]||consumeNext(eid);
-  if(song){if(nextSong[eid])consumeNext(eid);playSong(song,eid);}
+  const song=nextSong[eid]||peekNext(eid);
+  if(song){consumeNext(eid);playSong(song,eid);}
   else{setActiveBtn(eid,false);clearNowPlaying();currentEventId=null;updateSpaceBtn(false);nextSong[eid]=null;updateUpNext(eid);}
 }
 function skipToNext(eid){
   clearTimers();if(fadeInInterval){clearInterval(fadeInInterval);fadeInInterval=null;}
   if(player)player.stopVideo&&player.stopVideo();
-  const song=nextSong[eid]||consumeNext(eid);
-  if(song){if(nextSong[eid])consumeNext(eid);playSong(song,eid);}
+  const song=nextSong[eid]||peekNext(eid);
+  if(song){consumeNext(eid);playSong(song,eid);}
 }
 function replayCurrent(eid){
   if(!currentSong){skipToNext(eid);return;}
@@ -1121,8 +1137,8 @@ function spacebarAction(){
     const count=songs.filter(s=>s.event===lastEventId).length;
     if(!count){showToast('No songs assigned to last event');return;}
     ensureActiveEvent(lastEventId);
-    const song=nextSong[lastEventId]||consumeNext(lastEventId);
-    if(song){if(nextSong[lastEventId])consumeNext(lastEventId);playSong(song,lastEventId);}
+    const song=nextSong[lastEventId]||peekNext(lastEventId);
+    if(song){consumeNext(lastEventId);playSong(song,lastEventId);}
   }else showToast('Press an event button first');
 }
 function resumePlayback(){
@@ -1531,7 +1547,7 @@ function handleMidClick(eid){
     }else if(state===2){resumePlayback();}
   }else{
     if(isPaused&&currentSong&&lastEventId===eid){resumePlayback();}
-    else{ensureActiveEvent(eid);isPaused=false;const song=nextSong[eid]||consumeNext(eid);if(song){if(nextSong[eid])consumeNext(eid);playSong(song,eid);}}
+    else{ensureActiveEvent(eid);isPaused=false;const song=nextSong[eid]||peekNext(eid);if(song){consumeNext(eid);playSong(song,eid);}}
   }
 }
 function handleZoneLeft(eid){if(!ytReady)return;if(!songs.filter(s=>s.event===eid).length){showToast('No songs assigned');return;}ensureActiveEvent(eid);isPaused=false;replayCurrent(eid);showToast('↺ Replaying');}
@@ -1914,9 +1930,9 @@ function loadDefaultSongs(){
     // The White Stripes - Seven Nation Army Glitch Mob Remix 1fSgSm4hryc
     {title:'Seven Nation Army (Glitch Mob Remix) — The White Stripes', videoId:'1fSgSm4hryc', event:'match_intro', startAt:0, duration:90},
     // Two Steps From Hell - Heart of Courage (official TSFH channel) T5qkPY3lCOA
-    {title:'Heart of Courage — Two Steps From Hell', videoId:'T5qkPY3lCOA', event:'match_intro', startAt:0,   duration:90},
+    {title:'Heart of Courage — Two Steps From Hell', videoId:'T5qkPY3lCOA', event:'match_intro', startAt:13,   duration:90},
     // Hans Zimmer - Time (Inception OST, official WaterTower channel) RxabLA7UQ9k
-    {title:'Time — Hans Zimmer',                     videoId:'RxabLA7UQ9k', event:'match_intro', startAt:0,   duration:100},
+    {title:'Time — Hans Zimmer',                     videoId:'RxabLA7UQ9k', event:'match_intro', startAt:128,   duration:100},
 
     // ── WARM-UPS (50) — full song, pump-up rock/pop ───────────────────────
     {title:'Don\'t Stop Believin\' — Journey',       videoId:'1k8craCGpgs', event:'warmup', startAt:0, duration:0},
@@ -1972,13 +1988,13 @@ function loadDefaultSongs(){
 
     // ── INTERMISSION (80) — variety, crowd-engaged ────────────────────────
     // Classic Rock
-    {title:'Free Bird — Lynyrd Skynyrd',             videoId:'CqnU_sJ6oOI', event:'intermission', startAt:0,  duration:60},
-    {title:'Sweet Home Alabama — Lynyrd Skynyrd',    videoId:'ye5BuYf8q4o', event:'intermission', startAt:10, duration:50},
+    {title:'Free Bird — Lynyrd Skynyrd',             videoId:'CqnU_sJ6oOI', event:'intermission', startAt:62,  duration:60},
+    {title:'Sweet Home Alabama — Lynyrd Skynyrd',    videoId:'ye5BuYf8q4o', event:'intermission', startAt:0, duration:50},
     {title:'Piano Man — Billy Joel',                 videoId:'gxEPV4kolz0', event:'intermission', startAt:30, duration:60},
     {title:'Bohemian Rhapsody — Queen',              videoId:'fJ9rUzIMcZQ', event:'intermission', startAt:200,duration:60},
-    {title:'Hotel California — Eagles',              videoId:'BciS5krYL80', event:'intermission', startAt:10, duration:60},
+    {title:'Hotel California — Eagles',              videoId:'BciS5krYL80', event:'intermission', startAt:68, duration:60},
     {title:'More Than a Feeling — Boston',           videoId:'SSx9QkXvV10', event:'intermission', startAt:0,  duration:60},
-    {title:'Dream On — Aerosmith',                   videoId:'89dGtEyGmBY', event:'intermission', startAt:0,  duration:60},
+    {title:'Dream On — Aerosmith',                   videoId:'89dGtEyGmBY', event:'intermission', startAt:38,  duration:60},
     {title:'Heat of the Moment — Asia',              videoId:'nHBBKT3TNOU', event:'intermission', startAt:5,  duration:55},
     {title:'Running Down a Dream — Tom Petty',       videoId:'gunRDQ-yMiI', event:'intermission', startAt:0,  duration:60},
     {title:'Roxanne — The Police',                   videoId:'3T1c7GkzRQQ', event:'intermission', startAt:0,  duration:60},
@@ -1989,69 +2005,69 @@ function loadDefaultSongs(){
     {title:'Rock and Roll Part 2 — Gary Glitter',    videoId:'ADGy0FfWnfA', event:'intermission', startAt:80, duration:45},
     {title:'We Like to Party — Vengaboys',           videoId:'6Zbi0XmGtMw', event:'intermission', startAt:0,  duration:55},
     // Pop & Dance
-    {title:'Stayin\' Alive — Bee Gees',              videoId:'I_izvAbhExY', event:'intermission', startAt:0,  duration:60},
+    {title:'Stayin\' Alive — Bee Gees',              videoId:'I_izvAbhExY', event:'intermission', startAt:7,  duration:60},
     {title:'Billie Jean — Michael Jackson',          videoId:'Zi_XLOBDo_Y', event:'intermission', startAt:0,  duration:60},
     {title:'Beat It — Michael Jackson',              videoId:'oRdxUFDoQe0', event:'intermission', startAt:0,  duration:60},
-    {title:'Thriller — Michael Jackson',             videoId:'sOnqjkJTMaA', event:'intermission', startAt:0,  duration:60},
+    {title:'Thriller — Michael Jackson',             videoId:'sOnqjkJTMaA', event:'intermission', startAt:52,  duration:60},
     {title:'Macarena — Los Del Rio',                 videoId:'HbHOBPJn9E0', event:'intermission', startAt:0,  duration:60},
     {title:'Cotton Eye Joe — Rednex',                videoId:'0nJsSzWDWyQ', event:'intermission', startAt:0,  duration:60},
-    {title:'YMCA — Village People',                  videoId:'CS9OO0S5w2k', event:'intermission', startAt:0,  duration:60},
+    {title:'YMCA — Village People',                  videoId:'CS9OO0S5w2k', event:'intermission', startAt:27,  duration:60},
     {title:'Gonna Make You Sweat — C+C Music Factory', videoId:'0EXHqkO5pG0', event:'intermission', startAt:0, duration:60},
     {title:'Regulate — Warren G & Nate Dogg',        videoId:'1plPyJdXKIY', event:'intermission', startAt:0,  duration:60},
     {title:'Jump — Kris Kross',                      videoId:'010CS3b6jl8', event:'intermission', startAt:0,  duration:60},
     {title:'The Power — Snap!',                      videoId:'JhLxXZFqeYk', event:'intermission', startAt:0,  duration:60},
-    {title:'Everybody (Backstreet\'s Back) — Backstreet Boys', videoId:'6M6samPEMpM', event:'intermission', startAt:0, duration:60},
-    {title:'Bye Bye Bye — NSYNC',                    videoId:'Eo-KmOd3i7s', event:'intermission', startAt:0,  duration:60},
+    {title:'Everybody (Backstreet\'s Back) — Backstreet Boys', videoId:'6M6samPEMpM', event:'intermission', startAt:35, duration:60},
+    {title:'Bye Bye Bye — NSYNC',                    videoId:'Eo-KmOd3i7s', event:'intermission', startAt:3,  duration:60},
     {title:'Baby One More Time — Britney Spears',    videoId:'C-u5WLJ9Yk4', event:'intermission', startAt:0,  duration:60},
-    {title:'Party in the USA — Miley Cyrus',         videoId:'M11SvDtPBhA', event:'intermission', startAt:0,  duration:60},
+    {title:'Party in the USA — Miley Cyrus',         videoId:'M11SvDtPBhA', event:'intermission', startAt:8,  duration:60},
     // 2000s–2010s
     {title:'Yeah! — Usher ft. Lil Jon',              videoId:'GxBSyx85Kp8', event:'intermission', startAt:0,  duration:60},
     {title:'SexyBack — Justin Timberlake',           videoId:'3cKtSlsYVEU', event:'intermission', startAt:0,  duration:60},
     {title:'Gold Digger — Kanye West',               videoId:'6vwNcNOTVzY', event:'intermission', startAt:0,  duration:60},
     {title:'In da Club — 50 Cent',                   videoId:'5qm8PH4xAss', event:'intermission', startAt:0,  duration:60},
-    {title:'Hey Ya! — Outkast',                      videoId:'PWgvGjAhvIw', event:'intermission', startAt:0,  duration:60},
+    {title:'Hey Ya! — Outkast',                      videoId:'PWgvGjAhvIw', event:'intermission', startAt:4,  duration:60},
     {title:'Yeah! — Pitbull',                        videoId:'k4V3Mo61fJM', event:'intermission', startAt:0,  duration:60},
-    {title:'Party Rock Anthem — LMFAO',              videoId:'KQ6zr6kCPj8', event:'intermission', startAt:0,  duration:60},
+    {title:'Party Rock Anthem — LMFAO',              videoId:'KQ6zr6kCPj8', event:'intermission', startAt:87, duration:60},
     {title:'Gangnam Style — PSY',                    videoId:'9bZkp7q19f0', event:'intermission', startAt:0,  duration:60},
-    {title:'Harlem Shake — Baauer',                  videoId:'8vJiSSAMNWw', event:'intermission', startAt:0,  duration:60},
+    {title:'Harlem Shake — Baauer',                  videoId:'8vJiSSAMNWw', event:'intermission', startAt:31,  duration:60},
     {title:'Turn Down for What — DJ Snake',          videoId:'HMUDVMiITOU', event:'intermission', startAt:0,  duration:60},
-    {title:'Timber — Pitbull ft. Kesha',             videoId:'hHUbLv7ThoBs', event:'intermission', startAt:0, duration:60},
+    {title:'Timber — Pitbull ft. Kesha',             videoId:'hHUbLv7ThoBs', event:'intermission', startAt:4, duration:60},
     // Country / Alt crowd pleasers
-    {title:'Friends in Low Places — Garth Brooks',   videoId:'_EVeHATH3rQ', event:'intermission', startAt:0,  duration:60},
+    {title:'Friends in Low Places — Garth Brooks',   videoId:'_EVeHATH3rQ', event:'intermission', startAt:5,  duration:60},
     {title:'I Love Rock n Roll — Joan Jett',         videoId:'B-nNVRwsXNQ', event:'intermission', startAt:0,  duration:60},
     {title:'Tequila — The Champs',                   videoId:'fWiFMVjfJrQ', event:'intermission', startAt:0,  duration:45},
     {title:'Shout — Tears for Fears',                videoId:'Ye7FKc1JQe4', event:'intermission', startAt:0,  duration:60},
-    {title:'Dancing Queen — ABBA',                   videoId:'xFrGuyw1V8s', event:'intermission', startAt:0,  duration:60},
-    {title:'Gimme! Gimme! Gimme! — ABBA',            videoId:'rONbj31OIOA', event:'intermission', startAt:0,  duration:60},
-    {title:'Come On Eileen — Dexys Midnight Runners', videoId:'a6Kj3qD8A3I', event:'intermission', startAt:0, duration:60},
+    {title:'Dancing Queen — ABBA',                   videoId:'xFrGuyw1V8s', event:'intermission', startAt:4,  duration:60},
+    {title:'Gimme! Gimme! Gimme! — ABBA',            videoId:'rONbj31OIOA', event:'intermission', startAt:4,  duration:60},
+    {title:'Come On Eileen — Dexys Midnight Runners', videoId:'a6Kj3qD8A3I', event:'intermission', startAt:24, duration:60},
     {title:'Everybody Wants to Rule the World — Tears for Fears', videoId:'FdBNY2XDkoc', event:'intermission', startAt:0, duration:60},
     {title:'Wake Me Up Before You Go-Go — Wham!',   videoId:'pIgZ7gMze7A', event:'intermission', startAt:0,  duration:60},
-    {title:'Girls Just Want to Have Fun — Cyndi Lauper', videoId:'PIb6AZdTr-A', event:'intermission', startAt:0, duration:60},
+    {title:'Girls Just Want to Have Fun — Cyndi Lauper', videoId:'PIb6AZdTr-A', event:'intermission', startAt:3, duration:60},
     // Indie / Alt
     {title:'Bohemian Like You — Dandy Warhols',      videoId:'nZBKFoeDKJo', event:'intermission', startAt:0,  duration:60},
     {title:'Wonderwall — Oasis',                     videoId:'bx1Bh8ZvH84', event:'intermission', startAt:0,  duration:60},
     {title:'Semi-Charmed Life — Third Eye Blind',    videoId:'_mFGTMlaxn0', event:'intermission', startAt:0,  duration:60},
-    {title:'Closing Time — Semisonic',               videoId:'xGytDsXkXuA', event:'intermission', startAt:0,  duration:60},
+    {title:'Closing Time — Semisonic',               videoId:'xGytDsXkXuA', event:'intermission', startAt:6,  duration:60},
     {title:'I\'m Still Standing — Elton John',       videoId:'92cwKCU8Z5c', event:'intermission', startAt:0,  duration:60},
     {title:'Crocodile Rock — Elton John',            videoId:'aNulVBUkJzg', event:'intermission', startAt:0,  duration:60},
-    {title:'Brown Eyed Girl — Van Morrison',         videoId:'vu95Gtu7-2I', event:'intermission', startAt:0,  duration:60},
-    {title:'Let Her Go — Passenger',                 videoId:'RBumgq5yVrA', event:'intermission', startAt:0,  duration:60},
+    {title:'Brown Eyed Girl — Van Morrison',         videoId:'vu95Gtu7-2I', event:'intermission', startAt:4,  duration:60},
+    {title:'Let Her Go — Passenger',                 videoId:'RBumgq5yVrA', event:'intermission', startAt:22,  duration:60},
     // Newer
     {title:'Shape of You — Ed Sheeran',              videoId:'JGwWNGJdvx8', event:'intermission', startAt:0,  duration:60},
     {title:'Happy — Pharrell Williams',              videoId:'y6Sxv-sUYtM', event:'intermission', startAt:0,  duration:60},
-    {title:'Call Me Maybe — Carly Rae Jepsen',       videoId:'fWNaR-rxAic', event:'intermission', startAt:0,  duration:60},
+    {title:'Call Me Maybe — Carly Rae Jepsen',       videoId:'fWNaR-rxAic', event:'intermission', startAt:3,  duration:60},
     {title:'Moves Like Jagger — Maroon 5',           videoId:'iEPTlhErL-w', event:'intermission', startAt:0,  duration:60},
-    {title:'Sugar — Maroon 5',                       videoId:'09R8_2nJtjg', event:'intermission', startAt:0,  duration:60},
-    {title:'Counting Stars — OneRepublic',           videoId:'hT_nvWreIhg', event:'intermission', startAt:0,  duration:60},
+    {title:'Sugar — Maroon 5',                       videoId:'09R8_2nJtjg', event:'intermission', startAt:9,  duration:60},
+    {title:'Counting Stars — OneRepublic',           videoId:'hT_nvWreIhg', event:'intermission', startAt:6,  duration:60},
     {title:'Believer — Imagine Dragons',             videoId:'7wtfhZwyrcc', event:'intermission', startAt:0,  duration:60},
-    {title:'Thunder — Imagine Dragons',              videoId:'fKopy74weus', event:'intermission', startAt:0,  duration:60},
-    {title:'Radioactive — Imagine Dragons',          videoId:'ktvTqknDobU', event:'intermission', startAt:0,  duration:60},
+    {title:'Thunder — Imagine Dragons',              videoId:'fKopy74weus', event:'intermission', startAt:4,  duration:60},
+    {title:'Radioactive — Imagine Dragons',          videoId:'ktvTqknDobU', event:'intermission', startAt:25,  duration:60},
     {title:'Stressed Out — Twenty One Pilots',       videoId:'pXRviuL6vMY', event:'intermission', startAt:0,  duration:60},
-    {title:'Heathens — Twenty One Pilots',           videoId:'HVcLQB3oeik', event:'intermission', startAt:0,  duration:60},
+    {title:'Heathens — Twenty One Pilots',           videoId:'HVcLQB3oeik', event:'intermission', startAt:5,  duration:60},
     {title:'Ride — Twenty One Pilots',               videoId:'Pw-4NGC_0lU', event:'intermission', startAt:0,  duration:60},
     {title:'Centuries — Fall Out Boy',               videoId:'LBr7kECsjcQ', event:'intermission', startAt:0,  duration:60},
     {title:'My Songs Know What You Did in the Dark — Fall Out Boy', videoId:'GCRDbOJfRi0', event:'intermission', startAt:0, duration:60},
-    {title:'Bring Me to Life — Evanescence',         videoId:'3YxaaGgTQYM', event:'intermission', startAt:0,  duration:60},
+    {title:'Bring Me to Life — Evanescence',         videoId:'3YxaaGgTQYM', event:'intermission', startAt:12,  duration:60},
     {title:'Du Hast — Rammstein',                    videoId:'W3q8Od5qJio', event:'intermission', startAt:0,  duration:60},
     // Hockey organ vibes
     {title:'The Hockey Song — Stompin\' Tom Connors', videoId:'fKGgB-g5VJI', event:'intermission', startAt:0, duration:60},
@@ -2062,7 +2078,7 @@ function loadDefaultSongs(){
 
     // ── GAME OVER / FINAL (10) — celebration / victory ───────────────────
     // Queen - We Are The Champions (Official Video) 04854XqcfCY
-    {title:'We Are the Champions — Queen',           videoId:'04854XqcfCY', event:'final', startAt:0,   duration:120},
+    {title:'We Are the Champions — Queen',           videoId:'04854XqcfCY', event:'final', startAt:14,   duration:120},
     {title:'Don\'t Stop Me Now — Queen',             videoId:'HgzGwKwLmgM', event:'final', startAt:0,   duration:120},
     // Kool & the Gang - Celebration official VEVO qL2nZbfhgQk
     {title:'Celebration — Kool & the Gang',          videoId:'qL2nZbfhgQk', event:'final', startAt:0,   duration:90},
@@ -2092,7 +2108,7 @@ function loadDefaultSongs(){
     {title:'Hit Me Baby One More Time — Britney Spears', videoId:'C-u5WLJ9Yk4', event:'goal_away', startAt:0, duration:18},
     {title:'Oh No — General Levy',                   videoId:'vMDprf4rM_U', event:'goal_away', startAt:0,  duration:18},
     {title:'Wipe Out — The Surfaris',                videoId:'Z_wTzH4E7Is', event:'goal_away', startAt:0,  duration:20},
-    {title:'Take Me Out — Franz Ferdinand',          videoId:'Hdqvs14CKrs', event:'goal_away', startAt:0,  duration:22},
+    {title:'Take Me Out — Franz Ferdinand',          videoId:'Hdqvs14CKrs', event:'goal_away', startAt:14,  duration:22},
     {title:'In the Hall of the Mountain King — Edvard Grieg', videoId:'gy8oLl4GNtw', event:'goal_away', startAt:175, duration:22},
     {title:'Yakety Sax — Benny Hill Theme',          videoId:'ZnHmskwqCCQ', event:'goal_away', startAt:0,  duration:22},
     {title:'Super Mario Bros Theme',                 videoId:'NmCCQxVBfyM', event:'goal_away', startAt:0,  duration:22},
@@ -2100,37 +2116,37 @@ function loadDefaultSongs(){
 
     // ── POWER PLAY — HOME (10) — hunting / aggressive ─────────────────────
     {title:'Iron Man — Black Sabbath',               videoId:'LkVSYhX-k6o', event:'pp_home', startAt:0,  duration:25},
-    {title:'Welcome to the Jungle — Guns N\' Roses', videoId:'o1tj2zJ2Wvg', event:'pp_home', startAt:0,  duration:25},
+    {title:'Welcome to the Jungle — Guns N\' Roses', videoId:'o1tj2zJ2Wvg', event:'pp_home', startAt:4,  duration:25},
     {title:'Wolves at the Gate — Two Steps From Hell', videoId:'IfhtnhBL2rE', event:'pp_home', startAt:0, duration:25},
     {title:'Master of Puppets — Metallica',          videoId:'E0ozmU9cJDg', event:'pp_home', startAt:0,  duration:25},
-    {title:'Symphony of Destruction — Megadeth',     videoId:'7rvZBPr1XmQ', event:'pp_home', startAt:0,  duration:25},
+    {title:'Symphony of Destruction — Megadeth',     videoId:'7rvZBPr1XmQ', event:'pp_home', startAt:5,  duration:25},
     {title:'Run to the Hills — Iron Maiden',         videoId:'eedc9RaxBhI', event:'pp_home', startAt:0,  duration:25},
-    {title:'Aces High — Iron Maiden',                videoId:'53EHh3U0_n4', event:'pp_home', startAt:0,  duration:25},
-    {title:'War Pigs — Black Sabbath',               videoId:'LQUXuQ6Zd9w', event:'pp_home', startAt:0,  duration:25},
-    {title:'Raining Blood — Slayer',                 videoId:'fcjvVYmCKfk', event:'pp_home', startAt:0,  duration:25},
+    {title:'Aces High — Iron Maiden',                videoId:'53EHh3U0_n4', event:'pp_home', startAt:45,  duration:25},
+    {title:'War Pigs — Black Sabbath',               videoId:'LQUXuQ6Zd9w', event:'pp_home', startAt:68,  duration:25},
+    {title:'Raining Blood — Slayer',                 videoId:'fcjvVYmCKfk', event:'pp_home', startAt:72,  duration:25},
     {title:'Bulls on Parade — Rage Against the Machine', videoId:'3L4YrGaR8E4', event:'pp_home', startAt:0, duration:25},
 
     // ── BOX PLAY — HOME (10) — humorous, penalty box ─────────────────────
     {title:'Breaking the Law — Judas Priest',        videoId:'L397TWLwrUU', event:'box_home', startAt:0,  duration:25},
     {title:'Bad to the Bone — George Thorogood',     videoId:'DKYC7D7-iYk', event:'box_home', startAt:0,  duration:25},
     {title:'Highway to Hell — AC/DC',               videoId:'l482T0yNkeo', event:'box_home', startAt:0,  duration:25},
-    {title:'Smooth Criminal — Michael Jackson',      videoId:'h_D3VFfhvs4', event:'box_home', startAt:0,  duration:25},
+    {title:'Smooth Criminal — Michael Jackson',      videoId:'h_D3VFfhvs4', event:'box_home', startAt:27,  duration:25},
     {title:'Gangsta\'s Paradise — Coolio',           videoId:'fPO76Jlnz6c', event:'box_home', startAt:0,  duration:25},
     {title:'Bad Guy — Billie Eilish',                videoId:'DyDfgMOUjCI', event:'box_home', startAt:0,  duration:25},
     {title:'99 Problems — Jay-Z',                    videoId:'qKJMOzHGLYk', event:'box_home', startAt:0,  duration:25},
     {title:'Wanted Dead or Alive — Bon Jovi',        videoId:'GXK9MWWAZ6c', event:'box_home', startAt:0,  duration:25},
-    {title:'Locked Up — Akon',                       videoId:'OuNTkSH0eJo', event:'box_home', startAt:0,  duration:25},
+    {title:'Locked Up — Akon',                       videoId:'OuNTkSH0eJo', event:'box_home', startAt:4,  duration:25},
     {title:'Cop Killer — Body Count (ft. Ice-T)',    videoId:'oK1a2vb78q8', event:'box_home', startAt:0,  duration:25},
 
     // ── TIMEOUT (10) — brief tension break ───────────────────────────────
     {title:'Eye of the Tiger — Survivor',            videoId:'btPJPFnesV4', event:'timeout', startAt:0,  duration:30},
     {title:'Sandstorm — Darude',                     videoId:'y6120QOlsfU', event:'timeout', startAt:44, duration:30},
     {title:'Thunderstruck — AC/DC',                  videoId:'v2AC41dglnM', event:'timeout', startAt:0,  duration:30},
-    {title:'Enter Sandman — Metallica',              videoId:'CD-E-LDc384', event:'timeout', startAt:0,  duration:30},
+    {title:'Enter Sandman — Metallica',              videoId:'CD-E-LDc384', event:'timeout', startAt:36,  duration:30},
     {title:'Sirius — Alan Parsons Project',          videoId:'OkC_oi0ksuw', event:'timeout', startAt:0,  duration:30},
-    {title:'Welcome to the Jungle — Guns N\' Roses', videoId:'o1tj2zJ2Wvg', event:'timeout', startAt:0,  duration:30},
+    {title:'Welcome to the Jungle — Guns N\' Roses', videoId:'o1tj2zJ2Wvg', event:'timeout', startAt:4,  duration:30},
     {title:'Power — Kanye West',                     videoId:'L53gjP-TtGE', event:'timeout', startAt:19, duration:30},
-    {title:'Can\'t Hold Us — Macklemore & Ryan Lewis', videoId:'2zNSgSzhBfM', event:'timeout', startAt:0, duration:30},
+    {title:'Can\'t Hold Us — Macklemore & Ryan Lewis', videoId:'2zNSgSzhBfM', event:'timeout', startAt:18, duration:30},
     {title:'Start Me Up — The Rolling Stones',       videoId:'YrzkCuUJGYQ', event:'timeout', startAt:0,  duration:30},
     {title:'Lose Yourself — Eminem',                 videoId:'7YuAzR2XVAM', event:'timeout', startAt:0,  duration:30},
 
@@ -2141,8 +2157,8 @@ function loadDefaultSongs(){
     {title:'Thunderstruck (intro) — AC/DC',          videoId:'v2AC41dglnM', event:'hit', startAt:0,  duration:20},
     {title:'Du Hast — Rammstein',                    videoId:'W3q8Od5qJio', event:'hit', startAt:0,  duration:20},
     {title:'Immigrant Song — Led Zeppelin',          videoId:'y8OtzJtp-EM', event:'hit', startAt:0,  duration:20},
-    {title:'Kickstart My Heart — Mötley Crüe',      videoId:'CmXWkMlKFkI', event:'hit', startAt:0,  duration:18},
-    {title:'Seven Nation Army — The White Stripes',  videoId:'0J2QdDbelmY', event:'hit', startAt:0,  duration:20},
+    {title:'Kickstart My Heart — Mötley Crüe',      videoId:'CmXWkMlKFkI', event:'hit', startAt:2,  duration:18},
+    {title:'Seven Nation Army — The White Stripes',  videoId:'0J2QdDbelmY', event:'hit', startAt:4,  duration:20},
     {title:'Turn Down for What — DJ Snake',          videoId:'HMUDVMiITOU', event:'hit', startAt:14, duration:18},
     {title:'Bulls on Parade — Rage Against the Machine', videoId:'3L4YrGaR8E4', event:'hit', startAt:0, duration:20},
 
@@ -2155,7 +2171,7 @@ function loadDefaultSongs(){
     {title:'Cotton Eye Joe — Rednex',                videoId:'0nJsSzWDWyQ', event:'maintenance', startAt:0,  duration:60},
     {title:'I\'m Shipping Up to Boston — Dropkick Murphys', videoId:'gjN5D8Rsgk0', event:'maintenance', startAt:0, duration:60},
     {title:'Tubthumping — Chumbawamba',              videoId:'2H5uWHCn-60', event:'maintenance', startAt:0,  duration:60},
-    {title:'Who Let the Dogs Out — Baha Men',        videoId:'Qkuu0ix4ISo', event:'maintenance', startAt:0,  duration:60},
+    {title:'Who Let the Dogs Out — Baha Men',        videoId:'Qkuu0ix4ISo', event:'maintenance', startAt:3,  duration:60},
     {title:'Yakety Sax — Benny Hill Theme',          videoId:'ZnHmskwqCCQ', event:'maintenance', startAt:0,  duration:60},
   ];
 
