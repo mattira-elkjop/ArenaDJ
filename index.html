@@ -2,8 +2,24 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>ARENA DJ</title>
+
+<!-- PWA: Web App Manifest -->
+<link rel="manifest" href="manifest.json">
+
+<!-- PWA: iOS Safari standalone fullscreen support -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Arena DJ">
+<link rel="apple-touch-icon" href="icon-192.png">
+
+<!-- PWA: Android / Chrome theme -->
+<meta name="theme-color" content="#0a0c10">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="application-name" content="Arena DJ">
+
+<!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
@@ -14,6 +30,15 @@
   --font-display:'Bebas Neue',sans-serif;
   --font-ui:'Barlow Condensed',sans-serif;
   --font-body:'Barlow',sans-serif;
+  /* iOS safe areas when running as installed PWA (notch, home indicator) */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+/* In standalone mode, pad the top nav for the status bar */
+@media (display-mode: standalone) {
+  nav { padding-top: var(--safe-top); height: calc(52px + var(--safe-top)); }
+  #mobile-nav { padding-bottom: var(--safe-bottom); }
+  #app { height: 100dvh; } /* dvh = dynamic viewport height, avoids iOS bounce */
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--font-body);overflow:hidden}
@@ -2356,6 +2381,15 @@ function loadDefaultSongs(){
   buildEventCheckboxes('new-event-checks',null);
   buildKbdSettingsGrid();renderSongTable();buildEventButtons();refreshAllPeeks();
 })();
+
+// ── PWA Service Worker Registration ─────────────────
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg => console.log('[Arena DJ] Service worker registered:', reg.scope))
+      .catch(err => console.warn('[Arena DJ] Service worker registration failed:', err));
+  });
+}
 </script>
 </body>
 </html>
