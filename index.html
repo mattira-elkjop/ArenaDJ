@@ -109,39 +109,89 @@ nav{display:flex;align-items:center;background:var(--surface);border-bottom:1px 
 .warn-text code{background:rgba(245,166,35,.15);padding:1px 6px;border-radius:3px;font-size:11px}
 #warn-dismiss{background:none;border:1px solid var(--amber);color:var(--amber);padding:3px 9px;border-radius:3px;cursor:pointer;font-family:var(--font-ui);font-size:11px;font-weight:700}
 
-/* GLOBAL NOW-PLAYING BAR */
-#global-np-bar{display:flex;align-items:center;gap:0;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;height:62px;padding:0 18px}
-.gnp-badge{font-family:var(--font-ui);font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);white-space:nowrap;margin-right:12px}
-.gnp-info{display:flex;flex-direction:column;justify-content:center;min-width:0;margin-right:16px;width:200px;flex-shrink:0}
-.gnp-title{font-family:var(--font-ui);font-weight:700;font-size:14px;color:var(--ice);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2}
-.gnp-event{font-size:11px;color:var(--text-muted);font-family:var(--font-ui);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+/* GLOBAL NOW-PLAYING BAR — two-row layout on desktop */
+#global-np-bar{
+  display:flex;flex-direction:column;
+  background:var(--surface);border-bottom:1px solid var(--border);
+  flex-shrink:0;padding:0;
+}
+/* ── Row 1: badge · title/event · spacer · controls ── */
+.gnp-top-row{
+  display:flex;align-items:center;
+  padding:10px 20px 8px;
+  gap:14px;
+  min-height:52px;
+}
+.gnp-badge{
+  font-family:var(--font-ui);font-size:9px;font-weight:700;letter-spacing:2.5px;
+  text-transform:uppercase;color:var(--text-muted);white-space:nowrap;
+  border-right:1px solid var(--border);padding-right:14px;flex-shrink:0;
+}
+.gnp-info{
+  display:flex;flex-direction:column;justify-content:center;
+  min-width:0;flex:1;
+}
+.gnp-title{
+  font-family:var(--font-ui);font-weight:700;font-size:15px;
+  color:var(--ice);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2;
+}
+.gnp-event{
+  font-size:10px;color:var(--text-muted);font-family:var(--font-ui);
+  letter-spacing:1.5px;text-transform:uppercase;margin-top:3px;
+}
+/* ── Controls group — right side of top row ── */
+.gnp-controls{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.gnp-spacebar-btn{
+  display:flex;align-items:center;gap:7px;
+  background:transparent;border:1px solid var(--border);color:var(--text-muted);
+  padding:7px 14px;border-radius:5px;cursor:pointer;
+  font-family:var(--font-ui);font-size:11px;font-weight:700;letter-spacing:1.5px;
+  text-transform:uppercase;transition:border-color .15s,color .15s,background .15s;
+  white-space:nowrap;
+}
+.gnp-spacebar-btn:hover{border-color:var(--ice-dim);color:var(--text);background:rgba(200,232,255,.05)}
+.gnp-spacebar-btn.active{border-color:var(--ice);color:var(--ice);background:rgba(200,232,255,.08)}
+.gnp-spacebar-btn kbd{
+  background:var(--surface2);border:1px solid var(--border);border-radius:3px;
+  padding:1px 6px;font-size:10px;font-family:monospace;color:inherit;
+}
+.master-stop-btn{
+  font-family:var(--font-ui);font-size:11px;font-weight:700;letter-spacing:2px;
+  text-transform:uppercase;background:rgba(224,53,53,.1);
+  border:1px solid var(--red);color:var(--red);
+  padding:7px 16px;border-radius:5px;cursor:pointer;
+  transition:background .15s,color .15s;white-space:nowrap;
+}
+.master-stop-btn:hover{background:var(--red);color:#fff}
 
-/* SCRUBBER */
-.gnp-scrubber-wrap{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:3px;margin-right:16px}
-.gnp-track{position:relative;height:10px;background:var(--border);border-radius:5px;cursor:pointer;user-select:none;transition:height .1s}
-.gnp-track:hover,.gnp-track.dragging{height:12px}
-.gnp-seg-pre{position:absolute;top:0;left:0;height:100%;background:rgba(255,255,255,.06);border-radius:5px 0 0 5px;pointer-events:none}
-.gnp-seg-win{position:absolute;top:0;height:100%;background:rgba(200,232,255,.18);pointer-events:none}
-.gnp-seg-played{position:absolute;top:0;left:0;height:100%;background:var(--ice);border-radius:5px;pointer-events:none}
-.gnp-seg-post{position:absolute;top:0;right:0;height:100%;background:rgba(255,255,255,.04);border-radius:0 5px 5px 0;pointer-events:none}
-.gnp-handle-play{position:absolute;top:50%;width:14px;height:14px;background:var(--ice);border-radius:50%;transform:translate(-50%,-50%);pointer-events:none;box-shadow:0 0 6px rgba(200,232,255,.7);opacity:0;transition:opacity .15s;z-index:3}
+/* ── Row 2: full-width scrubber ── */
+.gnp-scrubber-wrap{
+  display:flex;flex-direction:column;gap:5px;
+  padding:0 20px 10px;
+}
+.gnp-track{
+  position:relative;height:5px;background:rgba(255,255,255,.08);
+  border-radius:3px;cursor:pointer;user-select:none;transition:height .12s;
+}
+.gnp-track:hover,.gnp-track.dragging{height:7px}
+.gnp-seg-pre{position:absolute;top:0;left:0;height:100%;background:rgba(255,255,255,.07);border-radius:3px 0 0 3px;pointer-events:none}
+.gnp-seg-win{position:absolute;top:0;height:100%;background:rgba(200,232,255,.15);pointer-events:none}
+.gnp-seg-played{position:absolute;top:0;left:0;height:100%;background:var(--ice);border-radius:3px;pointer-events:none}
+.gnp-seg-post{position:absolute;top:0;right:0;height:100%;background:rgba(255,255,255,.03);border-radius:0 3px 3px 0;pointer-events:none}
+.gnp-handle-play{position:absolute;top:50%;width:13px;height:13px;background:var(--ice);border-radius:50%;transform:translate(-50%,-50%);pointer-events:none;box-shadow:0 0 8px rgba(200,232,255,.8);opacity:0;transition:opacity .15s;z-index:3}
 .gnp-handle-end{position:absolute;top:50%;width:10px;height:18px;background:var(--amber);border-radius:3px;transform:translate(-50%,-50%);cursor:ew-resize;z-index:4;opacity:0;transition:opacity .15s;box-shadow:0 0 5px rgba(245,166,35,.6)}
 .gnp-track:hover .gnp-handle-play,.gnp-track.dragging .gnp-handle-play{opacity:1}
 .gnp-track:hover .gnp-handle-end,.gnp-track.dragging-end .gnp-handle-end{opacity:1}
 .gnp-handle-end:hover{opacity:1!important;background:#ffc040}
 
-/* Time row */
-.gnp-times{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--font-ui);font-size:10px;color:var(--text-muted);gap:6px}
+/* Time labels */
+.gnp-times{
+  display:flex;justify-content:space-between;align-items:baseline;
+  font-family:var(--font-ui);font-size:10px;color:var(--text-muted);
+}
 .gnp-t-elapsed{color:var(--ice-dim);white-space:nowrap}
 .gnp-t-win{color:var(--amber);font-size:10px;white-space:nowrap;text-align:center;flex:1}
 .gnp-t-total{white-space:nowrap;text-align:right}
-
-.gnp-spacebar-btn{display:flex;align-items:center;gap:6px;background:transparent;border:1px solid var(--border);color:var(--text-muted);padding:6px 11px;border-radius:4px;cursor:pointer;font-family:var(--font-ui);font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;transition:border-color .15s,color .15s;white-space:nowrap;margin-right:9px}
-.gnp-spacebar-btn:hover{border-color:var(--ice-dim);color:var(--text)}
-.gnp-spacebar-btn.active{border-color:var(--ice);color:var(--ice)}
-.gnp-spacebar-btn kbd{background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:1px 5px;font-size:10px;font-family:monospace;color:inherit}
-.master-stop-btn{font-family:var(--font-ui);font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;background:transparent;border:1px solid var(--red);color:var(--red);padding:6px 12px;border-radius:4px;cursor:pointer;transition:background .15s,color .15s;white-space:nowrap}
-.master-stop-btn:hover{background:var(--red);color:#fff}
 
 /* MOBILE — now-playing bar becomes a compact strip, tap to expand scrubber */
 @media(max-width:640px){
@@ -158,10 +208,11 @@ nav{display:flex;align-items:center;background:var(--surface);border-bottom:1px 
   .gnp-info{width:auto;flex:1;margin-right:0}
   .gnp-title{font-size:13px}
   .gnp-event{font-size:10px}
-  /* Compact play/stop buttons */
-  .gnp-spacebar-btn{padding:5px 10px;font-size:10px;letter-spacing:1px;margin-right:6px}
-  .gnp-spacebar-btn kbd{display:none} /* hide SPACE key label, just show PLAY/PAUSE */
-  .master-stop-btn{padding:5px 10px;font-size:10px;letter-spacing:1px}
+  /* Compact play/stop buttons on mobile */
+  .gnp-controls{display:flex;align-items:center;gap:6px;flex-shrink:0}
+  .gnp-spacebar-btn{padding:5px 9px;font-size:10px;letter-spacing:1px}
+  .gnp-spacebar-btn kbd{display:none}
+  .master-stop-btn{padding:5px 9px;font-size:10px;letter-spacing:1px}
   /* Scrubber row — collapsed by default, shown below */
   .gnp-scrubber-wrap{
     margin:0;padding:6px 12px 8px;
@@ -188,10 +239,13 @@ nav{display:flex;align-items:center;background:var(--surface);border-bottom:1px 
   .gnp-mini-played{height:100%;background:var(--ice);border-radius:2px;width:0%;transition:width .3s linear}
 }
 @media(min-width:641px){
-  .gnp-top-row{display:contents} /* desktop: children are direct flex children of #global-np-bar */
+  /* Desktop: two-row layout — top-row is a flex row, scrubber is its own row */
+  .gnp-top-row{display:flex} /* keep as flex row */
   .gnp-expand-btn{display:none}
   .gnp-mini-bar{display:none}
-  .gnp-scrubber-wrap{display:flex!important} /* always show scrubber on desktop */
+  .gnp-scrubber-wrap{display:flex!important}
+  /* Hide mobile-only spacebar btn hide — kbd shown on desktop */
+  .gnp-spacebar-btn{display:flex}
 }
 
 /* PAGES */
@@ -727,6 +781,7 @@ input[type=number]{width:84px}
 
 <!-- GLOBAL NOW-PLAYING BAR -->
 <div id="global-np-bar">
+  <!-- Row 1: badge · title/event · controls -->
   <div class="gnp-top-row">
     <div class="gnp-badge">NOW PLAYING</div>
     <div class="gnp-info">
@@ -735,11 +790,14 @@ input[type=number]{width:84px}
       <!-- Mini progress bar (mobile only) -->
       <div class="gnp-mini-bar"><div class="gnp-mini-played" id="gnp-mini-played"></div></div>
     </div>
-    <button class="gnp-spacebar-btn" id="space-btn" onclick="spacebarAction()"><kbd>SPACE</kbd><span id="space-btn-label">PLAY / PAUSE</span></button>
-    <button class="master-stop-btn" onclick="masterStop()">■ STOP</button>
-    <!-- Expand scrubber on mobile -->
-    <button class="gnp-expand-btn" id="gnp-expand-btn" onclick="toggleMobileScrubber()" title="Show/hide scrubber">▾</button>
+    <div class="gnp-controls">
+      <button class="gnp-spacebar-btn" id="space-btn" onclick="spacebarAction()"><kbd>SPACE</kbd><span id="space-btn-label">PLAY / PAUSE</span></button>
+      <button class="master-stop-btn" onclick="masterStop()">■ STOP</button>
+      <!-- Expand scrubber on mobile -->
+      <button class="gnp-expand-btn" id="gnp-expand-btn" onclick="toggleMobileScrubber()" title="Show/hide scrubber">▾</button>
+    </div>
   </div>
+  <!-- Row 2: full-width scrubber (always visible on desktop, expandable on mobile) -->
   <div class="gnp-scrubber-wrap" id="gnp-scrubber-wrap">
     <div class="gnp-track" id="gnp-track">
       <div class="gnp-seg-pre"    id="gnp-seg-pre"></div>
@@ -2181,6 +2239,86 @@ function loadDefaultSongs(){
     {title:'What Now - Rihanna', videoId:'veau65llg3g', event:'timeout', startAt:113, duration:40},
     {title:'What\'s Up?', videoId:'B6GdsRIbTSk', event:'timeout', startAt:208, duration:40},
     {title:'Every Breath You Take', videoId:'G0mGRit4_DA', event:'intermission', startAt:0, duration:0},
+    {title:'Organ 6', videoId:'b5wLgGEsXkA', event:'intermission', startAt:6, duration:0},
+    {title:'Organ 10', videoId:'f7LU8A19USE', event:'intermission', startAt:6, duration:0},
+    {title:'Organ 5', videoId:'BVAoP114ApY', event:'intermission', startAt:6, duration:0},
+    {title:'Organ 7', videoId:'frHfFbADVyI', event:'intermission', startAt:6, duration:0},
+    {title:'Can\'t Touch This', videoId:'z5X5zh00rdg', event:'hit', startAt:96, duration:0},
+    {title:'Bangarang', videoId:'EkZ4d470yV4', event:'warmup', startAt:0, duration:0},
+    {title:'Bangarang', videoId:'EkZ4d470yV4', event:'intermission', startAt:9, duration:0},
+    {title:'Epic - Faith No More', videoId:'Kw11B__dEGI', event:'intermission', startAt:0, duration:0},
+    {title:'Fireball', videoId:'x1h5CtcMmqE', event:'box_home', startAt:26, duration:0},
+    {title:'The Show Must Go On', videoId:'j5_0E38dQPw', event:'intermission', startAt:0, duration:0},
+    {title:'La Grange', videoId:'bSt4myecN_c', event:'warmup', startAt:0, duration:0},
+    {title:'La Grange', videoId:'bSt4myecN_c', event:'intermission', startAt:130, duration:0},
+    {title:'Born to be wild', videoId:'93fAJe8WVjA', event:'warmup', startAt:0, duration:0},
+    {title:'Get It On', videoId:'cp1m4B3HRhg', event:'warmup', startAt:0, duration:0},
+    {title:'A Warrior\'s Call', videoId:'NqJLMqKMzA0', event:'match_intro', startAt:0, duration:0},
+    {title:'Scream & Shout', videoId:'a5D8CTt-tfs', event:'intermission', startAt:0, duration:0},
+    {title:'Song 2 - Blur', videoId:'SQrKCytWbj8', event:'intermission', startAt:0, duration:0},
+    {title:'Chelsea Dagger', videoId:'jQveblLS03U', event:'intermission', startAt:0, duration:0},
+    {title:'Don\'t Bring Me Down', videoId:'kW0HZy8J0v0', event:'intermission', startAt:0, duration:0},
+    {title:'Cum on Feel the Noize', videoId:'XQ5mygB97nM', event:'warmup', startAt:0, duration:0},
+    {title:'Cum on Feel the Noize', videoId:'XQ5mygB97nM', event:'intermission', startAt:0, duration:0},
+    {title:'Crowd Chant', videoId:'eoWtsVXPExs', event:'intermission', startAt:0, duration:0},
+    {title:'Dream Is Collapsing - Inception Soundtrack', videoId:'Jx5KJQb0pDo', event:'match_intro', startAt:0, duration:0},
+    {title:'I wanna rock', videoId:'tyHpTG1MjVU', event:'intermission', startAt:0, duration:0},
+    {title:'Another One Bites The Dust', videoId:'Y09uL2qbYCg', event:'box_home', startAt:0, duration:0},
+    {title:'All Right Now', videoId:'7cQ4jNDRTOo', event:'intermission', startAt:0, duration:0},
+    {title:'Unstoppable', videoId:'b-nS40cYjh8', event:'intermission', startAt:0, duration:0},
+    {title:'Mony Mony', videoId:'VPwMsu63PUU', event:'intermission', startAt:0, duration:0},
+    {title:'Eye of the tiger', videoId:'S-LO6dctBms', event:'intermission', startAt:0, duration:0},
+    {title:'Baba O\'Riley', videoId:'rIbMbXjbW98', event:'match_intro', startAt:0, duration:0},
+    {title:'Baba O\'Riley', videoId:'rIbMbXjbW98', event:'intermission', startAt:0, duration:0},
+    {title:'Black Betty', videoId:'wWk-uDrGxL0', event:'intermission', startAt:0, duration:0},
+    {title:'Smells Like Teen Spirit', videoId:'ljUtuoFt-8c', event:'intermission', startAt:0, duration:0},
+    {title:'Whorehouse Blues', videoId:'xbd0p26-rr0', event:'intermission', startAt:0, duration:0},
+    {title:'Low - Flo Rida', videoId:'uUL8a7eJCk8', event:'intermission', startAt:0, duration:0},
+    {title:'Bad To The Bone', videoId:'8KciRaANKmo', event:'goal_away', startAt:0, duration:0},
+    {title:'Hate To Say I Told You So', videoId:'bL-hRknymbI', event:'intermission', startAt:0, duration:0},
+    {title:'Backseat Boogie - Airbourne', videoId:'K_SUM-9G7-k', event:'warmup', startAt:0, duration:0},
+    {title:'Backseat Boogie - Airbourne', videoId:'K_SUM-9G7-k', event:'intermission', startAt:0, duration:0},
+    {title:'Hail to the King', videoId:'MjwttGizNEs', event:'intermission', startAt:0, duration:0},
+    {title:'Radar Love', videoId:'GyAvXV1NJNY', event:'intermission', startAt:19, duration:0},
+    {title:'Figure It Out', videoId:'5idPf5Irfxk', event:'intermission', startAt:0, duration:0},
+    {title:'Maniac (Flashdance)', videoId:'6GCNUeTFSbA', event:'intermission', startAt:0, duration:0},
+    {title:'Should I Stay Or Should I Go', videoId:'wjZMcWaniA4', event:'warmup', startAt:0, duration:0},
+    {title:'Gimme All Your Lovin\'', videoId:'tMhZizgTnj0', event:'warmup', startAt:0, duration:0},
+    {title:'Yeah! - Usher', videoId:'XGXZOQ8yTU4', event:'intermission', startAt:0, duration:0},
+    {title:'You Could Be Mine', videoId:'DVzcQ4_khsM', event:'warmup', startAt:0, duration:0},
+    {title:'You Could Be Mine', videoId:'DVzcQ4_khsM', event:'intermission', startAt:0, duration:0},
+    {title:'Are You Ready', videoId:'N5U8O81jtAg', event:'warmup', startAt:0, duration:0},
+    {title:'Master of Puppets', videoId:'xnKhsTXoKCI', event:'intermission', startAt:0, duration:0},
+    {title:'Unstoppable', videoId:'_PBlykN4KIY', event:'warmup', startAt:0, duration:0},
+    {title:'Hockey Warm Up Mix (EDM)', videoId:'8QZwDkCQ060', event:'warmup', startAt:0, duration:0},
+    {title:'Hockey Warm Up Mix (EDM/House)', videoId:'KLe7jC6Sl68', event:'warmup', startAt:0, duration:0},
+    {title:'Down with the sickness', videoId:'iHGCJacleE4', event:'intermission', startAt:21, duration:0},
+    {title:'T.N.T', videoId:'NhsK5WExrnE', event:'match_intro', startAt:0, duration:0},
+    {title:'T.N.T', videoId:'NhsK5WExrnE', event:'warmup', startAt:0, duration:0},
+    {title:'T.N.T', videoId:'NhsK5WExrnE', event:'intermission', startAt:0, duration:0},
+    {title:'All We Do is Win', videoId:'sX9OAqlpjUY', event:'final', startAt:0, duration:0},
+    {title:'Timber - Pitbull & Kesha', videoId:'GcYF1xnmZTI', event:'intermission', startAt:0, duration:0},
+    {title:'Bohemian Rhapsody', videoId:'bSnlKl_PoQU', event:'box_home', startAt:248, duration:0},
+    {title:'Blinding Lights', videoId:'J7p4bzqLvCw', event:'warmup', startAt:0, duration:0},
+    {title:'Blinding Lights', videoId:'J7p4bzqLvCw', event:'intermission', startAt:0, duration:0},
+    {title:'One More Time', videoId:'wU26xVT_vBU', event:'warmup', startAt:0, duration:0},
+    {title:'One More Time', videoId:'wU26xVT_vBU', event:'intermission', startAt:0, duration:0},
+    {title:'Party Rock Anthem', videoId:'kmioyMNkgx4', event:'warmup', startAt:0, duration:0},
+    {title:'Party Rock Anthem', videoId:'kmioyMNkgx4', event:'intermission', startAt:0, duration:0},
+    {title:'It\'s My Life', videoId:'bY3vXr7fm8k', event:'intermission', startAt:0, duration:0},
+    {title:'Stayin Alive', videoId:'z2qoihbzc3E', event:'goal_away', startAt:0, duration:0},
+    {title:'Played-A-Live', videoId:'o_ZBzGlYS6g', event:'intermission', startAt:4, duration:0},
+    {title:'Pedro', videoId:'5WXs6hzsuZs', event:'warmup', startAt:0, duration:0},
+    {title:'Pedro', videoId:'5WXs6hzsuZs', event:'intermission', startAt:25, duration:0},
+    {title:'Mwaki', videoId:'wr62oNJORAI', event:'intermission', startAt:0, duration:0},
+    {title:'Mwaki (chorus start)', videoId:'wr62oNJORAI', event:'intermission', startAt:40, duration:0},
+    {title:'Wicked Game', videoId:'hHwYHn2mTpA', event:'final', startAt:0, duration:0},
+    {title:'The Sound of Silence (CYRIL Remix)', videoId:'jwptCxZI6y4', event:'final', startAt:0, duration:0},
+    {title:'Don\'t You Worry Child', videoId:'3mWbRB3Y4R8', event:'intermission', startAt:60, duration:0},
+    {title:'Save The World', videoId:'9TJGY8_22Kk', event:'goal_away', startAt:35, duration:0},
+    {title:'Antidote', videoId:'OPSnQzqDoec', event:'match_intro', startAt:0, duration:0},
+    {title:'Antidote', videoId:'OPSnQzqDoec', event:'intermission', startAt:0, duration:0},
+    {title:'Scary Monsters and Nice Sprites', videoId:'WSeNSzJ2-Jw', event:'intermission', startAt:0, duration:0},
   ];
 
   defaults.forEach(s => {
