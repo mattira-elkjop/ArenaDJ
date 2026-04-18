@@ -2,7 +2,7 @@
   "name": "Arena DJ",
   "short_name": "Arena DJ",
   "description": "Hockey arena soundboard — trigger event music with one tap",
-  "start_url": "./index.html",
+  "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
@@ -19,7 +19,28 @@
       "src": "./icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "./screenshot-mobile.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "label": "Arena DJ live page on mobile"
+    },
+    {
+      "src": "./screenshot-desktop.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Arena DJ live page on desktop"
     }
   ]
 }
