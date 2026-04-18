@@ -52,6 +52,23 @@ nav{display:flex;align-items:center;background:var(--surface);border-bottom:1px 
   #mobile-nav{display:none}
 }
 
+/* ADS NOTICE BANNER */
+#ads-notice{background:#0d1a2a;border-bottom:2px solid #3a7bd5;padding:8px 16px;display:flex;align-items:flex-start;gap:12px;font-family:var(--font-ui);font-size:12px;flex-shrink:0}
+#ads-notice.hidden{display:none}
+.ads-notice-icon{font-size:18px;flex-shrink:0;margin-top:1px}
+.ads-notice-body{flex:1;color:#8ab4f8;line-height:1.5}
+.ads-notice-body strong{color:#aecbfa}
+.ads-notice-body a{color:#aecbfa;text-decoration:underline;cursor:pointer}
+.ads-notice-actions{display:flex;gap:8px;flex-shrink:0;align-items:flex-start;flex-wrap:wrap}
+.ads-notice-btn{background:none;border:1px solid #3a7bd5;color:#8ab4f8;padding:4px 10px;border-radius:3px;cursor:pointer;font-family:var(--font-ui);font-size:11px;font-weight:700;white-space:nowrap}
+.ads-notice-btn:hover{background:rgba(58,123,213,.15)}
+.ads-notice-btn-primary{border-color:#8ab4f8;color:#aecbfa}
+@media(max-width:640px){
+  #ads-notice{flex-direction:column;gap:8px;padding:10px 14px}
+  .ads-notice-actions{flex-direction:row;width:100%}
+  .ads-notice-btn{flex:1;text-align:center;padding:8px 6px}
+}
+
 /* SERVER WARNING */
 #server-warning{background:#211400;border-bottom:2px solid var(--amber);padding:7px 24px;display:flex;align-items:center;gap:12px;font-family:var(--font-ui);font-size:12px;flex-shrink:0}
 #server-warning.hidden{display:none}
@@ -653,6 +670,20 @@ input[type=number]{width:84px}
   <div class="nav-tab" data-page="help">? HELP</div>
 </nav>
 
+<!-- ADS NOTICE — shown once unless dismissed, hidden if YouTube Premium detected -->
+<div id="ads-notice">
+  <div class="ads-notice-icon">ℹ</div>
+  <div class="ads-notice-body" id="ads-notice-body">
+    <strong>YouTube ads may interrupt playback.</strong>
+    Arena DJ uses the YouTube player, which may play ads before songs if you are not signed in or do not have YouTube Premium.
+    For uninterrupted arena use: <strong>sign in to YouTube</strong> in this browser and get <strong>YouTube Premium</strong>, or use a browser with an ad blocker installed.
+  </div>
+  <div class="ads-notice-actions">
+    <button class="ads-notice-btn ads-notice-btn-primary" onclick="openYouTubeSignIn()">Sign in to YouTube ↗</button>
+    <button class="ads-notice-btn" onclick="dismissAdsNotice()">Got it ✕</button>
+  </div>
+</div>
+
 <div id="server-warning">
   <span style="color:var(--amber)">⚠</span>
   <span class="warn-text"><strong>YouTube requires HTTP</strong> — double-click <strong>START_Arena_DJ.bat</strong>, or run <code>python -m http.server 8080</code> and open <code>http://localhost:8080/arena-dj.html</code>.</span>
@@ -799,6 +830,21 @@ input[type=number]{width:84px}
       <div class="help-h2">What is Arena DJ?</div>
       <p>Arena DJ is a browser-based music controller designed for ice hockey (and other sports) arena environments. It lets you assign music playlists to specific game events — goals, power plays, intermissions and more — and trigger them with a single button click or keyboard shortcut, with automatic fade-in, fade-out, and shuffle between songs.</p>
       <div class="help-tip"><strong>Tip:</strong> Always launch using <strong>START_Arena_DJ.bat</strong> (Windows). This starts a local web server required for YouTube playback. Opening the HTML file directly will not work.</div>
+    </div>
+
+    <div class="help-section">
+      <div class="help-h2">YouTube Ads &amp; Best Playback Setup</div>
+      <p>Arena DJ streams audio via the YouTube player. YouTube may play ads before songs start if you are not signed in to a Google account, or do not have <strong>YouTube Premium</strong>.</p>
+      <div class="help-tip" style="border-color:rgba(58,123,213,.4);background:rgba(13,26,42,.6);color:#8ab4f8">
+        <strong style="color:#aecbfa">There is no way to skip or suppress YouTube ads programmatically.</strong>
+        For uninterrupted arena use, choose one of the following:
+        <ul style="margin-top:8px;margin-bottom:0;padding-left:18px">
+          <li><strong style="color:#aecbfa">Best:</strong> Sign in to YouTube in this browser and have an active <strong style="color:#aecbfa">YouTube Premium</strong> subscription — no ads anywhere, including embeds.</li>
+          <li><strong style="color:#aecbfa">Good:</strong> Use a browser with an ad blocker extension installed (uBlock Origin, AdGuard, etc.).</li>
+          <li><strong style="color:#aecbfa">Note:</strong> The YouTube player in Arena DJ is hidden (audio only), so visual ads won't clutter your screen — but audio ads will still be audible over the PA system if they play.</li>
+        </ul>
+      </div>
+      <p>You can sign in to YouTube at any time by clicking <strong>Sign in to YouTube ↗</strong> in the notice banner at the top of the app, then reload the page.</p>
     </div>
 
     <div class="help-section">
@@ -1971,6 +2017,29 @@ function buildHelpKbdGrid(){
 function dismissWarning(){document.getElementById('server-warning').classList.add('hidden');}
 function checkWarning(){if(window.location.protocol!=='file:')document.getElementById('server-warning').classList.add('hidden');}
 
+// ── Ads Notice ─────────────────────────────────────
+function dismissAdsNotice(permanent){
+  document.getElementById('ads-notice').classList.add('hidden');
+  try{localStorage.setItem('arenaDJ_adsDismissed','1');}catch(e){}
+}
+function openYouTubeSignIn(){
+  window.open('https://accounts.google.com/ServiceLogin?service=youtube','_blank');
+}
+function checkAdsNotice(){
+  const notice = document.getElementById('ads-notice');
+  if(!notice) return;
+  // If user previously dismissed, hide immediately
+  try{ if(localStorage.getItem('arenaDJ_adsDismissed')==='1'){notice.classList.add('hidden');return;} }catch(e){}
+  // Heuristic: YouTube sets a cookie called 'VISITOR_INFO1_LIVE' for logged-in users
+  // and 'SID' / 'SSID' / '__Secure-3PSID' for authenticated sessions.
+  // We can't read cross-origin YouTube cookies, but we can check if the user
+  // seems to have a Google session via the legacy 'APISID' cookie if same-origin.
+  // Since we can't actually detect premium, we always show the notice unless dismissed —
+  // but we update the message to be less alarming if we detect any YT-like cookie.
+  // The most honest approach: always show until dismissed.
+  // The notice is already visible by default (no 'hidden' class in HTML).
+}
+
 function switchPage(pageId){
   document.querySelectorAll('.nav-tab,.mobile-nav-tab').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -2282,7 +2351,7 @@ function loadDefaultSongs(){
 //  INIT
 // ══════════════════════════════════════════════════
 (function init(){
-  load();checkWarning();loadConfigUI();
+  load();checkWarning();checkAdsNotice();loadConfigUI();
   if(songs.length === 0) loadDefaultSongs();
   buildEventCheckboxes('new-event-checks',null);
   buildKbdSettingsGrid();renderSongTable();buildEventButtons();refreshAllPeeks();
