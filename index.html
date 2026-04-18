@@ -400,25 +400,59 @@ kbd{background:var(--surface2);border:1px solid var(--border);border-radius:3px;
   .swipe-hint-left,.swipe-hint-right{display:none}
 }
 
-/* Settings & Help pages — mobile padding */
+/* Settings & Help pages — mobile */
 @media(max-width:640px){
-  #settings-page{padding:14px 14px 120px;gap:18px}
-  .settings-header{font-size:26px;letter-spacing:2px}
-  .settings-section-title{font-size:10px}
+  #settings-page{
+    padding:14px 14px 24px;gap:20px;
+    overflow-y:auto;overflow-x:hidden;
+    -webkit-overflow-scrolling:touch;
+  }
+  .settings-header{font-size:24px;letter-spacing:2px;padding-bottom:10px}
+  .settings-section{gap:12px}
+  .settings-section-title{font-size:10px;letter-spacing:2px}
   .cfg-row{flex-direction:column;align-items:flex-start;gap:8px}
-  .cfg-label{min-width:unset}
+  .cfg-label{min-width:unset;font-size:12px}
+  input[type=number]{width:100%;box-sizing:border-box}
+  input[type=text]{min-width:unset;width:100%;box-sizing:border-box;font-size:16px}
+  .add-song-form{padding:14px}
   .form-grid{grid-template-columns:1fr}
   .form-field{grid-column:1/-1!important}
-  input[type=text]{min-width:unset;width:100%}
-  .kbd-table th,.kbd-table td{padding:8px 10px}
-  .lib-toolbar{gap:8px}
-  .lib-search{max-width:100%;width:100%}
-  .song-table th:nth-child(3),.song-table td:nth-child(3),
-  .song-table th:nth-child(4),.song-table td:nth-child(4),
-  .song-table th:nth-child(5),.song-table td:nth-child(5){display:none}
-  .help-body{padding:16px 14px 120px}
-  .help-title{font-size:28px}
-  .io-bar{flex-direction:column;align-items:flex-start;gap:10px}
+  .form-field input,.form-field select{font-size:16px}
+  .event-checkboxes{gap:8px}
+  .event-check-pill{padding:6px 12px;font-size:12px}
+  .kbd-table th,.kbd-table td{padding:10px 10px}
+  .kbd-key-input{width:52px;height:40px;font-size:18px;touch-action:manipulation}
+  .lib-toolbar{gap:8px;flex-wrap:wrap}
+  .lib-search{max-width:100%;width:100%;flex:unset}
+  .lib-filter-wrap,.lib-sort-btn{flex:1}
+  .lib-filter-btn,.lib-sort-btn{width:100%;justify-content:center;padding:10px 8px;font-size:11px}
+  /* Hide desktop table on mobile */
+  .song-table-wrap{display:none}
+  /* Song cards */
+  .song-cards{display:flex;flex-direction:column;gap:8px}
+  .song-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+  .song-card-top{display:flex;align-items:flex-start;gap:10px}
+  .song-card-info{flex:1;min-width:0}
+  .song-card-title{font-family:var(--font-ui);font-weight:700;font-size:14px;color:var(--text);word-break:break-word;line-height:1.3}
+  .song-card-meta{font-family:var(--font-ui);font-size:11px;color:var(--text-muted);margin-top:3px}
+  .song-card-actions{display:flex;gap:8px;flex-shrink:0}
+  .song-card-actions .btn{padding:8px 14px;font-size:11px;min-width:44px;text-align:center}
+  .song-card-edit{display:flex;flex-direction:column;gap:10px}
+  .song-card-edit-row{display:flex;flex-direction:column;gap:4px}
+  .song-card-edit-row label{font-family:var(--font-ui);font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted)}
+  .song-card-edit-row input,.song-card-edit-row select{width:100%;font-size:16px;box-sizing:border-box;background:var(--surface2);border:1px solid var(--ice-dim);border-radius:4px;color:var(--text);padding:8px 10px;outline:none}
+  .song-card-edit-actions{display:flex;gap:8px}
+  .song-card-edit-actions .btn{flex:1;padding:12px;text-align:center;font-size:12px}
+  .io-bar{flex-direction:column;align-items:stretch;gap:10px;padding:14px}
+  .io-bar-label{margin-right:0;margin-bottom:2px}
+  .io-bar .btn,.io-bar label.btn{text-align:center;padding:12px;font-size:12px}
+  .help-body{padding:16px 14px 24px}
+  .help-title{font-size:26px}
+  .help-body p,.help-body li{font-size:13px}
+}
+/* Desktop: hide card list */
+@media(min-width:641px){
+  .song-cards{display:none}
 }
 /* UP NEXT strip — now a dropdown trigger */
 .up-next-strip{
@@ -733,6 +767,8 @@ input[type=number]{width:84px}
         </tbody>
       </table>
     </div>
+    <!-- Mobile card list (shown instead of table on small screens) -->
+    <div class="song-cards" id="song-cards"></div>
   </div>
 
   <div class="settings-section">
@@ -835,9 +871,7 @@ input[type=number]{width:84px}
   </div>
 </div>
 
-</div><!-- #app -->
-
-<!-- Mobile bottom nav (hidden on desktop via CSS) -->
+<!-- Mobile bottom nav (hidden on desktop via CSS) — inside #app so it stays in the 100vh flex column -->
 <div id="mobile-nav">
   <div class="mobile-nav-tab active" data-page="live">
     <span class="mnt-icon">⬤</span>
@@ -852,6 +886,8 @@ input[type=number]{width:84px}
     <span>HELP</span>
   </div>
 </div>
+
+</div><!-- #app -->
 
 <div style="position:fixed;bottom:-9999px;left:-9999px;width:2px;height:2px;pointer-events:none;opacity:.01"><div id="yt-player"></div></div>
 <div id="toast"></div>
@@ -1661,7 +1697,10 @@ function deleteSong(id){
   if(editingId===id)editingId=null;
   save();renderSongTable();buildEventButtons();refreshAllPeeks();
 }
-function startEdit(id){editingId=id;renderSongTable();}
+function startEdit(id){
+  editingId=id;renderSongTable();
+  setTimeout(()=>{const card=document.getElementById('card-'+id);if(card)card.scrollIntoView({behavior:'smooth',block:'nearest'});},60);
+}
 function cancelEdit(){editingId=null;renderSongTable();}
 function saveEdit(id){
   const s=songs.find(x=>x.id===id);if(!s)return;
@@ -1767,41 +1806,91 @@ function renderSongTable(){
   const countEl=document.getElementById('lib-count');
   if(countEl)countEl.textContent=`${list.length} of ${songs.length} song${songs.length!==1?'s':''}`;
 
+  // ── Desktop table ─────────────────────────────────
   const tbody=document.getElementById('song-tbody');
   if(!list.length){
     tbody.innerHTML=`<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:24px">${songs.length?'No songs match your search / filter':'No songs yet — add some above'}</td></tr>`;
+  } else {
+    tbody.innerHTML=list.map(s=>{
+      const def=EVENT_DEFS.find(e=>e.id===s.event);
+      const label=def?def.label+(def.sub?' — '+def.sub:''):s.event;
+      const color=getPillColor(s.event);
+      if(editingId===s.id){
+        const isWarmup=s.event==='warmup';
+        return `<tr class="editing">
+          <td><input class="edit-input" id="e-title-${s.id}" value="${esc(s.title)}"></td>
+          <td><select class="edit-input" id="e-event-${s.id}">${EVENT_DEFS.map(e=>`<option value="${e.id}"${s.event===e.id?' selected':''}>${e.label}${e.sub?' — '+e.sub:''}</option>`).join('')}</select></td>
+          <td>${isWarmup?'<span style="color:var(--text-muted);font-size:11px;font-family:var(--font-ui)">Full song</span>':'<input type="number" class="edit-input edit-num" id="e-start-'+s.id+'" value="'+(s.startAt||0)+'" min="0"> s'}</td>
+          <td>${isWarmup?'<span style="color:var(--text-muted);font-size:11px;font-family:var(--font-ui)">Full song</span>':'<input type="number" class="edit-input edit-num" id="e-dur-'+s.id+'" value="'+(s.duration||0)+'" min="0"> s'}</td>
+          <td><input class="edit-input" id="e-url-${s.id}" value="${esc(s.videoId)}" placeholder="ID or URL" style="font-family:monospace;font-size:11px"></td>
+          <td><div class="row-actions">
+            <button class="btn btn-primary btn-sm" onclick="saveEdit('${s.id}')">✓</button>
+            <button class="btn btn-secondary btn-sm" onclick="cancelEdit()">✕</button>
+          </div></td>
+        </tr>`;
+      }
+      const isWarmup=s.event==='warmup';
+      return `<tr>
+        <td class="song-title-cell" title="${esc(s.title)}">${esc(s.title)}</td>
+        <td><span class="pill" style="color:${color};border-color:${color}">${esc(label)}</span></td>
+        <td style="color:var(--text-muted)">${isWarmup?'<em>full song</em>':(s.startAt>0?fmt(s.startAt):'0:00')}</td>
+        <td style="color:var(--text-muted)">${isWarmup?'<em>full song</em>':(s.duration>0?s.duration+'s':'default')}</td>
+        <td style="color:var(--text-muted);font-family:monospace;font-size:11px">${esc(s.videoId)}</td>
+        <td><div class="row-actions">
+          <button class="btn btn-secondary btn-sm" onclick="startEdit('${s.id}')">✎</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteSong('${s.id}')">✕</button>
+        </div></td>
+      </tr>`;
+    }).join('');
+  }
+
+  // ── Mobile card list ──────────────────────────────
+  const cards=document.getElementById('song-cards');
+  if(!cards) return;
+  if(!list.length){
+    cards.innerHTML=`<div style="text-align:center;color:var(--text-muted);padding:24px;font-family:var(--font-ui);font-size:13px">${songs.length?'No songs match your search / filter':'No songs yet — add some above'}</div>`;
     return;
   }
-  tbody.innerHTML=list.map(s=>{
+  cards.innerHTML=list.map(s=>{
     const def=EVENT_DEFS.find(e=>e.id===s.event);
     const label=def?def.label+(def.sub?' — '+def.sub:''):s.event;
     const color=getPillColor(s.event);
-    if(editingId===s.id){
-      const isWarmup=s.event==='warmup';
-      return `<tr class="editing">
-        <td><input class="edit-input" id="e-title-${s.id}" value="${esc(s.title)}"></td>
-        <td><select class="edit-input" id="e-event-${s.id}">${EVENT_DEFS.map(e=>`<option value="${e.id}"${s.event===e.id?' selected':''}>${e.label}${e.sub?' — '+e.sub:''}</option>`).join('')}</select></td>
-        <td>${isWarmup?'<span style="color:var(--text-muted);font-size:11px;font-family:var(--font-ui)">Full song</span>':'<input type="number" class="edit-input edit-num" id="e-start-'+s.id+'" value="'+(s.startAt||0)+'" min="0"> s'}</td>
-        <td>${isWarmup?'<span style="color:var(--text-muted);font-size:11px;font-family:var(--font-ui)">Full song</span>':'<input type="number" class="edit-input edit-num" id="e-dur-'+s.id+'" value="'+(s.duration||0)+'" min="0"> s'}</td>
-        <td><input class="edit-input" id="e-url-${s.id}" value="${esc(s.videoId)}" placeholder="ID or URL" style="font-family:monospace;font-size:11px"></td>
-        <td><div class="row-actions">
-          <button class="btn btn-primary btn-sm" onclick="saveEdit('${s.id}')">✓</button>
-          <button class="btn btn-secondary btn-sm" onclick="cancelEdit()">✕</button>
-        </div></td>
-      </tr>`;
-    }
     const isWarmup=s.event==='warmup';
-    return `<tr>
-      <td class="song-title-cell" title="${esc(s.title)}">${esc(s.title)}</td>
-      <td><span class="pill" style="color:${color};border-color:${color}">${esc(label)}</span></td>
-      <td style="color:var(--text-muted)">${isWarmup?'<em>full song</em>':(s.startAt>0?fmt(s.startAt):'0:00')}</td>
-      <td style="color:var(--text-muted)">${isWarmup?'<em>full song</em>':(s.duration>0?s.duration+'s':'default')}</td>
-      <td style="color:var(--text-muted);font-family:monospace;font-size:11px">${esc(s.videoId)}</td>
-      <td><div class="row-actions">
-        <button class="btn btn-secondary btn-sm" onclick="startEdit('${s.id}')">✎</button>
-        <button class="btn btn-danger btn-sm" onclick="deleteSong('${s.id}')">✕</button>
-      </div></td>
-    </tr>`;
+    const startInfo=isWarmup?'Full song':(s.startAt>0?`▶ ${fmt(s.startAt)}`:'▶ 0:00');
+    const durInfo=isWarmup?'':(s.duration>0?` · ${s.duration}s`:'· default');
+    if(editingId===s.id){
+      return `<div class="song-card" id="card-${s.id}">
+        <div class="song-card-edit">
+          <div class="song-card-edit-row"><label>Title</label><input id="e-title-${s.id}" value="${esc(s.title)}" autocomplete="off"></div>
+          <div class="song-card-edit-row"><label>Event</label><select id="e-event-${s.id}">${EVENT_DEFS.map(e=>`<option value="${e.id}"${s.event===e.id?' selected':''}>${e.label}${e.sub?' — '+e.sub:''}</option>`).join('')}</select></div>
+          ${isWarmup?'<div style="font-family:var(--font-ui);font-size:11px;color:var(--text-muted)">Warm-Up songs always play the full song.</div>':`
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div class="song-card-edit-row"><label>Start (sec)</label><input type="number" id="e-start-${s.id}" value="${s.startAt||0}" min="0"></div>
+            <div class="song-card-edit-row"><label>Duration (sec)</label><input type="number" id="e-dur-${s.id}" value="${s.duration||0}" min="0"></div>
+          </div>`}
+          <div class="song-card-edit-row"><label>YouTube ID or URL</label><input id="e-url-${s.id}" value="${esc(s.videoId)}" placeholder="ID or URL" autocomplete="off" style="font-family:monospace"></div>
+          <div class="song-card-edit-actions">
+            <button class="btn btn-primary" onclick="saveEdit('${s.id}')">✓ SAVE</button>
+            <button class="btn btn-secondary" onclick="cancelEdit()">✕ CANCEL</button>
+          </div>
+        </div>
+      </div>`;
+    }
+    return `<div class="song-card" id="card-${s.id}">
+      <div class="song-card-top">
+        <div class="song-card-info">
+          <div class="song-card-title">${esc(s.title)}</div>
+          <div class="song-card-meta">
+            <span class="pill" style="color:${color};border-color:${color};font-size:9px">${esc(label)}</span>
+            <span style="margin-left:6px">${esc(startInfo)}${esc(durInfo)}</span>
+          </div>
+        </div>
+        <div class="song-card-actions">
+          <button class="btn btn-secondary" onclick="startEdit('${s.id}')">✎</button>
+          <button class="btn btn-danger" onclick="deleteSong('${s.id}')">✕</button>
+        </div>
+      </div>
+    </div>`;
   }).join('');
 }
 
@@ -1949,7 +2038,7 @@ function loadDefaultSongs(){
     {title:'Africa — Toto',                          videoId:'FTQbiNvZqaY', event:'warmup', startAt:0, duration:0},
     {title:'Take on Me — a-ha',                     videoId:'djV11Xbc914', event:'warmup', startAt:0, duration:0},
     {title:'Mr. Brightside — The Killers',           videoId:'gGdGFtwCNBE', event:'warmup', startAt:0, duration:0},
-    {title:'Lose Yourself — Eminem',                 videoId:'7YuAzR2XVAM', event:'warmup', startAt:0, duration:0},
+    {title:'Lose Yourself — Eminem',                 videoId:'Wj7lL6eDOqc', event:'warmup', startAt:0, duration:0},
     {title:'Can\'t Stop — Red Hot Chili Peppers',    videoId:'f3-2ynEJDCU', event:'warmup', startAt:0, duration:0},
     {title:'Blitzkrieg Bop — Ramones',               videoId:'skdE0KAFCEA', event:'warmup', startAt:0, duration:0},
     {title:'Jump Around — House of Pain',            videoId:'XhzpxjuwZy0', event:'warmup', startAt:0, duration:0},
@@ -1958,33 +2047,33 @@ function loadDefaultSongs(){
     {title:'Enter Sandman — Metallica',              videoId:'CD-E-LDc384', event:'warmup', startAt:0, duration:0},
     {title:'Master of Puppets — Metallica',          videoId:'E0ozmU9cJDg', event:'warmup', startAt:0, duration:0},
     {title:'Immigrant Song — Led Zeppelin',          videoId:'y8OtzJtp-EM', event:'warmup', startAt:0, duration:0},
-    {title:'Kashmir — Led Zeppelin',                 videoId:'ZkJhHerKRaI', event:'warmup', startAt:0, duration:0},
+    {title:'Kashmir — Led Zeppelin',                 videoId:'tzVJPgCn-Z8', event:'warmup', startAt:0, duration:0},
     {title:'Black Betty — Ram Jam',                  videoId:'4RYOGK0KOBE', event:'warmup', startAt:0, duration:0},
-    {title:'Start Me Up — The Rolling Stones',       videoId:'YrzkCuUJGYQ', event:'warmup', startAt:0, duration:0},
+    {title:'Start Me Up — The Rolling Stones',       videoId:'hXXeQhipizg', event:'warmup', startAt:0, duration:0},
     {title:'Livin\' La Vida Loca — Ricky Martin',    videoId:'p47fEXGabaY', event:'warmup', startAt:0, duration:0},
     {title:'Uptown Funk — Bruno Mars & Mark Ronson', videoId:'OPf0YbXqDm0', event:'warmup', startAt:0, duration:0},
     {title:'Can\'t Hold Us — Macklemore & Ryan Lewis', videoId:'2zNSgSzhBfM', event:'warmup', startAt:0, duration:0},
-    {title:'Till I Collapse — Eminem',               videoId:'S2AKFMVfZiM', event:'warmup', startAt:0, duration:0},
+    {title:'Till I Collapse — Eminem',               videoId:'Pi3_Zs-oRUo', event:'warmup', startAt:0, duration:0},
     {title:'Remember the Name — Fort Minor',         videoId:'VDvr08sCPOc', event:'warmup', startAt:0, duration:0},
-    {title:'Power — Kanye West',                     videoId:'L53gjP-TtGE', event:'warmup', startAt:0, duration:0},
-    {title:'Run the World (Girls) — Beyoncé',        videoId:'VBmMU3iA5AA', event:'warmup', startAt:0, duration:0},
+    {title:'Power — Kanye West',                     videoId:'k8JflBNovLE', event:'warmup', startAt:0, duration:0},
+    {title:'Run the World (Girls) — Beyoncé',        videoId:'RnX3Qas9zCs', event:'warmup', startAt:0, duration:0},
     {title:'Roar — Katy Perry',                      videoId:'CevxZvSJLk8', event:'warmup', startAt:0, duration:0},
     {title:'Fighter — Christina Aguilera',           videoId:'GBaHPND2QJg', event:'warmup', startAt:0, duration:0},
-    {title:'Harder, Better, Faster, Stronger — Daft Punk', videoId:'gAjR4_CbPpQ', event:'warmup', startAt:0, duration:0},
-    {title:'One More Time — Daft Punk',              videoId:'FGBhQbmPwH8', event:'warmup', startAt:0, duration:0},
-    {title:'Get Lucky — Daft Punk ft. Pharrell Williams', videoId:'5NV6Rdv1h3Q', event:'warmup', startAt:0, duration:0},
+    {title:'Harder, Better, Faster, Stronger — Daft Punk', videoId:'JhulBGMA7G4', event:'warmup', startAt:0, duration:0},
+    {title:'One More Time — Daft Punk',              videoId:'fa5IWHDbftI', event:'warmup', startAt:0, duration:0},
+    {title:'Get Lucky — Daft Punk ft. Pharrell Williams', videoId:'4D7u5KF7SP8', event:'warmup', startAt:0, duration:0},
     {title:'Levels — Avicii',                        videoId:'_ovdm2yX4MA', event:'warmup', startAt:0, duration:0},
     {title:'Wake Me Up — Avicii',                    videoId:'IcrbM1l_BoI', event:'warmup', startAt:0, duration:0},
     {title:'Titanium — David Guetta ft. Sia',        videoId:'JRfuAukYTKg', event:'warmup', startAt:0, duration:0},
     {title:'Pump It — Black Eyed Peas',              videoId:'ZiDVKMxpjdk', event:'warmup', startAt:0, duration:0},
     {title:'I Gotta Feeling — Black Eyed Peas',      videoId:'uSD4vsh1zDA', event:'warmup', startAt:0, duration:0},
     {title:'Shake It Off — Taylor Swift',            videoId:'nfWlot6h_JM', event:'warmup', startAt:0, duration:0},
-    {title:'Can\'t Feel My Face — The Weeknd',       videoId:'KEI4qSrkPAs', event:'warmup', startAt:0, duration:0},
-    {title:'Blinding Lights — The Weeknd',           videoId:'4NRXx6pTmKM', event:'warmup', startAt:0, duration:0},
+    {title:'Can\'t Feel My Face — The Weeknd',       videoId:'fHI8X4OXluQ', event:'warmup', startAt:0, duration:0},
+    {title:'Blinding Lights — The Weeknd',           videoId:'J7p4bzqLvCw', event:'warmup', startAt:0, duration:0},
     {title:'Don\'t You (Forget About Me) — Simple Minds', videoId:'CdqoNKCCt7A', event:'warmup', startAt:0, duration:0},
     {title:'We Got the Beat — The Go-Go\'s',         videoId:'kd-MR3ioGIk', event:'warmup', startAt:0, duration:0},
     {title:'Livin\' on the Edge — Aerosmith',        videoId:'f4WPGaxMPHk', event:'warmup', startAt:0, duration:0},
-    {title:'Born to Run — Bruce Springsteen',        videoId:'IxuThNgl3YA', event:'warmup', startAt:0, duration:0},
+    {title:'Born to Run — Bruce Springsteen',        videoId:'1glxaEB5G7I', event:'warmup', startAt:0, duration:0},
 
     // ── INTERMISSION (80) — variety, crowd-engaged ────────────────────────
     // Classic Rock
@@ -2006,9 +2095,9 @@ function loadDefaultSongs(){
     {title:'We Like to Party — Vengaboys',           videoId:'6Zbi0XmGtMw', event:'intermission', startAt:0,  duration:55},
     // Pop & Dance
     {title:'Stayin\' Alive — Bee Gees',              videoId:'I_izvAbhExY', event:'intermission', startAt:7,  duration:60},
-    {title:'Billie Jean — Michael Jackson',          videoId:'Zi_XLOBDo_Y', event:'intermission', startAt:0,  duration:60},
-    {title:'Beat It — Michael Jackson',              videoId:'oRdxUFDoQe0', event:'intermission', startAt:0,  duration:60},
-    {title:'Thriller — Michael Jackson',             videoId:'sOnqjkJTMaA', event:'intermission', startAt:52,  duration:60},
+    {title:'Billie Jean — Michael Jackson',          videoId:'Kr4EQDVETuA', event:'intermission', startAt:0,  duration:60},
+    {title:'Beat It — Michael Jackson',              videoId:'kOn-HdEg6AQ', event:'intermission', startAt:0,  duration:60},
+    {title:'Thriller — Michael Jackson',             videoId:'FnP8leSETgI', event:'intermission', startAt:52,  duration:60},
     {title:'Macarena — Los Del Rio',                 videoId:'HbHOBPJn9E0', event:'intermission', startAt:0,  duration:60},
     {title:'Cotton Eye Joe — Rednex',                videoId:'0nJsSzWDWyQ', event:'intermission', startAt:0,  duration:60},
     {title:'YMCA — Village People',                  videoId:'CS9OO0S5w2k', event:'intermission', startAt:27,  duration:60},
@@ -2130,10 +2219,10 @@ function loadDefaultSongs(){
     {title:'Breaking the Law — Judas Priest',        videoId:'L397TWLwrUU', event:'box_home', startAt:0,  duration:25},
     {title:'Bad to the Bone — George Thorogood',     videoId:'DKYC7D7-iYk', event:'box_home', startAt:0,  duration:25},
     {title:'Highway to Hell — AC/DC',               videoId:'l482T0yNkeo', event:'box_home', startAt:0,  duration:25},
-    {title:'Smooth Criminal — Michael Jackson',      videoId:'h_D3VFfhvs4', event:'box_home', startAt:27,  duration:25},
+    {title:'Smooth Criminal — Michael Jackson',      videoId:'XzNWRmqibNE', event:'box_home', startAt:27,  duration:25},
     {title:'Gangsta\'s Paradise — Coolio',           videoId:'fPO76Jlnz6c', event:'box_home', startAt:0,  duration:25},
     {title:'Bad Guy — Billie Eilish',                videoId:'DyDfgMOUjCI', event:'box_home', startAt:0,  duration:25},
-    {title:'99 Problems — Jay-Z',                    videoId:'qKJMOzHGLYk', event:'box_home', startAt:0,  duration:25},
+    {title:'99 Problems — Jay-Z',                    videoId:'60XTSx29OnM', event:'box_home', startAt:0,  duration:25},
     {title:'Wanted Dead or Alive — Bon Jovi',        videoId:'GXK9MWWAZ6c', event:'box_home', startAt:0,  duration:25},
     {title:'Locked Up — Akon',                       videoId:'OuNTkSH0eJo', event:'box_home', startAt:4,  duration:25},
     {title:'Cop Killer — Body Count (ft. Ice-T)',    videoId:'oK1a2vb78q8', event:'box_home', startAt:0,  duration:25},
@@ -2145,10 +2234,10 @@ function loadDefaultSongs(){
     {title:'Enter Sandman — Metallica',              videoId:'CD-E-LDc384', event:'timeout', startAt:36,  duration:30},
     {title:'Sirius — Alan Parsons Project',          videoId:'OkC_oi0ksuw', event:'timeout', startAt:0,  duration:30},
     {title:'Welcome to the Jungle — Guns N\' Roses', videoId:'o1tj2zJ2Wvg', event:'timeout', startAt:4,  duration:30},
-    {title:'Power — Kanye West',                     videoId:'L53gjP-TtGE', event:'timeout', startAt:19, duration:30},
+    {title:'Power — Kanye West',                     videoId:'k8JflBNovLE', event:'timeout', startAt:19, duration:30},
     {title:'Can\'t Hold Us — Macklemore & Ryan Lewis', videoId:'2zNSgSzhBfM', event:'timeout', startAt:18, duration:30},
-    {title:'Start Me Up — The Rolling Stones',       videoId:'YrzkCuUJGYQ', event:'timeout', startAt:0,  duration:30},
-    {title:'Lose Yourself — Eminem',                 videoId:'7YuAzR2XVAM', event:'timeout', startAt:0,  duration:30},
+    {title:'Start Me Up — The Rolling Stones',       videoId:'hXXeQhipizg', event:'timeout', startAt:0,  duration:30},
+    {title:'Lose Yourself — Eminem',                 videoId:'Wj7lL6eDOqc', event:'timeout', startAt:0,  duration:30},
 
     // ── HARD HIT (10) — heavy impact drops ───────────────────────────────
     {title:'Hit Me With Your Best Shot — Pat Benatar', videoId:'JbrfRO8CYyE', event:'hit', startAt:0,  duration:20},
