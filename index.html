@@ -2549,8 +2549,7 @@ function loadDefaultSongs(){
   buildKbdSettingsGrid();renderSongTable();buildEventButtons();refreshAllPeeks();
 })();
 
-// ── PWA: Dynamic Manifest + Service Worker ───────────
-// ── PWA Service Worker ───────────────────────────────
+// ── PWA Service Worker (v4 — network-first) ─────────
 if ('serviceWorker' in navigator) {
   // Derive the exact directory this page is served from.
   // Works at any path: root, subdirectory, GitHub Pages /repo/, etc.
