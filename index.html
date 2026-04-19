@@ -1862,17 +1862,34 @@ function makeKbdRow(id, label, sub, color, value){
   input.addEventListener('keydown',e=>{
     if(!input.dataset.capturing)return;
     e.preventDefault();e.stopPropagation();
+    // If only a modifier was pressed, show it as a hint but keep waiting
+    const MODIFIERS=['Control','Alt','Shift','Meta'];
+    if(MODIFIERS.includes(e.key)){
+      // Build a partial hint like "Ctrl+…" so user sees what's held
+      const parts=[];
+      if(e.ctrlKey||e.key==='Control')parts.push('Ctrl');
+      if(e.altKey||e.key==='Alt')parts.push('Alt');
+      if(e.shiftKey||e.key==='Shift')parts.push('Shift');
+      if(e.metaKey||e.key==='Meta')parts.push('Meta');
+      input.value=parts.join('+')+'+…';
+      return; // keep capturing — wait for the real key
+    }
     const combo=serializeKey(e);
-    if(combo==='Escape'){input.dataset.capturing='';input.classList.remove('capturing');input.blur();return;}
+    if(combo==='Escape'){input.dataset.capturing='';input.classList.remove('capturing');input.value=input.dataset.prev||'';input.blur();return;}
     input.value=combo;
     input.dataset.capturing='';input.classList.remove('capturing');input.blur();
   });
   input.addEventListener('blur',()=>{
-    input.dataset.capturing='';input.classList.remove('capturing');
+    // If blur happens mid-capture (e.g. clicked away), restore previous value
+    if(input.dataset.capturing){
+      input.dataset.capturing='';input.classList.remove('capturing');
+      input.value=input.dataset.prev||'';
+    }
   });
   return tr;
 }
 function startKbdCapture(input){
+  input.dataset.prev=input.value; // remember old value in case of cancel/blur
   input.dataset.capturing='1';input.classList.add('capturing');
   input.value='Press a key…';input.select();
 }
