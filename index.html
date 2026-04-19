@@ -1778,11 +1778,21 @@ function handleZoneRight(eid){if(!ytReady)return;if(!songs.filter(s=>s.event===e
 // ══════════════════════════════════════════════════
 function buildKbdHintStrip(){
   const strip=document.getElementById('kbd-hint-strip');strip.innerHTML='';
-  const sp=document.createElement('div');sp.className='kbd-item';sp.innerHTML=`<kbd>SPACE</kbd><span>Play/Pause</span>`;strip.appendChild(sp);
+  // Always-on: spacebar
+  const sp=document.createElement('div');sp.className='kbd-item';
+  sp.innerHTML=`<kbd>Space</kbd><span>Play / Pause</span>`;strip.appendChild(sp);
+  // Event trigger shortcuts
   EVENT_DEFS.forEach(def=>{
     const k=kbdConfig[def.id];if(!k)return;
     const el=document.createElement('div');el.className='kbd-item';
-    el.innerHTML=`<kbd>${k.toUpperCase()}</kbd><span>${def.label}${def.sub?' — '+def.sub:''}</span>`;
+    el.innerHTML=`<kbd>${esc(k)}</kbd><span>${def.label}${def.sub?' — '+def.sub:''}</span>`;
+    strip.appendChild(el);
+  });
+  // Global action shortcuts
+  ACTION_SHORTCUTS.forEach(a=>{
+    const k=kbdConfig[a.id];if(!k)return;
+    const el=document.createElement('div');el.className='kbd-item';
+    el.innerHTML=`<kbd>${esc(k)}</kbd><span>${a.label}</span>`;
     strip.appendChild(el);
   });
 }
@@ -1876,8 +1886,15 @@ function makeKbdRow(id, label, sub, color, value){
     }
     const combo=serializeKey(e);
     if(combo==='Escape'){input.dataset.capturing='';input.classList.remove('capturing');input.value=input.dataset.prev||'';input.blur();return;}
+    // Duplicate check — warn but still allow (user might want to reassign)
+    const ownId=input.id.replace(/^kbd-/,'');
+    const conflict=findKbdConflict(combo,ownId);
     input.value=combo;
     input.dataset.capturing='';input.classList.remove('capturing');input.blur();
+    if(conflict){
+      // Short delay so the input blur settles before the toast appears
+      setTimeout(()=>showToast(`⚠ "${combo}" is already used for: ${conflict}`,4000),80);
+    }
   });
   input.addEventListener('blur',()=>{
     // If blur happens mid-capture (e.g. clicked away), restore previous value
@@ -1889,9 +1906,32 @@ function makeKbdRow(id, label, sub, color, value){
   return tr;
 }
 function startKbdCapture(input){
-  input.dataset.prev=input.value; // remember old value in case of cancel/blur
+  input.dataset.prev=input.value;
   input.dataset.capturing='1';input.classList.add('capturing');
   input.value='Press a key…';input.select();
+}
+
+// Returns label of conflicting shortcut if combo is already assigned to a different id, else null
+function findKbdConflict(combo, ownId){
+  if(!combo)return null;
+  const norm=combo.toLowerCase();
+  // Check event triggers
+  for(const def of EVENT_DEFS){
+    if(def.id===ownId)continue;
+    const k=kbdConfig[def.id];
+    if(k&&(k===combo||k.toLowerCase()===norm))
+      return def.label+(def.sub?' — '+def.sub:'');
+  }
+  // Check action shortcuts
+  for(const a of ACTION_SHORTCUTS){
+    if(a.id===ownId)continue;
+    const k=kbdConfig[a.id];
+    if(k&&(k===combo||k.toLowerCase()===norm))
+      return a.label;
+  }
+  // Reserved: space
+  if(norm==='space')return 'Play / Pause (always reserved)';
+  return null;
 }
 function clearKbdInput(id){
   const el=document.getElementById('kbd-'+id);if(el)el.value='';
@@ -2333,7 +2373,7 @@ function toggleMobileScrubber(){
 }
 
 let toastT;
-function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),3200);}
+function showToast(msg,ms=3200){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),ms);}
 
 // ══════════════════════════════════════════════════
 //  DEFAULT SONG LIBRARY
