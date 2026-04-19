@@ -530,7 +530,7 @@ kbd{background:var(--surface2);border:1px solid var(--border);border-radius:3px;
   .event-checkboxes{gap:8px}
   .event-check-pill{padding:6px 12px;font-size:12px}
   .kbd-table th,.kbd-table td{padding:10px 10px}
-  .kbd-key-input{width:52px;height:40px;font-size:18px;touch-action:manipulation}
+  .kbd-key-input{width:auto;min-width:100px;height:36px;font-size:13px;touch-action:manipulation}
   .lib-toolbar{gap:8px;flex-wrap:wrap}
   .lib-search{max-width:100%;width:100%;flex:unset}
   .lib-filter-wrap,.lib-sort-btn{flex:1}
@@ -666,8 +666,20 @@ input[type=number]{width:84px}
 .kbd-table tr:hover td{background:#141820}
 .kbd-event-name{font-family:var(--font-ui);font-weight:600;font-size:13px;color:var(--text)}
 .kbd-accent-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:8px;vertical-align:middle;flex-shrink:0}
-.kbd-key-input{width:52px;text-align:center;font-family:monospace;font-size:14px;font-weight:700;text-transform:uppercase;background:var(--surface);border:1px solid var(--border);border-radius:4px;color:var(--text);padding:5px 4px;outline:none;transition:border-color .15s}
-.kbd-key-input:focus{border-color:var(--ice-dim);background:var(--surface2)}
+.kbd-capture-wrap{display:flex;align-items:center;gap:5px;justify-content:center}
+.kbd-key-input{
+  min-width:130px;max-width:200px;width:auto;text-align:center;
+  font-family:var(--font-ui);font-size:12px;font-weight:700;letter-spacing:1px;
+  text-transform:uppercase;background:var(--surface);border:1px solid var(--border);
+  border-radius:4px;color:var(--text);padding:6px 10px;outline:none;
+  transition:border-color .15s,background .15s;cursor:pointer;
+}
+.kbd-key-input:focus,.kbd-key-input.capturing{border-color:var(--ice);background:var(--surface2);color:var(--ice)}
+.kbd-key-input.capturing{animation:kbd-pulse 1s ease-in-out infinite}
+@keyframes kbd-pulse{0%,100%{border-color:var(--ice);box-shadow:0 0 0 0 rgba(200,232,255,.4)}50%{border-color:var(--ice-dim);box-shadow:0 0 0 3px rgba(200,232,255,.1)}}
+.kbd-clear-btn{background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:2px 4px;border-radius:3px;transition:color .15s}
+.kbd-clear-btn:hover{color:var(--red)}
+.kbd-section-header{font-family:var(--font-ui);font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--text-muted);padding:12px 14px 5px!important;background:var(--bg)!important;border-bottom:1px solid var(--border)}
 .kbd-space-note{font-family:var(--font-ui);font-size:11px;color:var(--text-muted);display:flex;align-items:center;gap:8px}
 
 /* SONG LIBRARY — search/filter bar */
@@ -833,6 +845,7 @@ input[type=number]{width:84px}
     <div class="cfg-row"><span class="cfg-label">Default Play Duration</span><input type="number" id="cfg-default-duration" min="5" max="600" value="60"><span style="color:var(--text-muted);font-size:13px">seconds per song</span></div>
     <div class="cfg-row"><span class="cfg-label">Fade Out Duration</span><input type="number" id="cfg-fade-duration" min="0" max="15" value="3"><span style="color:var(--text-muted);font-size:13px">seconds</span></div>
     <div class="cfg-row"><span class="cfg-label">Fade In Duration</span><input type="number" id="cfg-fadein-duration" min="0" max="10" value="2"><span style="color:var(--text-muted);font-size:13px">seconds (0 = instant)</span></div>
+    <div class="cfg-row"><span class="cfg-label">Announcement Fade</span><input type="number" id="cfg-announce-duration" min="1" max="30" value="8"><span style="color:var(--text-muted);font-size:13px">seconds (slow fade for PA announcements)</span></div>
     <div><button class="btn btn-primary" onclick="saveGlobalConfig()">SAVE DEFAULTS</button></div>
   </div>
 
@@ -1072,7 +1085,7 @@ function getPillColor(id){
 //  STATE
 // ══════════════════════════════════════════════════
 let songs          = [];
-let globalConfig   = {defaultDuration:60,fadeDuration:3,fadeInDuration:2};
+let globalConfig   = {defaultDuration:60,fadeDuration:3,fadeInDuration:2,announceFadeDuration:8};
 let kbdConfig      = {};
 let eventQueues    = {};
 let eventQueuePos  = {};
@@ -1109,6 +1122,9 @@ function load(){
     const k=localStorage.getItem('arenaDJ_kbd');    if(k) kbdConfig=JSON.parse(k);
   }catch(e){}
   EVENT_DEFS.forEach(d=>{if(!(d.id in kbdConfig)) kbdConfig[d.id]=d.defaultKey;});
+  // Default keys for global action shortcuts
+  const _actionDefaults={__next:'ArrowRight',__replay:'ArrowLeft',__announce:'f'};
+  Object.entries(_actionDefaults).forEach(([id,key])=>{if(!(id in kbdConfig))kbdConfig[id]=key;});
   // Always enforce warmup full-play rule on load
   songs=stripWarmupTiming(songs);
 }
@@ -1300,6 +1316,27 @@ function masterStop(){
   if(currentEventId)setActiveBtn(currentEventId,false);
   currentEventId=null;currentSong=null;isPaused=false;scrubPausedElapsed=0;
   clearNowPlaying();updateSpaceBtn(false);refreshAllPeeks();
+}
+function announceFade(){
+  // Slow fade-out to silence then full stop — for announcements
+  if(!currentEventId&&!isPaused){showToast('Nothing playing');return;}
+  const secs=Math.max(1,globalConfig.announceFadeDuration||8);
+  clearTimers();if(fadeInInterval){clearInterval(fadeInInterval);fadeInInterval=null;}
+  const vol=ytReady&&player&&player.getVolume?player.getVolume():100;
+  const steps=40,ms=(secs*1000)/steps,vs=vol/steps;let s=0;
+  showToast(`📢 Fading out over ${secs}s…`);
+  fadeInterval=setInterval(()=>{
+    s++;if(ytReady&&player)player.setVolume(Math.max(0,vol-vs*s));
+    if(s>=steps){
+      clearInterval(fadeInterval);fadeInterval=null;
+      if(ytReady&&player){player.pauseVideo&&player.pauseVideo();player.setVolume(100);}
+      if(currentEventId)setActiveBtn(currentEventId,false);
+      isPaused=true;scrubPausedElapsed=elapsedInWindow();
+      currentEventId=null;updateNowPlayingPaused();updateSpaceBtn(false);
+      clearInterval(progressInterval);progressInterval=null;
+      showToast('📢 Faded out — ready for announcement');
+    }
+  },ms);
 }
 
 // ══════════════════════════════════════════════════
@@ -1749,23 +1786,135 @@ function buildKbdHintStrip(){
     strip.appendChild(el);
   });
 }
+// Serialize a KeyboardEvent into a canonical string: "Ctrl+Shift+ArrowRight", "g", "F4" etc.
+function serializeKey(e){
+  const parts=[];
+  if(e.ctrlKey)parts.push('Ctrl');
+  if(e.altKey)parts.push('Alt');
+  if(e.shiftKey)parts.push('Shift');
+  if(e.metaKey)parts.push('Meta');
+  // Normalize the key name
+  let k=e.key;
+  if(k===' ')k='Space';
+  // Only add key if it's not a lone modifier
+  if(!['Control','Alt','Shift','Meta'].includes(k))parts.push(k);
+  return parts.join('+');
+}
+
 document.addEventListener('keydown',e=>{
+  // Allow capture inputs to work — they handle their own keydown
+  if(e.target.classList&&e.target.classList.contains('kbd-capture-input'))return;
   if(e.target.tagName==='INPUT'||e.target.tagName==='SELECT'||e.target.tagName==='TEXTAREA')return;
-  if(e.key===' '||e.code==='Space'){e.preventDefault();spacebarAction();return;}
-  const key=e.key.toLowerCase();
-  const def=EVENT_DEFS.find(d=>kbdConfig[d.id]&&kbdConfig[d.id].toLowerCase()===key);
+  const combo=serializeKey(e);
+
+  // Built-in non-configurable shortcuts
+  if(combo==='Space'){e.preventDefault();spacebarAction();return;}
+
+  // Configurable global action shortcuts
+  if(kbdConfig['__next']&&combo===kbdConfig['__next']){
+    e.preventDefault();
+    if(lastEventId&&songs.filter(s=>s.event===lastEventId).length){ensureActiveEvent(lastEventId);isPaused=false;skipToNext(lastEventId);showToast('⏭ Next song');}
+    return;
+  }
+  if(kbdConfig['__replay']&&combo===kbdConfig['__replay']){
+    e.preventDefault();
+    if(lastEventId&&songs.filter(s=>s.event===lastEventId).length){ensureActiveEvent(lastEventId);isPaused=false;replayCurrent(lastEventId);showToast('↺ Replay');}
+    return;
+  }
+  if(kbdConfig['__announce']&&combo===kbdConfig['__announce']){
+    e.preventDefault();announceFade();return;
+  }
+
+  // Event trigger shortcuts
+  const def=EVENT_DEFS.find(d=>{
+    const k=kbdConfig[d.id];
+    if(!k)return false;
+    // Legacy single-char stored lowercase — compare case-insensitively
+    return k===combo||k.toLowerCase()===combo.toLowerCase();
+  });
   if(def){e.preventDefault();handleMidClick(def.id);}
 });
+// Global action shortcuts defaults
+const ACTION_SHORTCUTS=[
+  {id:'__next',    label:'Next Song',           sub:'Skip to next in current event', color:'#8899aa', defaultKey:'ArrowRight'},
+  {id:'__replay',  label:'Replay from Start',   sub:'Restart current song',          color:'#8899aa', defaultKey:'ArrowLeft'},
+  {id:'__announce',label:'Announcement Fade',   sub:'Slow fade-out for announcements',color:'#26c6da', defaultKey:'f'},
+];
+
+function makeKbdRow(id, label, sub, color, value){
+  const tr=document.createElement('tr');
+  const displayVal=value||'';
+  tr.innerHTML=`
+    <td>
+      <span class="kbd-accent-dot" style="background:${color}"></span>
+      <span class="kbd-event-name">${label}${sub?' — <span style="color:var(--text-muted);font-weight:400">'+sub+'</span>':''}</span>
+    </td>
+    <td style="text-align:center">
+      <div class="kbd-capture-wrap">
+        <input type="text" class="kbd-key-input kbd-capture-input" id="kbd-${id}"
+          value="${esc(displayVal)}" placeholder="click to set" readonly
+          title="Click then press any key or key combo">
+        <button class="kbd-clear-btn" onclick="clearKbdInput('${id}')" title="Clear">✕</button>
+      </div>
+    </td>`;
+  const input=tr.querySelector('.kbd-capture-input');
+  input.addEventListener('click',()=>startKbdCapture(input));
+  input.addEventListener('keydown',e=>{
+    if(!input.dataset.capturing)return;
+    e.preventDefault();e.stopPropagation();
+    const combo=serializeKey(e);
+    if(combo==='Escape'){input.dataset.capturing='';input.classList.remove('capturing');input.blur();return;}
+    input.value=combo;
+    input.dataset.capturing='';input.classList.remove('capturing');input.blur();
+  });
+  input.addEventListener('blur',()=>{
+    input.dataset.capturing='';input.classList.remove('capturing');
+  });
+  return tr;
+}
+function startKbdCapture(input){
+  input.dataset.capturing='1';input.classList.add('capturing');
+  input.value='Press a key…';input.select();
+}
+function clearKbdInput(id){
+  const el=document.getElementById('kbd-'+id);if(el)el.value='';
+}
+
 function buildKbdSettingsGrid(){
   const tbody=document.getElementById('kbd-tbody');tbody.innerHTML='';
+  // Section: Event triggers
+  const hdrEvent=document.createElement('tr');
+  hdrEvent.innerHTML='<td colspan="2" class="kbd-section-header">Event Triggers</td>';
+  tbody.appendChild(hdrEvent);
   EVENT_DEFS.forEach(def=>{
-    const color=getPillColor(def.id);const tr=document.createElement('tr');
-    tr.innerHTML=`<td><span class="kbd-accent-dot" style="background:${color}"></span><span class="kbd-event-name">${def.label}${def.sub?' — '+def.sub:''}</span></td><td style="text-align:center"><input type="text" class="kbd-key-input" id="kbd-${def.id}" maxlength="1" value="${kbdConfig[def.id]||''}" placeholder="—"></td>`;
-    tbody.appendChild(tr);
+    tbody.appendChild(makeKbdRow(def.id,def.label,def.sub,getPillColor(def.id),kbdConfig[def.id]||''));
+  });
+  // Section: Global actions
+  const hdrAction=document.createElement('tr');
+  hdrAction.innerHTML='<td colspan="2" class="kbd-section-header">Global Actions</td>';
+  tbody.appendChild(hdrAction);
+  ACTION_SHORTCUTS.forEach(a=>{
+    tbody.appendChild(makeKbdRow(a.id,a.label,a.sub,a.color,kbdConfig[a.id]||''));
   });
 }
-function saveKbdConfig(){EVENT_DEFS.forEach(def=>{const el=document.getElementById(`kbd-${def.id}`);if(el)kbdConfig[def.id]=el.value.trim().toLowerCase();});save();buildEventButtons();showToast('Keyboard shortcuts saved');}
-function resetKbdDefaults(){EVENT_DEFS.forEach(d=>kbdConfig[d.id]=d.defaultKey);buildKbdSettingsGrid();save();buildEventButtons();showToast('Shortcuts reset to defaults');}
+
+function saveKbdConfig(){
+  EVENT_DEFS.forEach(def=>{
+    const el=document.getElementById(`kbd-${def.id}`);
+    if(el)kbdConfig[def.id]=el.value.trim();
+  });
+  ACTION_SHORTCUTS.forEach(a=>{
+    const el=document.getElementById(`kbd-${a.id}`);
+    if(el)kbdConfig[a.id]=el.value.trim();
+  });
+  save();buildEventButtons();buildKbdHintStrip();showToast('✓ Shortcuts saved');
+}
+function resetKbdDefaults(){
+  EVENT_DEFS.forEach(d=>kbdConfig[d.id]=d.defaultKey);
+  ACTION_SHORTCUTS.forEach(a=>kbdConfig[a.id]=a.defaultKey);
+  buildKbdSettingsGrid();save();buildEventButtons();buildKbdHintStrip();
+  showToast('Shortcuts reset to defaults');
+}
 
 // ══════════════════════════════════════════════════
 //  GLOBAL CONFIG
@@ -1773,6 +1922,7 @@ function resetKbdDefaults(){EVENT_DEFS.forEach(d=>kbdConfig[d.id]=d.defaultKey);
 function saveGlobalConfig(){
   globalConfig.defaultDuration=parseInt(document.getElementById('cfg-default-duration').value)||60;
   globalConfig.fadeDuration=parseInt(document.getElementById('cfg-fade-duration').value)||3;
+  globalConfig.announceFadeDuration=parseInt(document.getElementById('cfg-announce-duration').value)||8;
   globalConfig.fadeInDuration=parseInt(document.getElementById('cfg-fadein-duration').value);
   if(isNaN(globalConfig.fadeInDuration))globalConfig.fadeInDuration=2;
   save();showToast('Global settings saved');
@@ -2100,7 +2250,12 @@ function buildHelpKbdGrid(){
   EVENT_DEFS.forEach(def=>{
     const k=kbdConfig[def.id];if(!k)return;
     const el=document.createElement('div');el.className='help-kbd-item';
-    el.innerHTML=`<kbd>${k.toUpperCase()}</kbd><span>${def.label}${def.sub?' — '+def.sub:''}</span>`;grid.appendChild(el);
+    el.innerHTML=`<kbd>${esc(k)}</kbd><span>${def.label}${def.sub?' — '+def.sub:''}</span>`;grid.appendChild(el);
+  });
+  ACTION_SHORTCUTS.forEach(a=>{
+    const k=kbdConfig[a.id];if(!k)return;
+    const el=document.createElement('div');el.className='help-kbd-item';
+    el.innerHTML=`<kbd>${esc(k)}</kbd><span>${a.label}</span>`;grid.appendChild(el);
   });
 }
 
