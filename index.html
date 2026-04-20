@@ -763,6 +763,164 @@ input[type=number]{width:84px}
 ::-webkit-scrollbar{width:5px}
 ::-webkit-scrollbar-track{background:var(--bg)}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+/* ══════════════════════════════════════════════════
+   ADD SONG MODAL
+   ══════════════════════════════════════════════════ */
+.asm-overlay{
+  position:fixed;inset:0;z-index:1000;
+  background:rgba(0,0,0,.75);backdrop-filter:blur(4px);
+  display:none;align-items:center;justify-content:center;
+  padding:16px;
+}
+.asm-overlay.open{display:flex}
+.asm-panel{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:12px;width:100%;max-width:680px;
+  max-height:90vh;overflow-y:auto;
+  display:flex;flex-direction:column;
+  box-shadow:0 24px 64px rgba(0,0,0,.8);
+}
+.asm-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 20px 12px;border-bottom:1px solid var(--border);
+  flex-shrink:0;
+}
+.asm-title{font-family:var(--font-display);font-size:20px;letter-spacing:3px;color:var(--ice)}
+.asm-close{background:none;border:none;color:var(--text-muted);font-size:18px;cursor:pointer;padding:2px 6px;border-radius:4px;transition:color .15s,background .15s;line-height:1}
+.asm-close:hover{color:var(--text);background:var(--surface2)}
+
+/* Tabs */
+.asm-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);flex-shrink:0}
+.asm-tab{
+  flex:1;background:none;border:none;border-bottom:2px solid transparent;
+  color:var(--text-muted);font-family:var(--font-ui);font-size:12px;font-weight:700;
+  letter-spacing:1.5px;text-transform:uppercase;padding:10px 16px;cursor:pointer;
+  transition:color .15s,border-color .15s;margin-bottom:-1px;
+}
+.asm-tab.active{color:var(--ice);border-bottom-color:var(--ice)}
+.asm-tab:hover:not(.active){color:var(--text)}
+
+/* Panes */
+.asm-pane{padding:14px 20px 6px}
+.asm-search-row{display:flex;gap:8px;margin-bottom:8px}
+.asm-query-input{
+  flex:1;background:var(--surface2);border:1px solid var(--border);
+  border-radius:5px;color:var(--text);font-family:var(--font-body);
+  font-size:14px;padding:8px 12px;outline:none;transition:border-color .15s;
+}
+.asm-query-input:focus{border-color:var(--ice-dim)}
+.asm-api-notice{
+  font-family:var(--font-ui);font-size:11px;color:var(--amber);
+  background:rgba(245,166,35,.08);border:1px solid rgba(245,166,35,.2);
+  border-radius:5px;padding:7px 12px;margin-bottom:8px;
+}
+.asm-api-notice a{color:var(--amber);text-decoration:underline}
+
+/* Search results */
+.asm-results{max-height:220px;overflow-y:auto;border:1px solid var(--border);border-radius:7px;background:var(--surface2)}
+.asm-results-empty{color:var(--text-muted);font-family:var(--font-ui);font-size:12px;text-align:center;padding:28px 16px}
+.asm-result{
+  display:flex;align-items:center;gap:12px;padding:10px 12px;
+  cursor:pointer;border-bottom:1px solid rgba(255,255,255,.04);
+  transition:background .12s;
+}
+.asm-result:last-child{border-bottom:none}
+.asm-result:hover{background:rgba(200,232,255,.06)}
+.asm-result-thumb{width:80px;height:45px;object-fit:cover;border-radius:4px;flex-shrink:0;background:var(--border)}
+.asm-result-info{flex:1;min-width:0}
+.asm-result-title{font-family:var(--font-ui);font-size:13px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.asm-result-channel{font-family:var(--font-ui);font-size:10px;color:var(--text-muted);margin-top:2px}
+.asm-result-dur{font-family:var(--font-ui);font-size:11px;color:var(--text-muted);flex-shrink:0}
+.asm-result-spinner{text-align:center;padding:20px;color:var(--text-muted);font-family:var(--font-ui);font-size:12px}
+
+/* Preview pane */
+.asm-player-wrap{
+  width:100%;aspect-ratio:16/9;border-radius:8px;overflow:hidden;
+  background:#000;margin:14px 20px 0;width:calc(100% - 40px);
+}
+.asm-player-wrap iframe,.asm-player-wrap>div{width:100%!important;height:100%!important}
+
+/* Clip scrubber */
+.asm-scrubber-section{padding:14px 20px 8px}
+.asm-scrubber-labels{
+  display:flex;justify-content:space-between;
+  font-family:var(--font-ui);font-size:11px;color:var(--text-muted);
+  margin-bottom:8px;
+}
+.asm-scrubber{
+  position:relative;height:24px;cursor:pointer;user-select:none;
+  margin:0 8px;
+}
+.asm-scr-bg{
+  position:absolute;top:50%;transform:translateY(-50%);
+  left:0;right:0;height:6px;background:rgba(255,255,255,.1);border-radius:3px;
+}
+.asm-scr-clip{
+  position:absolute;top:50%;transform:translateY(-50%);
+  height:6px;background:rgba(200,232,255,.35);border-radius:2px;pointer-events:none;
+}
+.asm-scr-head{
+  position:absolute;top:50%;width:10px;height:10px;
+  background:var(--ice);border-radius:50%;transform:translate(-50%,-50%);
+  pointer-events:none;box-shadow:0 0 6px rgba(200,232,255,.8);z-index:3;
+  opacity:0;transition:opacity .2s;
+}
+.asm-scrubber:hover .asm-scr-head{opacity:1}
+.asm-scr-handle{
+  position:absolute;top:50%;width:12px;height:22px;
+  border-radius:4px;transform:translate(-50%,-50%);
+  cursor:ew-resize;z-index:4;
+  box-shadow:0 2px 6px rgba(0,0,0,.5);
+}
+.asm-scr-handle-start{background:var(--ice)}
+.asm-scr-handle-end{background:var(--amber)}
+.asm-mark-row{display:flex;align-items:center;justify-content:space-between;margin-top:10px;gap:8px}
+.asm-mark-btn{
+  background:var(--surface2);border:1px solid var(--border);color:var(--text-muted);
+  font-family:var(--font-ui);font-size:11px;font-weight:700;letter-spacing:1px;
+  padding:6px 14px;border-radius:5px;cursor:pointer;transition:border-color .15s,color .15s;
+}
+.asm-mark-btn:hover{border-color:var(--ice-dim);color:var(--ice)}
+.asm-loop-btn{
+  background:rgba(200,232,255,.1);border:1px solid var(--ice-dim);color:var(--ice);
+  font-family:var(--font-ui);font-size:11px;font-weight:700;letter-spacing:1px;
+  padding:6px 14px;border-radius:5px;cursor:pointer;transition:background .15s,border-color .15s,color .15s;
+}
+.asm-loop-btn.off{background:var(--surface2);border-color:var(--border);color:var(--text-muted)}
+
+/* Form fields */
+.asm-form{padding:8px 20px 4px;border-top:1px solid var(--border);margin-top:8px}
+.asm-form-row{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.asm-label{font-family:var(--font-ui);font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted)}
+.asm-input{
+  background:var(--surface2);border:1px solid var(--border);border-radius:5px;
+  color:var(--text);font-family:var(--font-body);font-size:14px;
+  padding:8px 12px;outline:none;transition:border-color .15s;
+}
+.asm-input:focus{border-color:var(--ice-dim)}
+.asm-note{font-family:var(--font-ui);font-size:10px;color:var(--text-muted);margin-bottom:8px}
+.asm-actions{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 20px 16px;border-top:1px solid var(--border);
+  margin-top:4px;gap:10px;
+}
+
+/* API key setting in settings page */
+.yt-api-key-row{display:flex;gap:8px;align-items:center;margin-top:8px}
+.yt-api-key-input{
+  flex:1;background:var(--surface2);border:1px solid var(--border);
+  border-radius:5px;color:var(--text);font-family:var(--font-body);font-size:13px;
+  padding:7px 10px;outline:none;transition:border-color .15s;
+}
+.yt-api-key-input:focus{border-color:var(--ice-dim)}
+
+@media(max-width:640px){
+  .asm-panel{max-height:95vh;border-radius:8px}
+  .asm-player-wrap{margin:10px 12px 0;width:calc(100% - 24px)}
+  .asm-scrubber-section,.asm-form,.asm-pane{padding-left:12px;padding-right:12px}
+  .asm-actions{padding-left:12px;padding-right:12px}
+}
 </style>
 </head>
 <body>
@@ -861,24 +1019,10 @@ input[type=number]{width:84px}
 
   <div class="settings-section">
     <div class="settings-section-title">Song Library</div>
-    <!-- Add song form -->
-    <div class="add-song-form">
-      <div class="add-song-form-title">+ Add Song</div>
-      <div class="form-grid">
-        <div class="form-field" style="grid-column:1/-1"><label>Song Title</label><input type="text" id="new-title" placeholder="e.g. Enter Sandman"></div>
-        <div class="form-field" style="grid-column:1/-1"><label>YouTube URL — youtube.com · youtu.be · music.youtube.com · or plain video ID</label><input type="text" id="new-url" placeholder="https://youtu.be/abc123  ·  https://music.youtube.com/watch?v=abc123"></div>
-        <div class="form-field"><label>Start At (seconds — skip intro)</label><input type="number" id="new-start" value="0" min="0"></div>
-        <div class="form-field"><label>Play Duration (0 = global default)</label><input type="number" id="new-duration" value="0" min="0"></div>
-        <div class="form-field" style="grid-column:1/-1">
-          <label>Assign to Events (select one or more)</label>
-          <div class="event-checkboxes" id="new-event-checks"></div>
-          <div style="font-family:var(--font-ui);font-size:11px;color:var(--text-muted);margin-top:4px">Each event gets its own song entry so you can set different start/duration per event if needed after adding.</div>
-        </div>
-      </div>
-      <div class="form-actions">
-        <button class="btn btn-primary" onclick="addSong()">ADD SONG</button>
-        <span id="add-song-msg" style="font-size:12px;color:var(--green);font-family:var(--font-ui);letter-spacing:1px"></span>
-      </div>
+    <!-- Add song trigger -->
+    <div class="add-song-form" style="padding:14px 0 6px">
+      <button class="btn btn-primary" onclick="openAddSongModal()" style="font-size:13px;padding:9px 20px">+ ADD SONG</button>
+      <span style="font-family:var(--font-ui);font-size:11px;color:var(--text-muted);margin-left:12px">Search YouTube or paste a URL — preview &amp; set clip times before adding</span>
     </div>
 
     <!-- Search / filter / sort toolbar -->
@@ -913,6 +1057,22 @@ input[type=number]{width:84px}
     </div>
     <!-- Mobile card list (shown instead of table on small screens) -->
     <div class="song-cards" id="song-cards"></div>
+  </div>
+
+  <div class="settings-section kbd-section-mobile-hide">
+    <div class="settings-section-title">YouTube API Key</div>
+    <p style="font-family:var(--font-ui);font-size:12px;color:var(--text-muted);margin-bottom:8px">
+      Required for in-app YouTube search. Get a free key from
+      <a href="https://console.cloud.google.com/" target="_blank" style="color:var(--ice-dim)">Google Cloud Console</a>
+      → Enable "YouTube Data API v3" → Credentials → API Key.
+      Your key is stored locally and never sent anywhere except YouTube's API.
+    </p>
+    <div class="yt-api-key-row">
+      <input type="password" id="yt-api-key-input" class="yt-api-key-input" placeholder="AIza…">
+      <button class="btn btn-primary" onclick="saveYtApiKey()">SAVE</button>
+      <button class="btn btn-secondary" onclick="clearYtApiKey()">CLEAR</button>
+    </div>
+    <div id="yt-api-key-status" style="font-family:var(--font-ui);font-size:11px;margin-top:6px;color:var(--text-muted)"></div>
   </div>
 
   <div class="settings-section">
@@ -2549,6 +2709,389 @@ function loadDefaultSongs(){
   buildKbdSettingsGrid();renderSongTable();buildEventButtons();refreshAllPeeks();
 })();
 
+
+// ══════════════════════════════════════════════════
+//  ADD SONG MODAL
+// ══════════════════════════════════════════════════
+let asmPreviewPlayer = null;   // separate YT player for preview
+let asmPreviewReady  = false;
+let asmVideoDuration = 0;
+let asmClipStart     = 0;      // seconds
+let asmClipEnd       = 0;      // seconds
+let asmLoopOn        = true;
+let asmLoopTimer     = null;
+let asmHeadTimer     = null;   // animates playhead
+let asmDragging      = null;   // 'start'|'end'|null
+let asmNextPageToken = null;
+let asmCurrentQuery  = '';
+let asmCurrentVideoId= null;
+let asmCurrentTitle  = '';
+
+// ── API key helpers ────────────────────────────────
+function getYtApiKey(){return localStorage.getItem('arenaDJ_ytApiKey')||'';}
+function saveYtApiKey(){
+  const val=document.getElementById('yt-api-key-input').value.trim();
+  if(!val){showToast('Enter a key first');return;}
+  localStorage.setItem('arenaDJ_ytApiKey',val);
+  updateApiKeyStatus();showToast('✓ YouTube API key saved');
+}
+function clearYtApiKey(){
+  localStorage.removeItem('arenaDJ_ytApiKey');
+  document.getElementById('yt-api-key-input').value='';
+  updateApiKeyStatus();showToast('API key cleared');
+}
+function updateApiKeyStatus(){
+  const key=getYtApiKey();
+  const input=document.getElementById('yt-api-key-input');
+  const status=document.getElementById('yt-api-key-status');
+  if(input&&key)input.value=key.slice(0,8)+'…';
+  if(status)status.textContent=key?'✓ Key configured — search is available':'No key set — URL paste still works';
+  if(status)status.style.color=key?'var(--green)':'var(--text-muted)';
+}
+function asmSwitchToApiKeySetting(){closeAddSongModal();switchPage('settings');}
+
+// ── Modal open/close ───────────────────────────────
+function openAddSongModal(){
+  const modal=document.getElementById('add-song-modal');
+  modal.classList.add('open');
+  document.body.style.overflow='hidden';
+  // Show/hide API key notice
+  const hasKey=!!getYtApiKey();
+  document.getElementById('asm-api-key-notice').style.display=hasKey?'none':'block';
+  // Build event checkboxes
+  buildEventCheckboxes('asm-event-checks',null);
+  // Focus search input
+  setTimeout(()=>document.getElementById('asm-query').focus(),120);
+  asmSwitchTab('search');
+}
+function closeAddSongModal(){
+  document.getElementById('add-song-modal').classList.remove('open');
+  document.body.style.overflow='';
+  asmStopLoop();asmStopHead();
+  // Stop preview player but keep it alive
+  if(asmPreviewPlayer&&asmPreviewReady){
+    try{asmPreviewPlayer.stopVideo();}catch(e){}
+  }
+}
+function handleAsmOverlayClick(e){
+  if(e.target===document.getElementById('add-song-modal'))closeAddSongModal();
+}
+
+// ── Tabs ───────────────────────────────────────────
+function asmSwitchTab(tab){
+  document.getElementById('asm-pane-search').style.display=tab==='search'?'block':'none';
+  document.getElementById('asm-pane-url').style.display=tab==='url'?'block':'none';
+  document.getElementById('asm-tab-search').classList.toggle('active',tab==='search');
+  document.getElementById('asm-tab-url').classList.toggle('active',tab==='url');
+  if(tab==='url')setTimeout(()=>document.getElementById('asm-paste-url').focus(),80);
+  else setTimeout(()=>document.getElementById('asm-query').focus(),80);
+}
+
+// ── Search ─────────────────────────────────────────
+async function asmDoSearch(){
+  const key=getYtApiKey();
+  if(!key){
+    document.getElementById('asm-api-key-notice').style.display='block';
+    return;
+  }
+  const q=document.getElementById('asm-query').value.trim();
+  if(!q)return;
+  asmCurrentQuery=q;asmNextPageToken=null;
+  document.getElementById('asm-results').innerHTML='<div class="asm-result-spinner">Searching…</div>';
+  document.getElementById('asm-load-more-wrap').style.display='none';
+  await asmFetchResults(true);
+}
+async function asmLoadMore(){
+  if(!asmNextPageToken)return;
+  await asmFetchResults(false);
+}
+async function asmFetchResults(fresh){
+  const key=getYtApiKey();
+  let url=`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&videoCategoryId=10&maxResults=5&q=${encodeURIComponent(asmCurrentQuery)}&key=${key}`;
+  if(!fresh&&asmNextPageToken)url+='&pageToken='+asmNextPageToken;
+  try{
+    const res=await fetch(url);
+    const data=await res.json();
+    if(data.error){
+      document.getElementById('asm-results').innerHTML=`<div class="asm-results-empty" style="color:var(--red)">API error: ${esc(data.error.message)}</div>`;
+      return;
+    }
+    asmNextPageToken=data.nextPageToken||null;
+    document.getElementById('asm-load-more-wrap').style.display=asmNextPageToken?'block':'none';
+
+    // Fetch durations via videos.list
+    const ids=data.items.map(i=>i.id.videoId).join(',');
+    const vres=await fetch(`https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${ids}&key=${key}`);
+    const vdata=await vres.json();
+    const durMap={};
+    (vdata.items||[]).forEach(v=>{durMap[v.id]=isoDurToSecs(v.contentDetails.duration);});
+
+    const container=document.getElementById('asm-results');
+    if(fresh)container.innerHTML='';
+    if(!data.items||!data.items.length){
+      container.innerHTML='<div class="asm-results-empty">No results found</div>';return;
+    }
+    data.items.forEach(item=>{
+      const vid=item.id.videoId;
+      const title=item.snippet.title;
+      const channel=item.snippet.channelTitle;
+      const thumb=item.snippet.thumbnails.default?.url||'';
+      const secs=durMap[vid]||0;
+      const durStr=secs?fmtSec(secs):'';
+      const el=document.createElement('div');el.className='asm-result';
+      el.innerHTML=`
+        <img class="asm-result-thumb" src="${thumb}" alt="" loading="lazy">
+        <div class="asm-result-info">
+          <div class="asm-result-title">${esc(title)}</div>
+          <div class="asm-result-channel">${esc(channel)}</div>
+        </div>
+        <div class="asm-result-dur">${durStr}</div>`;
+      el.addEventListener('click',()=>asmSelectVideo(vid,title));
+      container.appendChild(el);
+    });
+  }catch(e){
+    document.getElementById('asm-results').innerHTML=`<div class="asm-results-empty" style="color:var(--red)">Search failed — check your API key or network</div>`;
+  }
+}
+
+function isoDurToSecs(iso){
+  if(!iso)return 0;
+  const m=iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+  if(!m)return 0;
+  return (parseInt(m[1]||0)*3600)+(parseInt(m[2]||0)*60)+parseInt(m[3]||0);
+}
+function fmtSec(s){
+  s=Math.round(s);const m=Math.floor(s/60);const ss=s%60;
+  return m+':'+(ss<10?'0':'')+ss;
+}
+
+// ── Load from URL ──────────────────────────────────
+function asmLoadFromUrl(){
+  const val=document.getElementById('asm-paste-url').value.trim();
+  const vid=extractVideoId(val);
+  if(!vid){showToast('Could not extract a YouTube video ID');return;}
+  asmSelectVideo(vid,'');
+}
+
+// ── Select a video → show preview pane ────────────
+function asmSelectVideo(videoId,title){
+  asmCurrentVideoId=videoId;
+  asmCurrentTitle=title;
+  document.getElementById('asm-title').value=title;
+  document.getElementById('asm-preview-pane').style.display='block';
+  // Scroll preview into view
+  document.querySelector('.asm-panel').scrollTop=999;
+
+  // Stop arena player — preview takes priority, arena resumes when modal closes
+  // (arena player is not stopped, only preview is started separately)
+
+  asmClipStart=0;asmClipEnd=0;asmVideoDuration=0;
+  asmUpdateScrubberUI();
+
+  if(!asmPreviewPlayer){
+    // Create the preview YT player
+    asmPreviewPlayer=new YT.Player('asm-yt-player',{
+      videoId:videoId,
+      playerVars:{autoplay:1,controls:1,rel:0,modestbranding:1},
+      events:{
+        onReady:e=>{
+          asmPreviewReady=true;
+          asmOnPlayerReady(e);
+        },
+        onStateChange:asmOnStateChange,
+      }
+    });
+  } else {
+    if(asmPreviewReady){
+      try{
+        asmPreviewPlayer.loadVideoById(videoId);
+      }catch(e){}
+      // Wait for metadata
+      asmWaitForDuration();
+    }
+  }
+}
+
+function asmOnPlayerReady(e){
+  asmWaitForDuration();
+}
+
+function asmWaitForDuration(){
+  // Poll until duration is available
+  const poll=setInterval(()=>{
+    if(!asmPreviewReady)return;
+    let dur=0;
+    try{dur=asmPreviewPlayer.getDuration()||0;}catch(e){}
+    if(dur>0){
+      clearInterval(poll);
+      asmVideoDuration=dur;
+      asmClipStart=0;
+      asmClipEnd=dur;
+      asmUpdateScrubberUI();
+      asmStartHead();
+    }
+  },200);
+}
+
+function asmOnStateChange(e){
+  // YT.PlayerState.ENDED = 0
+  if(e.data===0&&asmLoopOn){
+    setTimeout(()=>{
+      try{asmPreviewPlayer.seekTo(asmClipStart,true);asmPreviewPlayer.playVideo();}catch(err){}
+    },100);
+  }
+}
+
+// ── Scrubber ───────────────────────────────────────
+function asmUpdateScrubberUI(){
+  if(!asmVideoDuration){return;}
+  const d=asmVideoDuration;
+  const pctS=asmClipStart/d*100;
+  const pctE=asmClipEnd/d*100;
+  document.getElementById('asm-scr-hs').style.left=pctS+'%';
+  document.getElementById('asm-scr-he').style.left=pctE+'%';
+  document.getElementById('asm-scr-clip').style.left=pctS+'%';
+  document.getElementById('asm-scr-clip').style.width=(pctE-pctS)+'%';
+  const dur=Math.round(asmClipEnd-asmClipStart);
+  document.getElementById('asm-scr-start-lbl').textContent='Start: '+fmtSec(asmClipStart);
+  document.getElementById('asm-scr-dur-lbl').textContent='Duration: '+dur+'s';
+  document.getElementById('asm-scr-end-lbl').textContent='End: '+fmtSec(asmClipEnd);
+}
+
+function asmStartHead(){
+  asmStopHead();
+  asmHeadTimer=setInterval(()=>{
+    if(!asmPreviewReady||!asmVideoDuration)return;
+    let t=0;
+    try{t=asmPreviewPlayer.getCurrentTime()||0;}catch(e){return;}
+    const pct=t/asmVideoDuration*100;
+    document.getElementById('asm-scr-head').style.left=pct+'%';
+    // Loop enforcement: if playing past clip end, seek back to start
+    if(asmLoopOn&&t>=asmClipEnd-0.3){
+      try{asmPreviewPlayer.seekTo(asmClipStart,true);}catch(e){}
+    }
+  },250);
+}
+function asmStopHead(){clearInterval(asmHeadTimer);asmHeadTimer=null;}
+function asmStopLoop(){clearInterval(asmLoopTimer);asmLoopTimer=null;}
+
+function asmToggleLoop(){
+  asmLoopOn=!asmLoopOn;
+  const btn=document.getElementById('asm-loop-btn');
+  btn.textContent='🔁 Loop: '+(asmLoopOn?'ON':'OFF');
+  btn.classList.toggle('off',!asmLoopOn);
+}
+
+function asmMarkStart(){
+  if(!asmPreviewReady){return;}
+  let t=0;try{t=asmPreviewPlayer.getCurrentTime()||0;}catch(e){}
+  asmClipStart=Math.max(0,Math.min(t,asmClipEnd-1));
+  asmUpdateScrubberUI();
+}
+function asmMarkEnd(){
+  if(!asmPreviewReady){return;}
+  let t=0;try{t=asmPreviewPlayer.getCurrentTime()||0;}catch(e){}
+  asmClipEnd=Math.max(asmClipStart+1,Math.min(t,asmVideoDuration));
+  asmUpdateScrubberUI();
+}
+
+// Drag handles on the scrubber
+(function(){
+  function setupDrag(){
+    const scr=document.getElementById('asm-scrubber');
+    const hs=document.getElementById('asm-scr-hs');
+    const he=document.getElementById('asm-scr-he');
+    if(!scr)return;
+
+    function pctFromEvent(e){
+      const rect=scr.getBoundingClientRect();
+      const clientX=e.touches?e.touches[0].clientX:e.clientX;
+      return Math.max(0,Math.min(1,(clientX-rect.left)/rect.width));
+    }
+    function startDrag(handle,e){
+      e.preventDefault();
+      asmDragging=handle;
+      const move=ev=>{
+        const pct=pctFromEvent(ev);
+        const t=pct*asmVideoDuration;
+        if(asmDragging==='start'){
+          asmClipStart=Math.max(0,Math.min(t,asmClipEnd-1));
+          try{asmPreviewPlayer.seekTo(asmClipStart,true);}catch(err){}
+        } else {
+          asmClipEnd=Math.max(asmClipStart+1,Math.min(t,asmVideoDuration));
+          try{asmPreviewPlayer.seekTo(asmClipEnd,true);}catch(err){}
+        }
+        asmUpdateScrubberUI();
+      };
+      const up=()=>{
+        asmDragging=null;
+        document.removeEventListener('mousemove',move);document.removeEventListener('mouseup',up);
+        document.removeEventListener('touchmove',move);document.removeEventListener('touchend',up);
+      };
+      document.addEventListener('mousemove',move);document.addEventListener('mouseup',up);
+      document.addEventListener('touchmove',move,{passive:false});document.addEventListener('touchend',up);
+    }
+    // Also allow clicking anywhere on scrubber to seek playhead
+    scr.addEventListener('click',e=>{
+      if(asmDragging)return;
+      const pct=pctFromEvent(e);
+      const t=pct*asmVideoDuration;
+      try{asmPreviewPlayer.seekTo(t,true);}catch(err){}
+    });
+    hs.addEventListener('mousedown',e=>startDrag('start',e));
+    hs.addEventListener('touchstart',e=>startDrag('start',e),{passive:false});
+    he.addEventListener('mousedown',e=>startDrag('end',e));
+    he.addEventListener('touchstart',e=>startDrag('end',e),{passive:false});
+  }
+  // Run after DOM is ready
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setupDrag);
+  else setupDrag();
+})();
+
+// ── Back to search ─────────────────────────────────
+function asmBackToSearch(){
+  document.getElementById('asm-preview-pane').style.display='none';
+  asmStopHead();
+  try{asmPreviewPlayer.stopVideo();}catch(e){}
+}
+
+// ── Confirm add ────────────────────────────────────
+function asmConfirmAdd(){
+  const title=document.getElementById('asm-title').value.trim();
+  if(!title){showToast('Enter a song title');return;}
+  const videoId=asmCurrentVideoId;
+  if(!videoId){showToast('No video selected');return;}
+  const events=getCheckedEvents('asm-event-checks');
+  if(!events.length){showToast('Select at least one event');return;}
+
+  const startAt=Math.round(asmClipStart);
+  const duration=Math.round(Math.max(0,asmClipEnd-asmClipStart));
+  // duration=0 means use global default; only set if user explicitly shortened clip
+  const effectiveDur=(duration>0&&Math.abs(duration-Math.round(asmVideoDuration))>2)?duration:0;
+
+  events.forEach(evId=>{
+    songs.push({id:uid(),title,videoId,event:evId,startAt,duration:effectiveDur});
+  });
+  save();renderSongTable();refreshAllPeeks();
+  showToast(`✓ Added "${title}" to ${events.length} event${events.length>1?'s':''}`);
+
+  // Reset and close
+  asmStopHead();
+  try{asmPreviewPlayer.stopVideo();}catch(e){}
+  document.getElementById('asm-preview-pane').style.display='none';
+  document.getElementById('asm-title').value='';
+  buildEventCheckboxes('asm-event-checks',null);
+  asmCurrentVideoId=null;asmCurrentTitle='';
+  closeAddSongModal();
+}
+
+// ── Keyboard: Esc closes modal ─────────────────────
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'&&document.getElementById('add-song-modal').classList.contains('open')){
+    closeAddSongModal();
+  }
+});
+
 // ── PWA Service Worker (v4 — network-first) ─────────
 if ('serviceWorker' in navigator) {
   // Derive the exact directory this page is served from.
@@ -2561,5 +3104,102 @@ if ('serviceWorker' in navigator) {
   });
 }
 </script>
+
+<!-- ══════════════════════════════════════════════════
+     ADD SONG MODAL
+     ══════════════════════════════════════════════════ -->
+<div id="add-song-modal" class="asm-overlay" onclick="handleAsmOverlayClick(event)">
+  <div class="asm-panel">
+
+    <!-- Header -->
+    <div class="asm-header">
+      <span class="asm-title">ADD SONG</span>
+      <button class="asm-close" onclick="closeAddSongModal()" title="Close">✕</button>
+    </div>
+
+    <!-- Tab bar: Search | Paste URL -->
+    <div class="asm-tabs">
+      <button class="asm-tab active" id="asm-tab-search" onclick="asmSwitchTab('search')">🔍 Search YouTube</button>
+      <button class="asm-tab" id="asm-tab-url" onclick="asmSwitchTab('url')">⎘ Paste URL</button>
+    </div>
+
+    <!-- SEARCH PANE -->
+    <div class="asm-pane" id="asm-pane-search">
+      <div class="asm-search-row">
+        <input type="text" id="asm-query" class="asm-query-input" placeholder="Search YouTube…" onkeydown="if(event.key==='Enter')asmDoSearch()">
+        <button class="btn btn-primary" onclick="asmDoSearch()" id="asm-search-btn">SEARCH</button>
+      </div>
+      <div id="asm-api-key-notice" class="asm-api-notice" style="display:none">
+        <span>⚠ No YouTube API key set. </span>
+        <a href="#" onclick="asmSwitchToApiKeySetting();return false">Add one in Settings →</a>
+        <span> or use Paste URL tab instead.</span>
+      </div>
+      <div class="asm-results" id="asm-results">
+        <div class="asm-results-empty" id="asm-results-empty">Search for a song to get started</div>
+      </div>
+      <div style="text-align:center;padding:6px 0;display:none" id="asm-load-more-wrap">
+        <button class="btn btn-secondary" onclick="asmLoadMore()" id="asm-load-more-btn">Load more results</button>
+      </div>
+    </div>
+
+    <!-- PASTE URL PANE -->
+    <div class="asm-pane" id="asm-pane-url" style="display:none">
+      <div class="asm-search-row">
+        <input type="text" id="asm-paste-url" class="asm-query-input" placeholder="https://youtu.be/…  or video ID" onkeydown="if(event.key==='Enter')asmLoadFromUrl()">
+        <button class="btn btn-primary" onclick="asmLoadFromUrl()">LOAD</button>
+      </div>
+    </div>
+
+    <!-- PREVIEW PANE (shown after a video is selected) -->
+    <div id="asm-preview-pane" style="display:none">
+
+      <!-- Inline YouTube player -->
+      <div class="asm-player-wrap">
+        <div id="asm-yt-player"></div>
+      </div>
+
+      <!-- Clip scrubber -->
+      <div class="asm-scrubber-section">
+        <div class="asm-scrubber-labels">
+          <span id="asm-scr-start-lbl">Start: 0:00</span>
+          <span id="asm-scr-dur-lbl">Duration: 0s</span>
+          <span id="asm-scr-end-lbl">End: 0:00</span>
+        </div>
+        <div class="asm-scrubber" id="asm-scrubber">
+          <div class="asm-scr-bg"></div>
+          <div class="asm-scr-clip" id="asm-scr-clip"></div>
+          <div class="asm-scr-head" id="asm-scr-head"></div>
+          <div class="asm-scr-handle asm-scr-handle-start" id="asm-scr-hs" title="Drag to set start"></div>
+          <div class="asm-scr-handle asm-scr-handle-end"   id="asm-scr-he" title="Drag to set end"></div>
+        </div>
+        <div class="asm-mark-row">
+          <button class="asm-mark-btn" onclick="asmMarkStart()" title="Set start to current playhead">⊙ Mark Start</button>
+          <button class="asm-loop-btn" id="asm-loop-btn" onclick="asmToggleLoop()" title="Loop clip">🔁 Loop: ON</button>
+          <button class="asm-mark-btn" onclick="asmMarkEnd()" title="Set end to current playhead">⊙ Mark End</button>
+        </div>
+      </div>
+
+      <!-- Song details form -->
+      <div class="asm-form">
+        <div class="asm-form-row">
+          <label class="asm-label">Title</label>
+          <input type="text" id="asm-title" class="asm-input" placeholder="Song title">
+        </div>
+        <div class="asm-form-row">
+          <label class="asm-label">Assign to Events</label>
+          <div class="event-checkboxes" id="asm-event-checks"></div>
+        </div>
+        <div class="asm-note">Each selected event gets its own entry so you can set different clip times per event later.</div>
+      </div>
+
+      <div class="asm-actions">
+        <button class="btn btn-secondary" onclick="asmBackToSearch()">← Back</button>
+        <button class="btn btn-primary" onclick="asmConfirmAdd()" style="min-width:140px">+ ADD TO LIBRARY</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
 </body>
 </html>
