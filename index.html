@@ -2437,23 +2437,25 @@ function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2
 // ══════════════════════════════════════════════════
 //  IMPORT / EXPORT
 // ══════════════════════════════════════════════════
-function resetToDefaultSongs(){
+async function resetToDefaultSongs(){
   const confirmed = window.confirm(
     'Reset song library to defaults?\n\n' +
-    'This will DELETE all ' + songs.length + ' current song(s) and reload the built-in default library (221 songs).\n\n' +
+    'This will DELETE all ' + songs.length + ' current song(s) and reload the default library from the repo.\n\n' +
     'Your keyboard shortcuts and global settings will be kept.\n\n' +
     'Export a backup first if you want to keep your current library.'
   );
   if(!confirmed) return;
-  // Clear queues and playback state
+  // Clear songs and queue state
   songs = [];
   Object.keys(eventQueues).forEach(k=>delete eventQueues[k]);
   Object.keys(eventQueuePos).forEach(k=>delete eventQueuePos[k]);
   Object.keys(nextSong).forEach(k=>delete nextSong[k]);
-  loadDefaultSongs(); // repopulates songs[] and calls save()
+  showToast('Fetching default songs…');
+  const ok = await loadDefaultSongs();
+  if(!ok) return; // fetch failed — toast already shown
   EVENT_DEFS.forEach(def=>{delete eventQueues[def.id];delete eventQueuePos[def.id];});
   renderSongTable();buildEventButtons();refreshAllPeeks();
-  showToast('✓ Song library reset to defaults (221 songs)');
+  showToast('✓ Song library reset to defaults (' + songs.length + ' songs)');
 }
 
 function exportSettings(){
@@ -2561,173 +2563,42 @@ function showToast(msg,ms=3200){const t=document.getElementById('toast');t.textC
 // ══════════════════════════════════════════════════
 //  DEFAULT SONG LIBRARY
 // ══════════════════════════════════════════════════
-function loadDefaultSongs(){
-  // Called only on first launch (songs.length === 0).
-  // All videoIds verified against official YouTube releases.
-  const defaults = [
-    {title:'Galvanize', videoId:'Xu3FTEmN-eg', event:'intermission', startAt:9, duration:0},
-    {title:'Snickerboa', videoId:'ozKtjCjCvLg', event:'pp_home', startAt:8, duration:0},
-    {title:'Levels', videoId:'wDuoOapZ9Z0', event:'intermission', startAt:60, duration:120},
-    {title:'In my mind', videoId:'VWQ-e0qXX0M', event:'intermission', startAt:46, duration:0},
-    {title:'Calgary Flames Goalhorn', videoId:'ITSxNwS_Dps', event:'goal_home', startAt:0, duration:0},
-    {title:'Karaoke - Kaj', videoId:'Nr6_YXHgKPk', event:'warmup', startAt:0, duration:0},
-    {title:'Róa - VAEB', videoId:'iO6eIE1tKfs', event:'intermission', startAt:0, duration:0},
-    {title:'Whatever you want', videoId:'AhvLxYKFq0k', event:'intermission', startAt:40, duration:0},
-    {title:'Breaking the law', videoId:'BXtPycm5dGc', event:'box_home', startAt:69, duration:0},
-    {title:'Money for Nothing', videoId:'6K6ODTZ7c10', event:'intermission', startAt:95, duration:0},
-    {title:'Sultans of Swing', videoId:'cF3OWCYLLVQ', event:'intermission', startAt:201, duration:0},
-    {title:'Don\'t Stop Believing', videoId:'pcXWq5MCelE', event:'warmup', startAt:0, duration:0},
-    {title:'Freebird', videoId:'IGLVMBTIAPE', event:'goal_away', startAt:296, duration:120},
-    {title:'smoke on the water', videoId:'kndSerBcsUg', event:'intermission', startAt:0, duration:0},
-    {title:'Still D.R.E', videoId:'_CL6n0FJZpk', event:'intermission', startAt:22, duration:0},
-    {title:'Tsunami', videoId:'xpNJ0qzaX4Q', event:'intermission', startAt:38, duration:0},
-    {title:'Albatrouz', videoId:'cbHs1Mx2M6Y', event:'intermission', startAt:91, duration:0},
-    {title:'Animals', videoId:'DYf28lOb8KU', event:'intermission', startAt:20, duration:90},
-    {title:'We found love', videoId:'u3e0XssrkCg', event:'intermission', startAt:45, duration:0},
-    {title:'Better off alone', videoId:'hl0AtMD9TAQ', event:'intermission', startAt:0, duration:90},
-    {title:'All Around the World', videoId:'4XrV1B7-yXQ', event:'intermission', startAt:36, duration:0},
-    {title:'PuuhePete', videoId:'NWJREjSrdaw', event:'maintenance', startAt:0, duration:0},
-    {title:'Are You Ready For This', videoId:'DJ6CcEOmlYU', event:'warmup', startAt:0, duration:0},
-    {title:'Are You Ready For This', videoId:'DJ6CcEOmlYU', event:'intermission', startAt:0, duration:0},
-    {title:'Welcome to the Jungle', videoId:'o1tj2zJ2Wvg', event:'match_intro', startAt:0, duration:240},
-    {title:'Welcome to the Jungle', videoId:'o1tj2zJ2Wvg', event:'intermission', startAt:9, duration:0},
-    {title:'We Will Rock You', videoId:'6SdIVPs8gZ8', event:'intermission', startAt:0, duration:0},
-    {title:'I\'m Shipping Up to Boston', videoId:'NsxcZol_FEE', event:'intermission', startAt:0, duration:0},
-    {title:'Sabotage', videoId:'aNQO94En8Tc', event:'intermission', startAt:0, duration:0},
-    {title:'Sabotage', videoId:'aNQO94En8Tc', event:'maintenance', startAt:0, duration:0},
-    {title:'Sandstorm', videoId:'jWMTJ0oepCU', event:'intermission', startAt:16, duration:0},
-    {title:'Seven Nation Army', videoId:'0J2QdDbelmY', event:'intermission', startAt:0, duration:0},
-    {title:'Equador', videoId:'9cQlVww0zKo', event:'intermission', startAt:11, duration:0},
-    {title:'Lose Yourself', videoId:'xFYQQPAOz7Y', event:'intermission', startAt:31, duration:0},
-    {title:'Kickstart my Heart', videoId:'y5Qkk42iYQE', event:'intermission', startAt:9, duration:0},
-    {title:'Mr. Saxobeat', videoId:'uYN0VbbQTP8', event:'intermission', startAt:0, duration:0},
-    {title:'You Shook Me All Night Long', videoId:'12U6KYIoHIQ', event:'intermission', startAt:15, duration:0},
-    {title:'Howlin\' For You', videoId:'3VP067RdgG8', event:'intermission', startAt:0, duration:0},
-    {title:'Joker and the Thief', videoId:'PZUS6M64o50', event:'match_intro', startAt:0, duration:240},
-    {title:'Joker and the Thief', videoId:'PZUS6M64o50', event:'intermission', startAt:0, duration:0},
-    {title:'Woman - Wolfmother', videoId:'1-wwc3ZqP0w', event:'intermission', startAt:7, duration:0},
-    {title:'Take Me Out', videoId:'d11xns8lE4w', event:'hit', startAt:54, duration:0},
-    {title:'The Kids Aren\'t Alright', videoId:'-uQi0vJK9lk', event:'intermission', startAt:0, duration:0},
-    {title:'Zitti e buoni', videoId:'16GpicX09gk', event:'intermission', startAt:0, duration:0},
-    {title:'Tarkenee', videoId:'WPi7N42Opzo', event:'intermission', startAt:0, duration:0},
-    {title:'Tarkenee', videoId:'WPi7N42Opzo', event:'warmup', startAt:0, duration:0},
-    {title:'Voitolla Yöhön', videoId:'CGfE11nCGMY', event:'final', startAt:15, duration:0},
-    {title:'Häissä', videoId:'jVmw9MliefU', event:'intermission', startAt:0, duration:0},
-    {title:'La Isla Bonita (metal)', videoId:'AJJaWZdZNU0', event:'intermission', startAt:0, duration:0},
-    {title:'Like a Prayer - Dogma', videoId:'pI45goRAQhU', event:'intermission', startAt:24, duration:0},
-    {title:'Hearts on Fire', videoId:'NPDMvYmhFHo', event:'intermission', startAt:0, duration:0},
-    {title:'Ievan Polkka - Korpiklaani', videoId:'0LfT5qJH2zc', event:'intermission', startAt:0, duration:37},
-    {title:'Sinne missä aamu sarastaa', videoId:'GHGPdS9MkA4', event:'hit', startAt:120, duration:0},
-    {title:'My Curse', videoId:'B4vTwppAfDg', event:'intermission', startAt:0, duration:0},
-    {title:'The Quiet Things That No One Ever Knows', videoId:'OZJ4KvTi5oU', event:'warmup', startAt:0, duration:0},
-    {title:'Rock And Roll Part II', videoId:'nSSbXR2CfwQ', event:'intermission', startAt:0, duration:0},
-    {title:'Zombie Nation Stadium Chant Mix', videoId:'avtCCpHYTVQ', event:'intermission', startAt:41, duration:0},
-    {title:'Stand up for Rock N Roll - Airbourne', videoId:'JsCPpQ_cHPQ', event:'intermission', startAt:45, duration:0},
-    {title:'Live It Up', videoId:'WuPNhMQcZQg', event:'intermission', startAt:80, duration:0},
-    {title:'You\'ve Got Another Thing Comin\'', videoId:'LNyIhirtXUI', event:'intermission', startAt:110, duration:0},
-    {title:'Blitzkrieg Bop', videoId:'8nYXTsbwsxA', event:'intermission', startAt:22, duration:0},
-    {title:'Rock the night', videoId:'2ASMmke_J70', event:'intermission', startAt:0, duration:0},
-    {title:'Final Countdown', videoId:'NNiTxUEnmKI', event:'intermission', startAt:13, duration:0},
-    {title:'Push It To The Limit', videoId:'TgHi0LxiPfg', event:'intermission', startAt:0, duration:0},
-    {title:'Rock You Like a Hurricane', videoId:'KpSGd-5c27s', event:'warmup', startAt:0, duration:0},
-    {title:'Rock You Like a Hurricane', videoId:'KpSGd-5c27s', event:'intermission', startAt:0, duration:0},
-    {title:'What Now - Rihanna', videoId:'veau65llg3g', event:'timeout', startAt:113, duration:40},
-    {title:'What\'s Up?', videoId:'B6GdsRIbTSk', event:'timeout', startAt:208, duration:40},
-    {title:'Every Breath You Take', videoId:'G0mGRit4_DA', event:'intermission', startAt:0, duration:0},
-    {title:'Organ 6', videoId:'b5wLgGEsXkA', event:'intermission', startAt:6, duration:0},
-    {title:'Organ 10', videoId:'f7LU8A19USE', event:'intermission', startAt:6, duration:0},
-    {title:'Organ 5', videoId:'BVAoP114ApY', event:'intermission', startAt:6, duration:0},
-    {title:'Organ 7', videoId:'frHfFbADVyI', event:'intermission', startAt:6, duration:0},
-    {title:'Can\'t Touch This', videoId:'z5X5zh00rdg', event:'hit', startAt:96, duration:0},
-    {title:'Bangarang', videoId:'EkZ4d470yV4', event:'warmup', startAt:0, duration:0},
-    {title:'Bangarang', videoId:'EkZ4d470yV4', event:'intermission', startAt:9, duration:0},
-    {title:'Epic - Faith No More', videoId:'Kw11B__dEGI', event:'intermission', startAt:0, duration:0},
-    {title:'Fireball', videoId:'x1h5CtcMmqE', event:'box_home', startAt:26, duration:0},
-    {title:'The Show Must Go On', videoId:'j5_0E38dQPw', event:'intermission', startAt:0, duration:0},
-    {title:'La Grange', videoId:'bSt4myecN_c', event:'warmup', startAt:0, duration:0},
-    {title:'La Grange', videoId:'bSt4myecN_c', event:'intermission', startAt:130, duration:0},
-    {title:'Born to be wild', videoId:'93fAJe8WVjA', event:'warmup', startAt:0, duration:0},
-    {title:'Get It On', videoId:'cp1m4B3HRhg', event:'warmup', startAt:0, duration:0},
-    {title:'A Warrior\'s Call', videoId:'NqJLMqKMzA0', event:'match_intro', startAt:0, duration:0},
-    {title:'Scream & Shout', videoId:'a5D8CTt-tfs', event:'intermission', startAt:0, duration:0},
-    {title:'Song 2 - Blur', videoId:'SQrKCytWbj8', event:'intermission', startAt:0, duration:0},
-    {title:'Chelsea Dagger', videoId:'jQveblLS03U', event:'intermission', startAt:0, duration:0},
-    {title:'Don\'t Bring Me Down', videoId:'kW0HZy8J0v0', event:'intermission', startAt:0, duration:0},
-    {title:'Cum on Feel the Noize', videoId:'XQ5mygB97nM', event:'warmup', startAt:0, duration:0},
-    {title:'Cum on Feel the Noize', videoId:'XQ5mygB97nM', event:'intermission', startAt:0, duration:0},
-    {title:'Crowd Chant', videoId:'eoWtsVXPExs', event:'intermission', startAt:0, duration:0},
-    {title:'Dream Is Collapsing - Inception Soundtrack', videoId:'Jx5KJQb0pDo', event:'match_intro', startAt:0, duration:0},
-    {title:'I wanna rock', videoId:'tyHpTG1MjVU', event:'intermission', startAt:0, duration:0},
-    {title:'Another One Bites The Dust', videoId:'Y09uL2qbYCg', event:'box_home', startAt:0, duration:0},
-    {title:'All Right Now', videoId:'7cQ4jNDRTOo', event:'intermission', startAt:0, duration:0},
-    {title:'Unstoppable', videoId:'b-nS40cYjh8', event:'intermission', startAt:0, duration:0},
-    {title:'Mony Mony', videoId:'VPwMsu63PUU', event:'intermission', startAt:0, duration:0},
-    {title:'Eye of the tiger', videoId:'S-LO6dctBms', event:'intermission', startAt:0, duration:0},
-    {title:'Baba O\'Riley', videoId:'rIbMbXjbW98', event:'match_intro', startAt:0, duration:0},
-    {title:'Baba O\'Riley', videoId:'rIbMbXjbW98', event:'intermission', startAt:0, duration:0},
-    {title:'Black Betty', videoId:'wWk-uDrGxL0', event:'intermission', startAt:0, duration:0},
-    {title:'Smells Like Teen Spirit', videoId:'ljUtuoFt-8c', event:'intermission', startAt:0, duration:0},
-    {title:'Whorehouse Blues', videoId:'xbd0p26-rr0', event:'intermission', startAt:0, duration:0},
-    {title:'Low - Flo Rida', videoId:'uUL8a7eJCk8', event:'intermission', startAt:0, duration:0},
-    {title:'Bad To The Bone', videoId:'8KciRaANKmo', event:'goal_away', startAt:0, duration:0},
-    {title:'Hate To Say I Told You So', videoId:'bL-hRknymbI', event:'intermission', startAt:0, duration:0},
-    {title:'Backseat Boogie - Airbourne', videoId:'K_SUM-9G7-k', event:'warmup', startAt:0, duration:0},
-    {title:'Backseat Boogie - Airbourne', videoId:'K_SUM-9G7-k', event:'intermission', startAt:0, duration:0},
-    {title:'Hail to the King', videoId:'MjwttGizNEs', event:'intermission', startAt:0, duration:0},
-    {title:'Radar Love', videoId:'GyAvXV1NJNY', event:'intermission', startAt:19, duration:0},
-    {title:'Figure It Out', videoId:'5idPf5Irfxk', event:'intermission', startAt:0, duration:0},
-    {title:'Maniac (Flashdance)', videoId:'6GCNUeTFSbA', event:'intermission', startAt:0, duration:0},
-    {title:'Should I Stay Or Should I Go', videoId:'wjZMcWaniA4', event:'warmup', startAt:0, duration:0},
-    {title:'Gimme All Your Lovin\'', videoId:'tMhZizgTnj0', event:'warmup', startAt:0, duration:0},
-    {title:'Yeah! - Usher', videoId:'XGXZOQ8yTU4', event:'intermission', startAt:0, duration:0},
-    {title:'You Could Be Mine', videoId:'DVzcQ4_khsM', event:'warmup', startAt:0, duration:0},
-    {title:'You Could Be Mine', videoId:'DVzcQ4_khsM', event:'intermission', startAt:0, duration:0},
-    {title:'Are You Ready', videoId:'N5U8O81jtAg', event:'warmup', startAt:0, duration:0},
-    {title:'Master of Puppets', videoId:'xnKhsTXoKCI', event:'intermission', startAt:0, duration:0},
-    {title:'Unstoppable', videoId:'_PBlykN4KIY', event:'warmup', startAt:0, duration:0},
-    {title:'Hockey Warm Up Mix (EDM)', videoId:'8QZwDkCQ060', event:'warmup', startAt:0, duration:0},
-    {title:'Hockey Warm Up Mix (EDM/House)', videoId:'KLe7jC6Sl68', event:'warmup', startAt:0, duration:0},
-    {title:'Down with the sickness', videoId:'iHGCJacleE4', event:'intermission', startAt:21, duration:0},
-    {title:'T.N.T', videoId:'NhsK5WExrnE', event:'match_intro', startAt:0, duration:0},
-    {title:'T.N.T', videoId:'NhsK5WExrnE', event:'warmup', startAt:0, duration:0},
-    {title:'T.N.T', videoId:'NhsK5WExrnE', event:'intermission', startAt:0, duration:0},
-    {title:'All We Do is Win', videoId:'sX9OAqlpjUY', event:'final', startAt:0, duration:0},
-    {title:'Timber - Pitbull & Kesha', videoId:'GcYF1xnmZTI', event:'intermission', startAt:0, duration:0},
-    {title:'Bohemian Rhapsody', videoId:'bSnlKl_PoQU', event:'box_home', startAt:248, duration:0},
-    {title:'Blinding Lights', videoId:'J7p4bzqLvCw', event:'warmup', startAt:0, duration:0},
-    {title:'Blinding Lights', videoId:'J7p4bzqLvCw', event:'intermission', startAt:0, duration:0},
-    {title:'One More Time', videoId:'wU26xVT_vBU', event:'warmup', startAt:0, duration:0},
-    {title:'One More Time', videoId:'wU26xVT_vBU', event:'intermission', startAt:0, duration:0},
-    {title:'Party Rock Anthem', videoId:'kmioyMNkgx4', event:'warmup', startAt:0, duration:0},
-    {title:'Party Rock Anthem', videoId:'kmioyMNkgx4', event:'intermission', startAt:0, duration:0},
-    {title:'It\'s My Life', videoId:'bY3vXr7fm8k', event:'intermission', startAt:0, duration:0},
-    {title:'Stayin Alive', videoId:'z2qoihbzc3E', event:'goal_away', startAt:0, duration:0},
-    {title:'Played-A-Live', videoId:'o_ZBzGlYS6g', event:'intermission', startAt:4, duration:0},
-    {title:'Pedro', videoId:'5WXs6hzsuZs', event:'warmup', startAt:0, duration:0},
-    {title:'Pedro', videoId:'5WXs6hzsuZs', event:'intermission', startAt:25, duration:0},
-    {title:'Mwaki', videoId:'wr62oNJORAI', event:'intermission', startAt:0, duration:0},
-    {title:'Mwaki (chorus start)', videoId:'wr62oNJORAI', event:'intermission', startAt:40, duration:0},
-    {title:'Wicked Game', videoId:'hHwYHn2mTpA', event:'final', startAt:0, duration:0},
-    {title:'The Sound of Silence (CYRIL Remix)', videoId:'jwptCxZI6y4', event:'final', startAt:0, duration:0},
-    {title:'Don\'t You Worry Child', videoId:'3mWbRB3Y4R8', event:'intermission', startAt:60, duration:0},
-    {title:'Save The World', videoId:'9TJGY8_22Kk', event:'goal_away', startAt:35, duration:0},
-    {title:'Antidote', videoId:'OPSnQzqDoec', event:'match_intro', startAt:0, duration:0},
-    {title:'Antidote', videoId:'OPSnQzqDoec', event:'intermission', startAt:0, duration:0},
-    {title:'Scary Monsters and Nice Sprites', videoId:'WSeNSzJ2-Jw', event:'intermission', startAt:0, duration:0},
-  ];
-
-  defaults.forEach(s => {
-    songs.push({ id: uid(), ...s });
-  });
-  save();
+async function loadDefaultSongs(){
+  // Fetch the default settings file from the repo root.
+  // This runs only on first launch (empty library) or on Reset to Default.
+  try {
+    const base = window.location.href.replace(/[^/]*$/, '');
+    const res = await fetch(base + 'arena-dj-settings.json?_=' + Date.now());
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    if (Array.isArray(data.songs)) {
+      data.songs.forEach(s => songs.push({ id: uid(), ...s }));
+    }
+    // Also load default globalConfig from file if not already customised
+    if (data.globalConfig) {
+      globalConfig = { ...globalConfig, ...data.globalConfig };
+      loadConfigUI();
+    }
+    save();
+    return true;
+  } catch (e) {
+    console.warn('[Arena DJ] Could not load default settings file:', e);
+    showToast('⚠ Could not load default songs — check network');
+    return false;
+  }
 }
 
 // ══════════════════════════════════════════════════
 //  INIT
 // ══════════════════════════════════════════════════
-(function init(){
+(async function init(){
   load();checkWarning();checkAdsNotice();loadConfigUI();
-  if(songs.length === 0) loadDefaultSongs();
+  if(songs.length === 0){
+    // Show a loading state while fetching defaults
+    document.getElementById('events-layout').innerHTML =
+      '<div style="color:var(--text-muted);font-family:var(--font-ui);font-size:13px;padding:32px;text-align:center">Loading default songs…</div>';
+    await loadDefaultSongs();
+  }
   buildKbdSettingsGrid();buildKbdHintStrip();renderSongTable();buildEventButtons();refreshAllPeeks();
 })();
 

@@ -1,0 +1,1331 @@
+{
+  "songs": [
+    {
+      "id": "mo4xlga05dadshulaji",
+      "title": "Galvanize",
+      "videoId": "Xu3FTEmN-eg",
+      "event": "intermission",
+      "startAt": 9,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0nhxt7mf0d0j",
+      "title": "Snickerboa",
+      "videoId": "ozKtjCjCvLg",
+      "event": "pp_home",
+      "startAt": 8,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga02lp1ampufij",
+      "title": "Levels",
+      "videoId": "wDuoOapZ9Z0",
+      "event": "intermission",
+      "startAt": 60,
+      "duration": 120
+    },
+    {
+      "id": "mo4xlga0izwbvjep7b",
+      "title": "In my mind",
+      "videoId": "VWQ-e0qXX0M",
+      "event": "intermission",
+      "startAt": 46,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga09jy96v09mrl",
+      "title": "Calgary Flames Goalhorn",
+      "videoId": "ITSxNwS_Dps",
+      "event": "goal_home",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0xn6ka3014le",
+      "title": "Karaoke - Kaj",
+      "videoId": "Nr6_YXHgKPk",
+      "event": "warmup",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga08x2a0u4n1l6",
+      "title": "Róa - VAEB",
+      "videoId": "iO6eIE1tKfs",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga07zsbh1c1358",
+      "title": "Whatever you want",
+      "videoId": "AhvLxYKFq0k",
+      "event": "intermission",
+      "startAt": 40,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0fsbcmqepltt",
+      "title": "Breaking the law",
+      "videoId": "BXtPycm5dGc",
+      "event": "box_home",
+      "startAt": 69,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0mcx7weo6ftm",
+      "title": "Money for Nothing",
+      "videoId": "6K6ODTZ7c10",
+      "event": "intermission",
+      "startAt": 95,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga010kx8p9umpa",
+      "title": "Sultans of Swing",
+      "videoId": "cF3OWCYLLVQ",
+      "event": "intermission",
+      "startAt": 201,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0vfl36e57qpk",
+      "title": "Don't Stop Believing",
+      "videoId": "pcXWq5MCelE",
+      "event": "warmup",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0prnnrbbnbei",
+      "title": "Freebird",
+      "videoId": "IGLVMBTIAPE",
+      "event": "goal_home",
+      "startAt": 296,
+      "duration": 120
+    },
+    {
+      "id": "mo4xlga0iitvloopqxa",
+      "title": "smoke on the water",
+      "videoId": "kndSerBcsUg",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0swth6q867h",
+      "title": "Still D.R.E",
+      "videoId": "_CL6n0FJZpk",
+      "event": "intermission",
+      "startAt": 22,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0yk01yhc9x9",
+      "title": "Tsunami",
+      "videoId": "xpNJ0qzaX4Q",
+      "event": "intermission",
+      "startAt": 38,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0dkuipf20wnr",
+      "title": "Albatrouz",
+      "videoId": "cbHs1Mx2M6Y",
+      "event": "intermission",
+      "startAt": 91,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0iafv1iz7ysi",
+      "title": "Animals",
+      "videoId": "DYf28lOb8KU",
+      "event": "intermission",
+      "startAt": 20,
+      "duration": 90
+    },
+    {
+      "id": "mo4xlga0y4kgv7s3vjd",
+      "title": "We found love",
+      "videoId": "u3e0XssrkCg",
+      "event": "intermission",
+      "startAt": 45,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0vk8o5qkeut",
+      "title": "Better off alone",
+      "videoId": "hl0AtMD9TAQ",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 90
+    },
+    {
+      "id": "mo4xlga0pn4q3zawob8",
+      "title": "All Around the World",
+      "videoId": "4XrV1B7-yXQ",
+      "event": "intermission",
+      "startAt": 36,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0wzv8pif3qyo",
+      "title": "PuuhePete",
+      "videoId": "NWJREjSrdaw",
+      "event": "maintenance",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0kps920cslae",
+      "title": "Are You Ready For This",
+      "videoId": "DJ6CcEOmlYU",
+      "event": "warmup",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0awkgge7ubd",
+      "title": "Are You Ready For This",
+      "videoId": "DJ6CcEOmlYU",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga01puynde3fj6",
+      "title": "Welcome to the Jungle",
+      "videoId": "o1tj2zJ2Wvg",
+      "event": "match_intro",
+      "startAt": 0,
+      "duration": 240
+    },
+    {
+      "id": "mo4xlga0am3s8qhnre7",
+      "title": "Welcome to the Jungle",
+      "videoId": "o1tj2zJ2Wvg",
+      "event": "intermission",
+      "startAt": 9,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0axs5ewxtdgv",
+      "title": "We Will Rock You",
+      "videoId": "6SdIVPs8gZ8",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0xs9mseqjn8k",
+      "title": "I'm Shipping Up to Boston",
+      "videoId": "NsxcZol_FEE",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0e5dfpd8qg3q",
+      "title": "Sabotage",
+      "videoId": "aNQO94En8Tc",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0fti0nhjpwop",
+      "title": "Sabotage",
+      "videoId": "aNQO94En8Tc",
+      "event": "maintenance",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0y8anwvhszbf",
+      "title": "Sandstorm",
+      "videoId": "jWMTJ0oepCU",
+      "event": "intermission",
+      "startAt": 16,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0ec2yefh4f6",
+      "title": "Seven Nation Army",
+      "videoId": "0J2QdDbelmY",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0gyfzphxooqv",
+      "title": "Equador",
+      "videoId": "9cQlVww0zKo",
+      "event": "intermission",
+      "startAt": 11,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0i64tgbth9wh",
+      "title": "Lose Yourself",
+      "videoId": "xFYQQPAOz7Y",
+      "event": "intermission",
+      "startAt": 31,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0hqhxtfsz40r",
+      "title": "Kickstart my Heart",
+      "videoId": "y5Qkk42iYQE",
+      "event": "intermission",
+      "startAt": 9,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga006jkyvp6hwzl",
+      "title": "Mr. Saxobeat",
+      "videoId": "uYN0VbbQTP8",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0y7hqmcfnd3",
+      "title": "You Shook Me All Night Long",
+      "videoId": "12U6KYIoHIQ",
+      "event": "intermission",
+      "startAt": 15,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0lvkqhkmm2lk",
+      "title": "Howlin' For You",
+      "videoId": "3VP067RdgG8",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga063hbxa7xqh",
+      "title": "Joker and the Thief",
+      "videoId": "PZUS6M64o50",
+      "event": "match_intro",
+      "startAt": 0,
+      "duration": 240
+    },
+    {
+      "id": "mo4xlga0pikyclw4qp",
+      "title": "Joker and the Thief",
+      "videoId": "PZUS6M64o50",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0gp3ix50sht6",
+      "title": "Woman - Wolfmother",
+      "videoId": "1-wwc3ZqP0w",
+      "event": "intermission",
+      "startAt": 7,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0q1i2rmif9m",
+      "title": "Take Me Out",
+      "videoId": "d11xns8lE4w",
+      "event": "hit",
+      "startAt": 54,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga01c1ch18gfch",
+      "title": "The Kids Aren't Alright",
+      "videoId": "-uQi0vJK9lk",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0j974fp4a77",
+      "title": "Zitti e buoni",
+      "videoId": "16GpicX09gk",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga028e7lqonehc",
+      "title": "Tarkenee",
+      "videoId": "WPi7N42Opzo",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0f1ncyr6753",
+      "title": "Tarkenee",
+      "videoId": "WPi7N42Opzo",
+      "event": "warmup",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0b9la5lkg5bt",
+      "title": "Voitolla Yöhön",
+      "videoId": "CGfE11nCGMY",
+      "event": "final",
+      "startAt": 15,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0skpmcby1a7b",
+      "title": "Häissä",
+      "videoId": "jVmw9MliefU",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0m033387qqqo",
+      "title": "La Isla Bonita (metal)",
+      "videoId": "AJJaWZdZNU0",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0wfjkeogi9k",
+      "title": "Like a Prayer - Dogma",
+      "videoId": "pI45goRAQhU",
+      "event": "intermission",
+      "startAt": 24,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0jdoiroy967",
+      "title": "Hearts on Fire",
+      "videoId": "NPDMvYmhFHo",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0a2xgsdx4ngi",
+      "title": "Ievan Polkka - Korpiklaani",
+      "videoId": "0LfT5qJH2zc",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 37
+    },
+    {
+      "id": "mo4xlga0veio6mrcdqd",
+      "title": "Sinne missä aamu sarastaa",
+      "videoId": "GHGPdS9MkA4",
+      "event": "hit",
+      "startAt": 120,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga08yox7k2rix4",
+      "title": "My Curse",
+      "videoId": "B4vTwppAfDg",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0b7ci8zuzgu",
+      "title": "The Quiet Things That No One Ever Knows",
+      "videoId": "OZJ4KvTi5oU",
+      "event": "warmup",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0wlj16pj3cdg",
+      "title": "Rock And Roll Part II",
+      "videoId": "nSSbXR2CfwQ",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga049vbm0ukwoh",
+      "title": "Zombie Nation Stadium Chant Mix",
+      "videoId": "avtCCpHYTVQ",
+      "event": "intermission",
+      "startAt": 41,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0dtz5jh1mwrc",
+      "title": "Stand up for Rock N Roll - Airbourne",
+      "videoId": "JsCPpQ_cHPQ",
+      "event": "intermission",
+      "startAt": 45,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0tpaw2h2fua",
+      "title": "Live It Up",
+      "videoId": "WuPNhMQcZQg",
+      "event": "intermission",
+      "startAt": 80,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0ren4aebv8k",
+      "title": "You've Got Another Thing Comin'",
+      "videoId": "LNyIhirtXUI",
+      "event": "intermission",
+      "startAt": 110,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0q1a4pcuthd",
+      "title": "Blitzkrieg Bop",
+      "videoId": "8nYXTsbwsxA",
+      "event": "intermission",
+      "startAt": 22,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga08elj1lvuilo",
+      "title": "Rock the night",
+      "videoId": "2ASMmke_J70",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0a52s2i60pq8",
+      "title": "Final Countdown",
+      "videoId": "NNiTxUEnmKI",
+      "event": "intermission",
+      "startAt": 13,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0dso6k24oohg",
+      "title": "Push It To The Limit",
+      "videoId": "TgHi0LxiPfg",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0gjhdb8hlzmf",
+      "title": "Rock You Like a Hurricane",
+      "videoId": "KpSGd-5c27s",
+      "event": "warmup",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0x8d04xjbqjr",
+      "title": "Rock You Like a Hurricane",
+      "videoId": "KpSGd-5c27s",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0lqu581w80pb",
+      "title": "What Now - Rihanna",
+      "videoId": "veau65llg3g",
+      "event": "timeout",
+      "startAt": 113,
+      "duration": 40
+    },
+    {
+      "id": "mo4xlga08y4vynuuzxr",
+      "title": "What's Up?",
+      "videoId": "B6GdsRIbTSk",
+      "event": "timeout",
+      "startAt": 208,
+      "duration": 40
+    },
+    {
+      "id": "mo4xlga0bn7ciyf03v",
+      "title": "Every Breath You Take",
+      "videoId": "G0mGRit4_DA",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0h5oqz3e35me",
+      "title": "Organ 6",
+      "videoId": "b5wLgGEsXkA",
+      "event": "intermission",
+      "startAt": 6,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0coyswx4nd",
+      "title": "Organ 10",
+      "videoId": "f7LU8A19USE",
+      "event": "intermission",
+      "startAt": 6,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga04ervqheo2u5",
+      "title": "Organ 5",
+      "videoId": "BVAoP114ApY",
+      "event": "intermission",
+      "startAt": 6,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0x66ujwg5ms",
+      "title": "Organ 7",
+      "videoId": "frHfFbADVyI",
+      "event": "intermission",
+      "startAt": 6,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0t6vj3jxgnq",
+      "title": "Can't Touch This",
+      "videoId": "z5X5zh00rdg",
+      "event": "hit",
+      "startAt": 96,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0xi2g5sa4de",
+      "title": "Bangarang",
+      "videoId": "EkZ4d470yV4",
+      "event": "warmup",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0vlvqiv7z72n",
+      "title": "Bangarang",
+      "videoId": "EkZ4d470yV4",
+      "event": "intermission",
+      "startAt": 9,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0zf3e8dhtn6d",
+      "title": "Epic - Faith No More",
+      "videoId": "Kw11B__dEGI",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0xdbzs7h7wrs",
+      "title": "Fireball",
+      "videoId": "x1h5CtcMmqE",
+      "event": "box_home",
+      "startAt": 26,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0uyao6kgzpnn",
+      "title": "The Show Must Go On",
+      "videoId": "j5_0E38dQPw",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0yg9c4gu0hbr",
+      "title": "La Grange",
+      "videoId": "bSt4myecN_c",
+      "event": "warmup",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga04onyc3y1g49",
+      "title": "La Grange",
+      "videoId": "bSt4myecN_c",
+      "event": "intermission",
+      "startAt": 130,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0fbc6ctvzxu8",
+      "title": "Born to be wild",
+      "videoId": "93fAJe8WVjA",
+      "event": "warmup",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga095f1wpebfz5",
+      "title": "Get It On",
+      "videoId": "cp1m4B3HRhg",
+      "event": "warmup",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0nn00nz1oy8e",
+      "title": "A Warrior's Call",
+      "videoId": "NqJLMqKMzA0",
+      "event": "match_intro",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga02jvnbf4psph",
+      "title": "Scream & Shout",
+      "videoId": "a5D8CTt-tfs",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0f3retv81l19",
+      "title": "Song 2 - Blur",
+      "videoId": "SQrKCytWbj8",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0s04x066sib",
+      "title": "Chelsea Dagger",
+      "videoId": "jQveblLS03U",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0fdozyr6hz9h",
+      "title": "Don't Bring Me Down",
+      "videoId": "kW0HZy8J0v0",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga07o339y15zgf",
+      "title": "Cum on Feel the Noize",
+      "videoId": "XQ5mygB97nM",
+      "event": "warmup",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0ascnd7kyn1l",
+      "title": "Cum on Feel the Noize",
+      "videoId": "XQ5mygB97nM",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga069pmxb5a7bq",
+      "title": "Crowd Chant",
+      "videoId": "eoWtsVXPExs",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0r5q4qyza3e",
+      "title": "Dream Is Collapsing - Inception Soundtrack",
+      "videoId": "Jx5KJQb0pDo",
+      "event": "match_intro",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0a3fot4kn5hn",
+      "title": "I wanna rock",
+      "videoId": "tyHpTG1MjVU",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0dcamtw21d28",
+      "title": "Another One Bites The Dust",
+      "videoId": "Y09uL2qbYCg",
+      "event": "box_home",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0uzmaxbgh8v8",
+      "title": "All Right Now",
+      "videoId": "7cQ4jNDRTOo",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga08kc38zi4yim",
+      "title": "Unstoppable",
+      "videoId": "b-nS40cYjh8",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0g3vx0tbisp",
+      "title": "Mony Mony",
+      "videoId": "VPwMsu63PUU",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0wroq8oa1oub",
+      "title": "Eye of the tiger",
+      "videoId": "S-LO6dctBms",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0undjih430ej",
+      "title": "Baba O'Riley",
+      "videoId": "rIbMbXjbW98",
+      "event": "match_intro",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga068mzwh04jsj",
+      "title": "Baba O'Riley",
+      "videoId": "rIbMbXjbW98",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga090nn6xpxupk",
+      "title": "Black Betty",
+      "videoId": "wWk-uDrGxL0",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga07xmakhlivi8",
+      "title": "Smells Like Teen Spirit",
+      "videoId": "ljUtuoFt-8c",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0i3dq1rp0brn",
+      "title": "Whorehouse Blues",
+      "videoId": "xbd0p26-rr0",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0vigncvnuu7d",
+      "title": "Low - Flo Rida",
+      "videoId": "uUL8a7eJCk8",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0hi6r6ulf869",
+      "title": "Bad To The Bone",
+      "videoId": "8KciRaANKmo",
+      "event": "goal_away",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga040s24mu1cju",
+      "title": "Hate To Say I Told You So",
+      "videoId": "bL-hRknymbI",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0efdtcabc538",
+      "title": "Backseat Boogie - Airbourne",
+      "videoId": "K_SUM-9G7-k",
+      "event": "warmup",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga054jxy1fcna",
+      "title": "Backseat Boogie - Airbourne",
+      "videoId": "K_SUM-9G7-k",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0c9fzke3nrj",
+      "title": "Hail to the King",
+      "videoId": "MjwttGizNEs",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0ztd6x37p9h9",
+      "title": "Radar Love",
+      "videoId": "GyAvXV1NJNY",
+      "event": "intermission",
+      "startAt": 19,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0jl3nw0239o",
+      "title": "Figure It Out",
+      "videoId": "5idPf5Irfxk",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0j4pehf03lc",
+      "title": "Maniac (Flashdance)",
+      "videoId": "6GCNUeTFSbA",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0qdwcqta05xe",
+      "title": "Should I Stay Or Should I Go",
+      "videoId": "wjZMcWaniA4",
+      "event": "warmup",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga06u16137emmw",
+      "title": "Gimme All Your Lovin'",
+      "videoId": "tMhZizgTnj0",
+      "event": "warmup",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga02mot40n1f9m",
+      "title": "Yeah! - Usher",
+      "videoId": "XGXZOQ8yTU4",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga06cguapy7jdq",
+      "title": "You Could Be Mine",
+      "videoId": "DVzcQ4_khsM",
+      "event": "warmup",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0vpsy4wx5hfp",
+      "title": "You Could Be Mine",
+      "videoId": "DVzcQ4_khsM",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0yefxv1ycvz",
+      "title": "Are You Ready",
+      "videoId": "N5U8O81jtAg",
+      "event": "warmup",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0iddbsbjmhb",
+      "title": "Master of Puppets",
+      "videoId": "xnKhsTXoKCI",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga01fgipx0pflo",
+      "title": "Unstoppable",
+      "videoId": "_PBlykN4KIY",
+      "event": "warmup",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0lcbvodzowx",
+      "title": "Hockey Warm Up Mix (EDM)",
+      "videoId": "8QZwDkCQ060",
+      "event": "warmup",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga08bpbplvx6y",
+      "title": "Hockey Warm Up Mix (EDM/House)",
+      "videoId": "KLe7jC6Sl68",
+      "event": "warmup",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0lu6jdl73muh",
+      "title": "Down with the sickness",
+      "videoId": "iHGCJacleE4",
+      "event": "intermission",
+      "startAt": 21,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0f7hzpm6sbkk",
+      "title": "T.N.T",
+      "videoId": "NhsK5WExrnE",
+      "event": "match_intro",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga09pcj54ja9eu",
+      "title": "T.N.T",
+      "videoId": "NhsK5WExrnE",
+      "event": "warmup",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga03u9yrvlffmj",
+      "title": "T.N.T",
+      "videoId": "NhsK5WExrnE",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0jj2b4s4jey",
+      "title": "All We Do is Win",
+      "videoId": "sX9OAqlpjUY",
+      "event": "final",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0kyvxkkiiyst",
+      "title": "Timber - Pitbull & Kesha",
+      "videoId": "GcYF1xnmZTI",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0blkjltcgfoj",
+      "title": "Bohemian Rhapsody",
+      "videoId": "bSnlKl_PoQU",
+      "event": "box_home",
+      "startAt": 248,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga02awpqbz7po",
+      "title": "Blinding Lights",
+      "videoId": "J7p4bzqLvCw",
+      "event": "warmup",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0z05nczvs5me",
+      "title": "Blinding Lights",
+      "videoId": "J7p4bzqLvCw",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0e5i79f3v8hs",
+      "title": "One More Time",
+      "videoId": "wU26xVT_vBU",
+      "event": "warmup",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0zzx6ryjyb0r",
+      "title": "One More Time",
+      "videoId": "wU26xVT_vBU",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0i75p30eab8c",
+      "title": "Party Rock Anthem",
+      "videoId": "kmioyMNkgx4",
+      "event": "warmup",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0r7y0rifue3",
+      "title": "Party Rock Anthem",
+      "videoId": "kmioyMNkgx4",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0gajug0mhq9k",
+      "title": "It's My Life",
+      "videoId": "bY3vXr7fm8k",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0l36al36nzrm",
+      "title": "Stayin Alive",
+      "videoId": "z2qoihbzc3E",
+      "event": "goal_away",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0g0nbnya87e",
+      "title": "Played-A-Live",
+      "videoId": "o_ZBzGlYS6g",
+      "event": "intermission",
+      "startAt": 4,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0k74bdxb3z4",
+      "title": "Pedro",
+      "videoId": "5WXs6hzsuZs",
+      "event": "warmup",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0op0fel1nvbg",
+      "title": "Pedro",
+      "videoId": "5WXs6hzsuZs",
+      "event": "intermission",
+      "startAt": 25,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga07cjri9a217k",
+      "title": "Mwaki",
+      "videoId": "wr62oNJORAI",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga06rxzbaiailv",
+      "title": "Mwaki (chorus start)",
+      "videoId": "wr62oNJORAI",
+      "event": "intermission",
+      "startAt": 40,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0sxe5zxtcb3",
+      "title": "Wicked Game",
+      "videoId": "hHwYHn2mTpA",
+      "event": "final",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0fh9sqtus88u",
+      "title": "The Sound of Silence (CYRIL Remix)",
+      "videoId": "jwptCxZI6y4",
+      "event": "final",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0hn08kxlfad",
+      "title": "Don't You Worry Child",
+      "videoId": "3mWbRB3Y4R8",
+      "event": "intermission",
+      "startAt": 60,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga02h07ay6b2cp",
+      "title": "Save The World",
+      "videoId": "9TJGY8_22Kk",
+      "event": "goal_away",
+      "startAt": 35,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga07ou2dn48mt",
+      "title": "Antidote",
+      "videoId": "OPSnQzqDoec",
+      "event": "match_intro",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0be4oiypf49",
+      "title": "Antidote",
+      "videoId": "OPSnQzqDoec",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo4xlga0ld5zt8mwyw",
+      "title": "Scary Monsters and Nice Sprites",
+      "videoId": "WSeNSzJ2-Jw",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo6vxog1yi38hpxjwic",
+      "title": "Live is Life - Opus",
+      "videoId": "EGikhmjTSZI",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 64
+    },
+    {
+      "id": "mo6w4bcj2ifua4ciw4",
+      "title": "End of Beginning - Djo",
+      "videoId": "oXSw8DGjf5E",
+      "event": "final",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo6w5fyxjuc7e2owebl",
+      "title": "Abracadabra - Lady Gaga",
+      "videoId": "vBynw9Isr28",
+      "event": "intermission",
+      "startAt": 181,
+      "duration": 47
+    },
+    {
+      "id": "mo6waehl8wvzoaku75k",
+      "title": "Panama",
+      "videoId": "YRFKU6QvBJY",
+      "event": "warmup",
+      "startAt": 0,
+      "duration": 0
+    },
+    {
+      "id": "mo6waehl4po9xifckq",
+      "title": "Panama",
+      "videoId": "YRFKU6QvBJY",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 59
+    },
+    {
+      "id": "mo6wcj6oeg05eb0kz76",
+      "title": "Fight For Your Right to Party",
+      "videoId": "eBShN8qT4lk",
+      "event": "intermission",
+      "startAt": 32,
+      "duration": 108
+    },
+    {
+      "id": "mo6weepgyi1n72cmnaf",
+      "title": "Fortunate Son",
+      "videoId": "ZWijx_AgPiA",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 48
+    },
+    {
+      "id": "mo6whqw5g5ed9oz1nzs",
+      "title": "Livin on a Prayer - Bon Jovi",
+      "videoId": "lDK9QqIzhwk",
+      "event": "goal_home",
+      "startAt": 201,
+      "duration": 48
+    },
+    {
+      "id": "mo6wkaqaqsoa8uantef",
+      "title": "Don't Stop Believing - Journey",
+      "videoId": "1k8craCGpgs",
+      "event": "goal_home",
+      "startAt": 182,
+      "duration": 68
+    },
+    {
+      "id": "mo6wn7xe1ktf4nkrsqni",
+      "title": "Rollin' - Limp Bizkit",
+      "videoId": "RYnFIRc0k6E",
+      "event": "intermission",
+      "startAt": 25,
+      "duration": 53
+    },
+    {
+      "id": "mo6wqnqtrvieggo11q",
+      "title": "Ozzy Osbourne - Crazy Train",
+      "videoId": "tMDFv5m18Pw",
+      "event": "warmup",
+      "startAt": 0,
+      "duration": 88
+    },
+    {
+      "id": "mo6wqnqt6giyu89m0sp",
+      "title": "Ozzy Osbourne - Crazy Train",
+      "videoId": "tMDFv5m18Pw",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 88
+    },
+    {
+      "id": "mo6ws5enjkgkg6esdp",
+      "title": "Barracuda - Heart",
+      "videoId": "PeMvMNpvB5M",
+      "event": "intermission",
+      "startAt": 0,
+      "duration": 77
+    },
+    {
+      "id": "mo6wygds164f8b6sdxs",
+      "title": "WWE: The Game (Triple H)",
+      "videoId": "FM2WB0AyAjA",
+      "event": "match_intro",
+      "startAt": 0,
+      "duration": 0
+    }
+  ],
+  "globalConfig": {
+    "defaultDuration": 60,
+    "fadeDuration": 3,
+    "fadeInDuration": 2,
+    "announceFadeDuration": 5
+  },
+  "kbdConfig": {
+    "match_intro": "i",
+    "warmup": "w",
+    "intermission": "ArrowDown",
+    "final": "ö",
+    "goal_home": "g",
+    "goal_away": "c",
+    "pp_home": "p",
+    "box_home": "b",
+    "timeout": "t",
+    "hit": "h",
+    "maintenance": "m",
+    "__next": "ArrowRight",
+    "__replay": "ArrowLeft",
+    "__announce": "f"
+  },
+  "version": 7
+}
