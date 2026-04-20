@@ -2172,38 +2172,6 @@ function getCheckedEvents(containerId){
   return [...document.querySelectorAll(`#${containerId} input[type=checkbox]:checked`)].map(el=>el.value);
 }
 
-function addSong(){
-  const title=document.getElementById('new-title').value.trim();
-  const url=document.getElementById('new-url').value.trim();
-  const startAt=parseInt(document.getElementById('new-start').value)||0;
-  const duration=parseInt(document.getElementById('new-duration').value)||0;
-  const events=getCheckedEvents('new-event-checks');
-  if(!title){showToast('Enter a song title');return;}
-  if(!url){showToast('Enter a YouTube URL or video ID');return;}
-  if(!events.length){showToast('Select at least one event');return;}
-  const videoId=extractVideoId(url);
-  if(!videoId){showToast('Could not extract video ID — check the URL');return;}
-  // Create one entry per selected event
-  events.forEach(eid=>{
-    const isWarmup=eid==='warmup';
-    songs.push({
-      id:uid(),title,videoId,event:eid,
-      startAt: isWarmup?0:startAt,
-      duration: isWarmup?0:duration
-    });
-  });
-  // Invalidate queues for affected events
-  events.forEach(eid=>{delete eventQueues[eid];delete eventQueuePos[eid];});
-  save();renderSongTable();buildEventButtons();refreshAllPeeks();
-  document.getElementById('new-title').value='';
-  document.getElementById('new-url').value='';
-  document.getElementById('new-start').value='0';
-  document.getElementById('new-duration').value='0';
-  buildEventCheckboxes('new-event-checks',null);
-  const msg=document.getElementById('add-song-msg');
-  msg.textContent=`✓ Added ${events.length} entr${events.length===1?'y':'ies'}`;
-  setTimeout(()=>msg.textContent='',2500);
-}
 
 function deleteSong(id){
   const s=songs.find(x=>x.id===id);if(s){delete eventQueues[s.event];delete eventQueuePos[s.event];}
@@ -2705,7 +2673,6 @@ function loadDefaultSongs(){
 (function init(){
   load();checkWarning();checkAdsNotice();loadConfigUI();
   if(songs.length === 0) loadDefaultSongs();
-  buildEventCheckboxes('new-event-checks',null);
   buildKbdSettingsGrid();renderSongTable();buildEventButtons();refreshAllPeeks();
 })();
 
