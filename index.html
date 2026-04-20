@@ -916,10 +916,40 @@ input[type=number]{width:84px}
 .yt-api-key-input:focus{border-color:var(--ice-dim)}
 
 @media(max-width:640px){
-  .asm-panel{max-height:95vh;border-radius:8px}
-  .asm-player-wrap{margin:10px 12px 0;width:calc(100% - 24px)}
-  .asm-scrubber-section,.asm-form,.asm-pane{padding-left:12px;padding-right:12px}
-  .asm-actions{padding-left:12px;padding-right:12px}
+  /* Full-screen modal on mobile */
+  .asm-overlay{padding:0;align-items:flex-end}
+  .asm-panel{
+    max-height:95dvh;border-radius:14px 14px 0 0;
+    border-bottom:none;
+  }
+  /* Player: fixed 16:9 ratio, full width */
+  .asm-player-wrap{margin:10px 0 0;width:100%;border-radius:0}
+  /* Tighter padding on small screens */
+  .asm-scrubber-section,.asm-form{padding-left:14px;padding-right:14px}
+  .asm-pane{padding-left:14px;padding-right:14px}
+  .asm-actions{padding:10px 14px 14px;gap:8px}
+  .asm-actions .btn{flex:1;text-align:center}
+  /* Larger touch targets for scrubber handles */
+  .asm-scr-handle{width:18px;height:28px;border-radius:5px}
+  .asm-scrubber{height:32px}  /* bigger hit area */
+  /* Mark/loop buttons: equal width, full row */
+  .asm-mark-row{flex-wrap:wrap}
+  .asm-mark-btn{flex:1;min-width:0;font-size:10px;padding:7px 8px}
+  .asm-loop-btn{width:100%;order:3;font-size:10px;padding:7px 8px}
+  /* Results list: tighter thumbnails */
+  .asm-result-thumb{width:64px;height:36px}
+  .asm-result-title{font-size:12px}
+  /* Search row stacked on very narrow */
+  .asm-search-row{flex-direction:column}
+  .asm-search-row .btn{width:100%}
+  /* API key section visible on mobile too */
+  .kbd-section-mobile-hide.yt-api-section{display:block!important}
+  /* Scrubber labels smaller */
+  .asm-scrubber-labels{font-size:10px}
+}
+/* Make the YouTube API key section show on mobile for the add-song feature */
+@media(max-width:640px){
+  .asm-api-notice a{color:var(--amber);text-decoration:underline}
 }
 </style>
 </head>
@@ -1059,16 +1089,22 @@ input[type=number]{width:84px}
     <div class="song-cards" id="song-cards"></div>
   </div>
 
-  <div class="settings-section kbd-section-mobile-hide">
+  <div class="settings-section kbd-section-mobile-hide yt-api-section">
     <div class="settings-section-title">YouTube API Key</div>
-    <p style="font-family:var(--font-ui);font-size:12px;color:var(--text-muted);margin-bottom:8px">
-      Required for in-app YouTube search. Get a free key from
-      <a href="https://console.cloud.google.com/" target="_blank" style="color:var(--ice-dim)">Google Cloud Console</a>
-      → Enable "YouTube Data API v3" → Credentials → API Key.
-      Your key is stored locally and never sent anywhere except YouTube's API.
-    </p>
+    <div style="font-family:var(--font-ui);font-size:12px;color:var(--text-muted);margin-bottom:10px;line-height:1.7">
+      <div style="margin-bottom:6px">Required for in-app YouTube search. Free — no billing needed for typical use. Your key is stored locally, never sent anywhere except YouTube's own API.</div>
+      <div style="font-weight:700;color:var(--text);margin-bottom:4px">How to get your key:</div>
+      <ol style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:3px">
+        <li>Go to <a href="https://console.cloud.google.com/apis/library/youtube.googleapis.com" target="_blank" style="color:var(--ice-dim)">Google Cloud Console → YouTube Data API v3</a></li>
+        <li>Sign in with any Google account, then click <strong>Enable</strong></li>
+        <li>In the left sidebar go to <strong>APIs &amp; Services → Credentials</strong></li>
+        <li>Click <strong>+ Create Credentials → API key</strong></li>
+        <li>Copy the key (starts with <code style="background:var(--surface2);padding:1px 5px;border-radius:3px">AIza…</code>) and paste it below</li>
+        <li><em style="color:var(--text-muted)">Optional but recommended: click Edit API key → restrict it to "YouTube Data API v3" only</em></li>
+      </ol>
+    </div>
     <div class="yt-api-key-row">
-      <input type="password" id="yt-api-key-input" class="yt-api-key-input" placeholder="AIza…">
+      <input type="text" id="yt-api-key-input" class="yt-api-key-input" placeholder="AIza…" autocomplete="off" spellcheck="false">
       <button class="btn btn-primary" onclick="saveYtApiKey()">SAVE</button>
       <button class="btn btn-secondary" onclick="clearYtApiKey()">CLEAR</button>
     </div>
@@ -2933,10 +2969,8 @@ function asmStartHead(){
     try{t=asmPreviewPlayer.getCurrentTime()||0;}catch(e){return;}
     const pct=t/asmVideoDuration*100;
     document.getElementById('asm-scr-head').style.left=pct+'%';
-    // Loop enforcement: if playing past clip end, seek back to start
-    if(asmLoopOn&&t>=asmClipEnd-0.3){
-      try{asmPreviewPlayer.seekTo(asmClipStart,true);}catch(e){}
-    }
+    // No clip-end enforcement here — playback continues past the end marker freely.
+    // Loop (seek back to start) only triggers when the video naturally ends.
   },250);
 }
 function asmStopHead(){clearInterval(asmHeadTimer);asmHeadTimer=null;}
@@ -2945,7 +2979,7 @@ function asmStopLoop(){clearInterval(asmLoopTimer);asmLoopTimer=null;}
 function asmToggleLoop(){
   asmLoopOn=!asmLoopOn;
   const btn=document.getElementById('asm-loop-btn');
-  btn.textContent='🔁 Loop: '+(asmLoopOn?'ON':'OFF');
+  btn.textContent='🔁 Loop from Start: '+(asmLoopOn?'ON':'OFF');
   btn.classList.toggle('off',!asmLoopOn);
 }
 
@@ -3093,7 +3127,7 @@ if ('serviceWorker' in navigator) {
     <!-- SEARCH PANE -->
     <div class="asm-pane" id="asm-pane-search">
       <div class="asm-search-row">
-        <input type="text" id="asm-query" class="asm-query-input" placeholder="Search YouTube…" onkeydown="if(event.key==='Enter')asmDoSearch()">
+        <input type="text" id="asm-query" class="asm-query-input" placeholder="Search YouTube…" autocomplete="off" onkeydown="if(event.key==='Enter')asmDoSearch()">
         <button class="btn btn-primary" onclick="asmDoSearch()" id="asm-search-btn">SEARCH</button>
       </div>
       <div id="asm-api-key-notice" class="asm-api-notice" style="display:none">
@@ -3112,7 +3146,7 @@ if ('serviceWorker' in navigator) {
     <!-- PASTE URL PANE -->
     <div class="asm-pane" id="asm-pane-url" style="display:none">
       <div class="asm-search-row">
-        <input type="text" id="asm-paste-url" class="asm-query-input" placeholder="https://youtu.be/…  or video ID" onkeydown="if(event.key==='Enter')asmLoadFromUrl()">
+        <input type="text" id="asm-paste-url" class="asm-query-input" placeholder="https://youtu.be/…  or video ID" autocomplete="off" onkeydown="if(event.key==='Enter')asmLoadFromUrl()">
         <button class="btn btn-primary" onclick="asmLoadFromUrl()">LOAD</button>
       </div>
     </div>
@@ -3141,7 +3175,7 @@ if ('serviceWorker' in navigator) {
         </div>
         <div class="asm-mark-row">
           <button class="asm-mark-btn" onclick="asmMarkStart()" title="Set start to current playhead">⊙ Mark Start</button>
-          <button class="asm-loop-btn" id="asm-loop-btn" onclick="asmToggleLoop()" title="Loop clip">🔁 Loop: ON</button>
+          <button class="asm-loop-btn" id="asm-loop-btn" onclick="asmToggleLoop()" title="When the video ends, loop back to the start marker">🔁 Loop from Start: ON</button>
           <button class="asm-mark-btn" onclick="asmMarkEnd()" title="Set end to current playhead">⊙ Mark End</button>
         </div>
       </div>
@@ -3150,7 +3184,7 @@ if ('serviceWorker' in navigator) {
       <div class="asm-form">
         <div class="asm-form-row">
           <label class="asm-label">Title</label>
-          <input type="text" id="asm-title" class="asm-input" placeholder="Song title">
+          <input type="text" id="asm-title" class="asm-input" placeholder="Song title" autocomplete="off">
         </div>
         <div class="asm-form-row">
           <label class="asm-label">Assign to Events</label>
