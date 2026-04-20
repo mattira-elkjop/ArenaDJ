@@ -2758,14 +2758,19 @@ function openAddSongModal(){
   const modal=document.getElementById('add-song-modal');
   modal.classList.add('open');
   document.body.style.overflow='hidden';
-  // Show/hide API key notice
+  // Default tab: search if API key exists, paste URL otherwise
   const hasKey=!!getYtApiKey();
   document.getElementById('asm-api-key-notice').style.display=hasKey?'none':'block';
   // Build event checkboxes
   buildEventCheckboxes('asm-event-checks',null);
-  // Focus search input
-  setTimeout(()=>document.getElementById('asm-query').focus(),120);
-  asmSwitchTab('search');
+  // Open on the most useful tab for the user
+  if(hasKey){
+    asmSwitchTab('search');
+    setTimeout(()=>document.getElementById('asm-query').focus(),120);
+  } else {
+    asmSwitchTab('url');
+    setTimeout(()=>document.getElementById('asm-paste-url').focus(),120);
+  }
 }
 function closeAddSongModal(){
   document.getElementById('add-song-modal').classList.remove('open');
@@ -2869,11 +2874,32 @@ function fmtSec(s){
 }
 
 // ── Load from URL ──────────────────────────────────
-function asmLoadFromUrl(){
+async function asmLoadFromUrl(){
   const val=document.getElementById('asm-paste-url').value.trim();
   const vid=extractVideoId(val);
   if(!vid){showToast('Could not extract a YouTube video ID');return;}
-  asmSelectVideo(vid,'');
+
+  // Show preview immediately with empty title, then fetch title via oEmbed (no API key needed)
+  asmSelectVideo(vid,'Loading title…');
+
+  try{
+    const oEmbed=await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${vid}&format=json`);
+    if(oEmbed.ok){
+      const data=await oEmbed.json();
+      if(data.title){
+        asmCurrentTitle=data.title;
+        const titleEl=document.getElementById('asm-title');
+        // Only update if user hasn't already typed something
+        if(titleEl&&(titleEl.value===''||titleEl.value==='Loading title…')){
+          titleEl.value=data.title;
+        }
+      }
+    }
+  }catch(e){
+    // oEmbed failed silently — user can type title manually
+    const titleEl=document.getElementById('asm-title');
+    if(titleEl&&titleEl.value==='Loading title…')titleEl.value='';
+  }
 }
 
 // ── Select a video → show preview pane ────────────
