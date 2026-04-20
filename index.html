@@ -1126,37 +1126,48 @@ input[type=number]{width:84px}
 <div id="help-page" class="page">
   <div class="help-body">
     <div class="help-title">ARENA DJ</div>
-    <div class="help-version">Quick Start Guide · Version 6</div>
+    <div class="help-version">Quick Start Guide · Version 7</div>
 
     <div class="help-section">
       <div class="help-h2">What is Arena DJ?</div>
-      <p>Arena DJ is a browser-based music controller designed for ice hockey (and other sports) arena environments. It lets you assign music playlists to specific game events — goals, power plays, intermissions and more — and trigger them with a single button click or keyboard shortcut, with automatic fade-in, fade-out, and shuffle between songs.</p>
-
+      <p>Arena DJ is a browser-based music controller for ice hockey (and other sports) arenas. Assign YouTube music to specific game events — goals, power plays, intermissions and more — then trigger them with a single button tap or keyboard shortcut. Songs shuffle automatically with configurable fade-in and fade-out.</p>
     </div>
 
     <div class="help-section">
       <div class="help-h2">YouTube Ads &amp; Best Playback Setup</div>
-      <p>Arena DJ streams audio via the YouTube player. YouTube may play ads before songs start if you are not signed in to a Google account, or do not have <strong>YouTube Premium</strong>.</p>
+      <p>Arena DJ streams audio via the hidden YouTube player. YouTube may play ads before songs if you are not signed in or do not have <strong>YouTube Premium</strong>.</p>
       <div class="help-tip" style="border-color:rgba(58,123,213,.4);background:rgba(13,26,42,.6);color:#8ab4f8">
-        <strong style="color:#aecbfa">There is no way to skip or suppress YouTube ads programmatically.</strong>
-        For uninterrupted arena use, choose one of the following:
+        <strong style="color:#aecbfa">Ads cannot be skipped or suppressed programmatically.</strong>
+        For uninterrupted arena use:
         <ul style="margin-top:8px;margin-bottom:0;padding-left:18px">
-          <li><strong style="color:#aecbfa">Best:</strong> Sign in to YouTube in this browser and have an active <strong style="color:#aecbfa">YouTube Premium</strong> subscription — no ads anywhere, including embeds.</li>
-          <li><strong style="color:#aecbfa">Good:</strong> Use a browser with an ad blocker extension installed (uBlock Origin, AdGuard, etc.).</li>
-          <li><strong style="color:#aecbfa">Note:</strong> The YouTube player in Arena DJ is hidden (audio only), so visual ads won't clutter your screen — but audio ads will still be audible over the PA system if they play.</li>
+          <li><strong style="color:#aecbfa">Best:</strong> Sign in to YouTube in this browser with an active <strong style="color:#aecbfa">YouTube Premium</strong> subscription.</li>
+          <li><strong style="color:#aecbfa">Good:</strong> Use a browser with an ad blocker (uBlock Origin, AdGuard, etc.).</li>
+          <li><strong style="color:#aecbfa">Note:</strong> The YouTube player is hidden (audio only) — visual ads won't show, but audio ads will play over the PA if they occur.</li>
         </ul>
       </div>
-      <p>You can sign in to YouTube at any time by clicking <strong>Sign in to YouTube ↗</strong> in the notice banner at the top of the app, then reload the page.</p>
+      <p>Sign in to YouTube at any time via the notice banner at the top of the app.</p>
     </div>
 
     <div class="help-section">
       <div class="help-h2">Getting Started</div>
-      <div class="help-h3">1 — Add Songs (Settings → Song Library)</div>
-      <p>Each song needs a YouTube URL, a title, at least one event assignment, and optionally a <strong>Start At</strong> (skip intro) and <strong>Play Duration</strong> (how long to play before auto-advancing). You can assign a single song to multiple events at once — it creates a separate entry per event, so you can later set different start times and durations for each.</p>
+      <div class="help-h3">1 — Add Songs (Settings → Song Library → + ADD SONG)</div>
+      <p>Click <strong>+ ADD SONG</strong> to open the song browser. You can either search YouTube directly (requires a free API key — see Settings → YouTube API Key) or paste any YouTube URL. Once a video loads, use the <strong>clip scrubber</strong> to set exactly where the song starts and ends, then assign it to one or more events and click <strong>+ ADD TO LIBRARY</strong>.</p>
       <div class="help-h3">2 — Set Defaults (Settings → Global Defaults)</div>
-      <p>Set how long songs play before advancing (<strong>Default Play Duration</strong>), how long the fade-out lasts, and how long the fade-in takes when a song starts. Per-song durations override the global default.</p>
+      <p>Set how long songs play before auto-advancing (<strong>Default Play Duration</strong> — used for any song without an explicit clip end set), fade-out and fade-in durations, and the <strong>Announcement Fade</strong> duration. Per-song clip times override the global default.</p>
       <div class="help-h3">3 — Go Live</div>
-      <p>Switch to the <strong>Live</strong> tab. Press any event button to start playing a shuffled song from that event's pool. The <strong>Now Playing</strong> bar at the top shows what's playing across all pages.</p>
+      <p>Switch to the <strong>Live</strong> tab. Press any event button to start playing. The <strong>Now Playing</strong> bar at the top is always visible across all pages.</p>
+    </div>
+
+    <div class="help-section">
+      <div class="help-h2">Adding Songs — Clip Scrubber</div>
+      <p>When previewing a song in the Add Song modal, the clip scrubber lets you define exactly what part of the video will play in the arena:</p>
+      <ul>
+        <li><strong>Cyan handle (left)</strong> — start position. Drag to set, or play to the right moment and click <strong>⊙ Mark Start</strong>.</li>
+        <li><strong>Amber handle (right)</strong> — end position. Same — drag or use <strong>⊙ Mark End</strong>.</li>
+        <li><strong>Loop from Start</strong> — when ON, playback loops back to your start marker when the video ends, so you can keep listening while finding the right end point.</li>
+        <li>Click anywhere on the scrubber track to seek the player to that position.</li>
+      </ul>
+      <p>If you leave the end handle at the very end of the video, the song will use the <strong>Default Play Duration</strong> from Global Defaults for auto-advance timing.</p>
     </div>
 
     <div class="help-section">
@@ -1164,63 +1175,69 @@ input[type=number]{width:84px}
       <div class="help-h3">Event Button Zones</div>
       <p>Each button has three clickable zones:</p>
       <ul>
-        <li><strong>Left edge (↺)</strong> — Replays the current song from its configured start time.</li>
+        <li><strong>Left edge (↺)</strong> — Replay the current song from its start time.</li>
         <li><strong>Middle</strong> — Play / Pause / Resume toggle for that event.</li>
-        <li><strong>Right edge (⏭)</strong> — Skips to the next song in that event's queue immediately.</li>
+        <li><strong>Right edge (⏭)</strong> — Skip to the next song immediately.</li>
       </ul>
       <div class="help-h3">Up Next</div>
-      <p>The bottom strip of every button shows the next song queued for that event. Click <strong>⟳</strong> to re-roll it to a different random song without affecting playback.</p>
+      <p>The bottom strip shows the next queued song. Click <strong>⟳</strong> to re-roll to a different random song without affecting what's currently playing.</p>
       <div class="help-h3">Keyboard Shortcuts</div>
       <div class="help-kbd-grid" id="help-kbd-grid"></div>
-      <p>Shortcuts can be customised in Settings. <kbd>SPACE</kbd> is always global play/pause for the last active event.</p>
+      <p>All shortcuts can be customised in Settings → Keyboard Shortcuts. <kbd>SPACE</kbd> is always reserved for play/pause. The three Global Actions (Next Song, Replay, Announcement Fade) are also configurable and support modifier combinations like <kbd>Ctrl+→</kbd>.</p>
+    </div>
+
+    <div class="help-section">
+      <div class="help-h2">Announcement Fade</div>
+      <p>Press the <strong>Announcement Fade</strong> shortcut (default: <kbd>F</kbd>) to slowly fade the music out over a configurable number of seconds (default: 8s), then pause. This gives a smooth, professional transition before a PA announcement. Press <kbd>SPACE</kbd> afterwards to resume from where it stopped.</p>
+      <p>The fade duration can be adjusted in Settings → Global Defaults → <strong>Announcement Fade</strong>.</p>
     </div>
 
     <div class="help-section">
       <div class="help-h2">Now Playing Bar</div>
-      <p>The bar at the top is always visible, even on the Settings page. It shows the current song, event, and a <strong>scrubber</strong> you can interact with:</p>
+      <p>Always visible at the top of every page. Shows the current song, event, and a full-width scrubber:</p>
       <ul>
-        <li><strong>Click or drag</strong> anywhere on the track to seek to that position in the video.</li>
-        <li>The <strong>lighter shaded area</strong> represents the configured active window (start → end) within the full video.</li>
-        <li>The <strong>amber handle</strong> (⬜) on the right edge of the window marks the configured end time. <strong>Drag it</strong> left or right to temporarily shorten or extend how long the current song plays — this does not change your saved settings.</li>
-        <li>The time labels show: elapsed in window · window range in video · total video length.</li>
+        <li><strong>Click or drag</strong> the track to seek.</li>
+        <li>The <strong>highlighted zone</strong> shows the configured clip window (start → end).</li>
+        <li>The <strong>amber handle</strong> on the right edge of the window marks the end time — drag it to temporarily extend or shorten the current song without changing saved settings.</li>
+        <li>Time labels show: elapsed · clip window range · total video length.</li>
       </ul>
     </div>
 
     <div class="help-section">
       <div class="help-h2">Song Library</div>
-      <div class="help-h3">Search</div>
-      <p>Type in the search box to filter songs by title in real time.</p>
-      <div class="help-h3">Filter by Event</div>
-      <p>Click <strong>Filter by Event</strong> to open a dropdown and select one or more events. Only songs assigned to those events will be shown. A badge shows how many filters are active.</p>
-      <div class="help-h3">Sort</div>
-      <p>Click the <strong>⇅</strong> sort button or the <strong>Title</strong> column header to toggle between alphabetical (A→Z / Z→A) and date-added order.</p>
-      <div class="help-h3">Editing a Song</div>
-      <p>Click <strong>✎ EDIT</strong> on any row to edit it inline. You can change the title, URL/video ID, event, start time, and play duration without deleting and re-adding.</p>
+      <div class="help-h3">Searching &amp; Filtering</div>
+      <p>Use the search box to filter by title in real time. Use <strong>Filter by Event</strong> to show only songs for specific events. Click <strong>⇅</strong> or the Title column header to toggle sort order.</p>
+      <div class="help-h3">Editing</div>
+      <p>Click <strong>✎ EDIT</strong> on any row to edit inline — title, URL/video ID, event, start time, and duration — without deleting and re-adding.</p>
       <div class="help-h3">One Song, Multiple Events</div>
-      <p>When adding a song you can tick multiple events. A separate entry is created per event, so each can have its own start time and duration. Edit them individually afterwards if needed.</p>
+      <p>When adding a song you can select multiple events. A separate entry is created per event, so each can have its own clip times. Edit them individually afterwards if needed.</p>
+    </div>
+
+    <div class="help-section">
+      <div class="help-h2">YouTube API Key</div>
+      <p>The in-app YouTube search requires a free API key from Google. Without one, you can still add songs by pasting a YouTube URL directly. To set up search, go to <strong>Settings → YouTube API Key</strong> and follow the step-by-step instructions there.</p>
     </div>
 
     <div class="help-section">
       <div class="help-h2">Import &amp; Export</div>
-      <p>Use <strong>Export .JSON</strong> to save a complete backup of all your songs, settings, and keyboard shortcuts to a file. Use <strong>Import .JSON</strong> to restore it on the same or a different computer.</p>
-      <p>Files from older versions of Arena DJ are automatically migrated when imported — you will see a notification if migration occurred.</p>
-      <div class="help-tip"><strong>Tip:</strong> Export a backup before making large changes to your song library.</div>
+      <p>Use <strong>Export .JSON</strong> to save a full backup of your songs, settings, and shortcuts. Use <strong>Import .JSON</strong> to restore on the same or a different device. Files from older versions are migrated automatically.</p>
+      <div class="help-tip"><strong>Tip:</strong> Export a backup before making large changes to your library.</div>
     </div>
 
     <div class="help-section">
       <div class="help-h2">Event Reference</div>
       <ul>
         <li><strong>Match Intro</strong> — Players entering the ice, up to puck drop.</li>
-        <li><strong>Warm-Ups</strong> — Pre-game warmup and between-period music. Always plays the <em>full song</em> from beginning to end — no start time or duration settings apply.</li>
+        <li><strong>Warm-Ups</strong> — Pre-game and between-period music. Always plays the <em>full song</em> — start time and duration settings do not apply.</li>
+        <li><strong>Intermission</strong> — Mid-game stoppages. Uses clip start and duration settings.</li>
+        <li><strong>Game Over</strong> — Final horn, end of game.</li>
         <li><strong>Goal — Home</strong> — Home team scores.</li>
         <li><strong>Goal — Away</strong> — Away team scores.</li>
         <li><strong>Power Play</strong> — Home team on power play (opponent penalised).</li>
         <li><strong>Box Play</strong> — Home team short-handed (own player penalised).</li>
         <li><strong>Timeout</strong> — Either team calls timeout.</li>
         <li><strong>Hard Hit</strong> — Big body check moment.</li>
-        <li><strong>Intermission</strong> — Mid-game stoppages (broken glass, ice maintenance, etc.). Uses configured start times and durations.</li>
         <li><strong>Maintenance</strong> — Play stopped for ice or board repair.</li>
-        <li><strong>Game Over</strong> — Final horn, end of game.</li>
       </ul>
     </div>
   </div>
@@ -2184,6 +2201,8 @@ function loadConfigUI(){
   document.getElementById('cfg-default-duration').value=globalConfig.defaultDuration;
   document.getElementById('cfg-fade-duration').value=globalConfig.fadeDuration;
   document.getElementById('cfg-fadein-duration').value=(globalConfig.fadeInDuration??2);
+  const annEl=document.getElementById('cfg-announce-duration');if(annEl)annEl.value=globalConfig.announceFadeDuration??8;
+  updateApiKeyStatus();
 }
 
 // ══════════════════════════════════════════════════
@@ -2709,7 +2728,7 @@ function loadDefaultSongs(){
 (function init(){
   load();checkWarning();checkAdsNotice();loadConfigUI();
   if(songs.length === 0) loadDefaultSongs();
-  buildKbdSettingsGrid();renderSongTable();buildEventButtons();refreshAllPeeks();
+  buildKbdSettingsGrid();buildKbdHintStrip();renderSongTable();buildEventButtons();refreshAllPeeks();
 })();
 
 
@@ -2747,8 +2766,10 @@ function updateApiKeyStatus(){
   const key=getYtApiKey();
   const input=document.getElementById('yt-api-key-input');
   const status=document.getElementById('yt-api-key-status');
-  if(input&&key)input.value=key.slice(0,8)+'…';
-  if(status)status.textContent=key?'✓ Key configured — search is available':'No key set — URL paste still works';
+  // Never put the key back into the input — it would get overwritten on next Save
+  // Instead keep the input blank and show status below
+  if(input&&!input.matches(':focus'))input.value='';
+  if(status)status.textContent=key?'✓ Key saved ('+key.slice(0,8)+'…) — search is available. Paste a new key above to replace it.':'No key set — URL paste still works without one.';
   if(status)status.style.color=key?'var(--green)':'var(--text-muted)';
 }
 function asmSwitchToApiKeySetting(){closeAddSongModal();switchPage('settings');}
@@ -2776,7 +2797,12 @@ function closeAddSongModal(){
   document.getElementById('add-song-modal').classList.remove('open');
   document.body.style.overflow='';
   asmStopLoop();asmStopHead();
-  // Stop preview player but keep it alive
+  // Reset all modal state so reopening starts clean
+  document.getElementById('asm-preview-pane').style.display='none';
+  document.getElementById('asm-title').value='';
+  document.getElementById('asm-paste-url').value='';
+  asmCurrentVideoId=null;asmCurrentTitle='';
+  asmVideoDuration=0;asmClipStart=0;asmClipEnd=0;
   if(asmPreviewPlayer&&asmPreviewReady){
     try{asmPreviewPlayer.stopVideo();}catch(e){}
   }
@@ -2791,8 +2817,14 @@ function asmSwitchTab(tab){
   document.getElementById('asm-pane-url').style.display=tab==='url'?'block':'none';
   document.getElementById('asm-tab-search').classList.toggle('active',tab==='search');
   document.getElementById('asm-tab-url').classList.toggle('active',tab==='url');
-  if(tab==='url')setTimeout(()=>document.getElementById('asm-paste-url').focus(),80);
-  else setTimeout(()=>document.getElementById('asm-query').focus(),80);
+  // Re-evaluate API key notice each time the search tab is shown
+  if(tab==='search'){
+    const hasKey=!!getYtApiKey();
+    document.getElementById('asm-api-key-notice').style.display=hasKey?'none':'block';
+    setTimeout(()=>document.getElementById('asm-query').focus(),80);
+  } else {
+    setTimeout(()=>document.getElementById('asm-paste-url').focus(),80);
+  }
 }
 
 // ── Search ─────────────────────────────────────────
@@ -3079,6 +3111,8 @@ function asmMarkEnd(){
 function asmBackToSearch(){
   document.getElementById('asm-preview-pane').style.display='none';
   asmStopHead();
+  asmCurrentVideoId=null;asmCurrentTitle='';
+  asmVideoDuration=0;asmClipStart=0;asmClipEnd=0;
   try{asmPreviewPlayer.stopVideo();}catch(e){}
 }
 
