@@ -642,9 +642,9 @@ kbd{background:var(--surface2);border:1px solid var(--border);border-radius:3px;
   overflow:unset !important;
   display:flex !important;
   flex-direction:column !important;
-  background:#1a1f2b !important;
-  border:1px solid #2e3545 !important;
-  box-shadow:0 12px 40px rgba(0,0,0,.9),0 2px 8px rgba(0,0,0,.6) !important;
+  background:#12151e !important;
+  border:1px solid #3a4255 !important;
+  box-shadow:0 12px 40px rgba(0,0,0,.95),0 2px 12px rgba(0,0,0,.8) !important;
   border-radius:9px !important;
   z-index:9999 !important;
 }
@@ -655,9 +655,9 @@ kbd{background:var(--surface2);border:1px solid var(--border);border-radius:3px;
 /* The list scrolls, capped at 320px — panel grows to fit header+search+list */
 .up-next-dropdown.is-desktop-popup .und-list{
   overflow-y:auto !important;
-  max-height:320px !important;
   min-height:40px !important;
   border-radius:0 0 9px 9px;
+  /* max-height set dynamically by JS based on available space above */
 }
 .up-next-dropdown.is-desktop-popup .und-search-wrap{
   display:block;flex-shrink:0;
@@ -2099,17 +2099,20 @@ function toggleUpNextDropdown(eid){
     left = Math.max(margin, Math.min(left, vpW - panelW - margin));
 
     // Prefer opening above; fall back to below
-    const approxH = Math.min(420, songs.filter(s=>s.event===eid).length * 42 + 100);
-    let top;
-    if(rect.top - approxH - 8 >= 0){
-      top = rect.top - approxH - 8;
-    } else {
-      top = rect.bottom + 8;
-    }
-    top = Math.max(margin, Math.min(top, vpH - approxH - margin));
+    // Always open upward from the strip.
+    // Cap the list height so the panel fits in the space above the strip.
+    const headerH   = 42;   // und-header approx height
+    const searchH   = 50;   // und-search-wrap approx height
+    const spaceAbove = rect.top - margin; // available px above the strip
+    const maxListH  = Math.max(80, spaceAbove - headerH - searchH - 8);
+    const listEl = dd.querySelector('.und-list');
+    if(listEl) listEl.style.maxHeight = maxListH + 'px';
+
+    const panelH = Math.min(spaceAbove - 8, headerH + searchH + maxListH);
+    const top    = rect.top - panelH - 8;
 
     dd.style.left = left + 'px';
-    dd.style.top  = top  + 'px';
+    dd.style.top  = Math.max(margin, top) + 'px';
 
     dd.classList.add('open');
     setTimeout(()=>{ if(searchEl)searchEl.focus(); },80);
