@@ -2264,7 +2264,7 @@ function clearKbdInput(id){
 }
 
 function buildKbdSettingsGrid(){
-  const tbody=document.getElementById('kbd-tbody');tbody.innerHTML='';
+  const tbody=document.getElementById('kbd-tbody');if(!tbody)return;
   // Section: Event triggers
   const hdrEvent=document.createElement('tr');
   hdrEvent.innerHTML='<td colspan="2" class="kbd-section-header">Event Triggers</td>';
@@ -2742,25 +2742,27 @@ let asmCurrentTitle  = '';
 // ── API key helpers ────────────────────────────────
 function getYtApiKey(){return localStorage.getItem('arenaDJ_ytApiKey')||'';}
 function saveYtApiKey(){
-  const val=document.getElementById('yt-api-key-input').value.trim();
+  const input_el=document.getElementById('yt-api-key-input');if(!input_el)return;
+  const val=input_el.value.trim();
   if(!val){showToast('Enter a key first');return;}
   localStorage.setItem('arenaDJ_ytApiKey',val);
   updateApiKeyStatus();updateApiKeyHint();showToast('✓ YouTube API key saved');
 }
 function clearYtApiKey(){
   localStorage.removeItem('arenaDJ_ytApiKey');
-  document.getElementById('yt-api-key-input').value='';
+  const clr=document.getElementById('yt-api-key-input');if(clr)clr.value='';
   updateApiKeyStatus();updateApiKeyHint();showToast('API key cleared');
 }
 function updateApiKeyStatus(){
   const key=getYtApiKey();
+  // These elements only exist when the API key modal is open
   const input=document.getElementById('yt-api-key-input');
   const status=document.getElementById('yt-api-key-status');
-  // Never put the key back into the input — it would get overwritten on next Save
-  // Instead keep the input blank and show status below
   if(input&&!input.matches(':focus'))input.value='';
-  if(status)status.textContent=key?'✓ Key saved ('+key.slice(0,8)+'…) — search is available. Paste a new key above to replace it.':'No key set — URL paste still works without one.';
-  if(status)status.style.color=key?'var(--green)':'var(--text-muted)';
+  if(status){
+    status.textContent=key?'✓ Key saved ('+key.slice(0,8)+'…) — search is available. Paste a new key above to replace it.':'No key set — URL paste still works without one.';
+    status.style.color=key?'var(--green)':'var(--text-muted)';
+  }
 }
 function asmSwitchToApiKeySetting(){closeAddSongModal();switchPage('settings');setTimeout(openApiKeyModal,80);}
 
