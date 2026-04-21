@@ -633,32 +633,35 @@ kbd{background:var(--surface2);border:1px solid var(--border);border-radius:3px;
 }
 .up-next-dropdown.open{display:block}
 
-/* Desktop: fixed-position panel, much wider than the button */
-@media(min-width:641px){
-  .up-next-dropdown{
-    position:fixed;
-    width:380px;
-    max-height:420px;
-    box-shadow:0 8px 32px rgba(0,0,0,.7),0 2px 8px rgba(0,0,0,.4);
-    border-radius:9px;
-    display:none;
-  }
-  .up-next-dropdown.open{display:flex;flex-direction:column;}
-  .und-search-wrap{
-    display:block;
-    padding:8px 10px;
-    border-bottom:1px solid var(--border);
-    background:var(--surface);
-  }
-  .und-search{
-    width:100%;background:var(--surface2);border:1px solid var(--border);
-    border-radius:5px;color:var(--text);font-family:var(--font-body);
-    font-size:13px;padding:7px 10px;outline:none;box-sizing:border-box;
-  }
-  .und-search:focus{border-color:var(--ice-dim)}
-  .und-list{overflow-y:auto;flex:1;min-height:0}
-  .und-item{font-size:12px;padding:7px 10px}
+/* Desktop dropdown — styles applied when .is-desktop-popup class is added by JS */
+.up-next-dropdown.is-desktop-popup{
+  position:fixed !important;
+  width:380px !important;
+  max-height:420px !important;
+  height:auto !important;
+  overflow:visible !important;
+  display:flex !important;
+  flex-direction:column !important;
+  box-shadow:0 8px 32px rgba(0,0,0,.8),0 2px 8px rgba(0,0,0,.5) !important;
+  border-radius:9px !important;
+  z-index:9999 !important;
 }
+.up-next-dropdown.is-desktop-popup .und-search-wrap{
+  display:block;flex-shrink:0;
+  padding:8px 10px;
+  border-bottom:1px solid var(--border);
+  background:var(--surface);
+}
+.up-next-dropdown.is-desktop-popup .und-search{
+  width:100%;background:var(--surface2);border:1px solid var(--border);
+  border-radius:5px;color:var(--text);font-family:var(--font-body);
+  font-size:13px;padding:7px 10px;outline:none;box-sizing:border-box;
+}
+.up-next-dropdown.is-desktop-popup .und-search:focus{border-color:var(--ice-dim)}
+.up-next-dropdown.is-desktop-popup .und-list{
+  overflow-y:auto;flex:1;min-height:100px;max-height:340px;
+}
+.up-next-dropdown.is-desktop-popup .und-item{font-size:13px;padding:8px 12px}
 .und-header{
   display:flex;align-items:center;justify-content:space-between;
   padding:6px 10px;
@@ -2062,33 +2065,42 @@ function toggleUpNextDropdown(eid){
     backdrop.classList.add('open');
     setTimeout(()=>{ if(searchEl)searchEl.focus(); },200);
   } else {
-    // Desktop: fixed position panel, computed from the strip's screen coordinates
-    const strip=dd.closest('.up-next-strip');
-    const rect=strip ? strip.getBoundingClientRect() : dd.getBoundingClientRect();
-    const panelW=380;
-    const margin=8;
-    const vpW=window.innerWidth;
+    // Desktop: move dropdown to body so it's free of all parent CSS constraints
+    const strip = dd.closest('.up-next-strip');
+    const rect  = strip ? strip.getBoundingClientRect() : {left:0,right:0,top:0,bottom:0,width:0};
 
-    // Centre the panel on the strip, clamped inside viewport
-    let left=rect.left + rect.width/2 - panelW/2;
-    left=Math.max(margin, Math.min(left, vpW - panelW - margin));
-
-    // Open above the strip; if not enough room above, open below
-    const panelH=Math.min(420, songs.filter(s=>s.event===eid).length * 38 + 80);
-    let top;
-    if(rect.top - panelH - 8 > 0){
-      top = rect.top - panelH - 8;   // above
-    } else {
-      top = rect.bottom + 8;          // below
+    // Move to body if not already there; remember original parent for restore
+    if(dd.parentElement !== document.body){
+      dd._origParent = dd.parentElement;
+      document.body.appendChild(dd);
     }
+    dd.classList.add('is-desktop-popup');
 
-    dd.style.left  = left + 'px';
-    dd.style.top   = top  + 'px';
-    dd.style.width = panelW + 'px';
+    const panelW = 380;
+    const margin = 8;
+    const vpW    = window.innerWidth;
+    const vpH    = window.innerHeight;
+
+    // Centre horizontally on the strip, clamped to viewport
+    let left = rect.left + rect.width / 2 - panelW / 2;
+    left = Math.max(margin, Math.min(left, vpW - panelW - margin));
+
+    // Prefer opening above; fall back to below
+    const approxH = Math.min(420, songs.filter(s=>s.event===eid).length * 42 + 100);
+    let top;
+    if(rect.top - approxH - 8 >= 0){
+      top = rect.top - approxH - 8;
+    } else {
+      top = rect.bottom + 8;
+    }
+    top = Math.max(margin, Math.min(top, vpH - approxH - margin));
+
+    dd.style.left = left + 'px';
+    dd.style.top  = top  + 'px';
+
+    dd.classList.add('open');
     setTimeout(()=>{ if(searchEl)searchEl.focus(); },80);
   }
-
-  dd.classList.add('open');
 }
 
 // ── Swipe gesture for event buttons (mobile) ──────
@@ -2153,7 +2165,13 @@ function selectNextSong(eid, songId){
 function closeAllDropdowns(){
   document.querySelectorAll('.up-next-dropdown.open').forEach(d=>{
     d.classList.remove('open');
+    d.classList.remove('is-desktop-popup');
     d.style.left=''; d.style.top=''; d.style.width='';
+    // Return to original parent if it was moved to body
+    if(d._origParent && d.parentElement===document.body){
+      d._origParent.appendChild(d);
+      d._origParent=null;
+    }
   });
   const backdrop=document.getElementById('und-backdrop');
   if(backdrop)backdrop.classList.remove('open');
