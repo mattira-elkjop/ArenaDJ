@@ -3,8 +3,8 @@
   "shortName": "SPO",
   "colors": {
     "primary": "#d71018",
-    "primaryDim": "#ffffff",
-    "secondary": "#000000"
+    "primaryDim": "#000000",
+    "secondary": "#ffffff"
   },
   "logoUrl": "./teams/vaasansport.png"
 }
