@@ -633,48 +633,51 @@ kbd{background:var(--surface2);border:1px solid var(--border);border-radius:3px;
 }
 .up-next-dropdown.open{display:block}
 
-/* Desktop dropdown — styles applied when .is-desktop-popup class is added by JS */
+/* Desktop dropdown popup */
 .up-next-dropdown.is-desktop-popup{
   position:fixed !important;
   width:380px !important;
-  /* No max-height or overflow on the panel — let it size to content */
   height:auto !important;
-  overflow:unset !important;
   display:flex !important;
   flex-direction:column !important;
-  background:#12151e !important;
+  overflow:hidden !important;
+  background:#0e1118 !important;
   border:1px solid #3a4255 !important;
-  box-shadow:0 12px 40px rgba(0,0,0,.95),0 2px 12px rgba(0,0,0,.8) !important;
+  box-shadow:0 12px 40px rgba(0,0,0,.97),0 2px 12px rgba(0,0,0,.9) !important;
   border-radius:9px !important;
   z-index:9999 !important;
 }
-/* Clip corners on header and search without clipping the list */
 .up-next-dropdown.is-desktop-popup .und-header{
+  flex-shrink:0;
+  background:#0e1118;
+  border-bottom:1px solid #2a3040;
   border-radius:9px 9px 0 0;
-}
-/* The list scrolls, capped at 320px — panel grows to fit header+search+list */
-.up-next-dropdown.is-desktop-popup .und-list{
-  overflow-y:auto !important;
-  min-height:40px !important;
-  border-radius:0 0 9px 9px;
-  /* max-height set dynamically by JS based on available space above */
 }
 .up-next-dropdown.is-desktop-popup .und-search-wrap{
   display:block;flex-shrink:0;
   padding:8px 10px;
-  border-bottom:1px solid var(--border);
-  background:var(--surface);
+  background:#0e1118;
+  border-bottom:1px solid #2a3040;
 }
 .up-next-dropdown.is-desktop-popup .und-search{
-  width:100%;background:var(--surface2);border:1px solid var(--border);
+  width:100%;background:#1c2130;border:1px solid #3a4255;
   border-radius:5px;color:var(--text);font-family:var(--font-body);
   font-size:13px;padding:7px 10px;outline:none;box-sizing:border-box;
 }
 .up-next-dropdown.is-desktop-popup .und-search:focus{border-color:var(--ice-dim)}
 .up-next-dropdown.is-desktop-popup .und-list{
-  overflow-y:auto;flex:1;min-height:100px;max-height:340px;
+  overflow-y:scroll !important;
+  flex:1 !important;
+  background:#0e1118 !important;
+  /* max-height set dynamically by JS */
 }
-.up-next-dropdown.is-desktop-popup .und-item{font-size:13px;padding:8px 12px}
+.up-next-dropdown.is-desktop-popup .und-item{
+  font-size:13px;padding:8px 12px;
+  background:#0e1118;
+  border-bottom:1px solid #1a2030;
+}
+.up-next-dropdown.is-desktop-popup .und-item:hover{background:#1c2535 !important}
+.up-next-dropdown.is-desktop-popup .und-item.is-next{background:#112035 !important}
 .und-header{
   display:flex;align-items:center;justify-content:space-between;
   padding:6px 10px;
@@ -2110,19 +2113,19 @@ function toggleUpNextDropdown(eid){
     const overhead = headerH + searchH + 8;
 
     // Maximum list height = full usable area minus overhead, capped at 360px
-    const maxListH = Math.min(360, areaBot - areaTop - overhead);
-    const listEl   = dd.querySelector('.und-list');
-    if(listEl) listEl.style.maxHeight = Math.max(80, maxListH) + 'px';
+    const maxListH = Math.min(360, Math.max(80, areaBot - areaTop - overhead));
+    const panelH   = overhead + maxListH;
 
-    const panelH = overhead + Math.max(80, maxListH);
+    // Set explicit height on panel and list so flex+overflow:hidden works
+    dd.style.height    = panelH + 'px';
+    dd.style.maxHeight = panelH + 'px';
+    const listEl = dd.querySelector('.und-list');
+    if(listEl) listEl.style.maxHeight = maxListH + 'px';
 
-    // Open upward from strip if space allows, else as high as possible
+    // Position: open upward from the strip, clamped to usable area
     let top = rect.top - panelH - 8;
-    // Clamp so panel never goes above the usable area top
     top = Math.max(areaTop, top);
-    // If panel would extend below the strip, shift it up
     if(top + panelH > areaBot) top = areaBot - panelH;
-    // Final clamp
     top = Math.max(areaTop, top);
 
     dd.style.left = left + 'px';
@@ -2196,7 +2199,8 @@ function closeAllDropdowns(){
   document.querySelectorAll('.up-next-dropdown.open').forEach(d=>{
     d.classList.remove('open');
     d.classList.remove('is-desktop-popup');
-    d.style.left=''; d.style.top=''; d.style.width='';
+    d.style.left=''; d.style.top=''; d.style.width=''; d.style.height=''; d.style.maxHeight='';
+    const l=d.querySelector('.und-list');if(l)l.style.maxHeight='';
     // Return to original parent if it was moved to body
     if(d._origParent && d.parentElement===document.body){
       d._origParent.appendChild(d);
