@@ -951,6 +951,86 @@ input[type=number]{width:84px}
 @media(max-width:640px){
   .asm-api-notice a{color:var(--amber);text-decoration:underline}
 }
+
+/* ══ SETTINGS PAGE — NEW LAYOUT ══════════════════ */
+.settings-action-row{
+  display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap;
+  padding:12px 0 4px;
+}
+.settings-action-group{display:flex;flex-direction:column;gap:5px}
+.settings-action-hint{
+  font-family:var(--font-ui);font-size:11px;color:var(--text-muted);
+  letter-spacing:.5px;
+}
+#api-key-hint.key-set{color:var(--green)}
+
+/* Tool cards row */
+.settings-tools-row{border-top:1px solid var(--border);padding-top:18px}
+.settings-tools-btns{display:flex;gap:12px;flex-wrap:wrap}
+.settings-tool-card{
+  display:flex;flex-direction:column;gap:4px;
+  background:var(--surface);border:1px solid var(--border);border-radius:8px;
+  padding:14px 20px;cursor:pointer;min-width:160px;
+  transition:border-color .15s,background .15s;
+}
+.settings-tool-card:hover{border-color:var(--ice-dim);background:var(--surface2)}
+.stc-icon{font-size:20px;line-height:1}
+.stc-label{font-family:var(--font-ui);font-size:13px;font-weight:700;letter-spacing:1px;color:var(--text);margin-top:4px}
+.stc-hint{font-family:var(--font-ui);font-size:10px;color:var(--text-muted);letter-spacing:.5px}
+
+/* ══ SETTINGS MODALS ══════════════════════════════ */
+.settings-modal-overlay{
+  position:fixed;inset:0;z-index:1000;
+  background:rgba(0,0,0,.75);backdrop-filter:blur(4px);
+  display:none;align-items:center;justify-content:center;padding:20px;
+}
+.settings-modal-overlay.open{display:flex}
+.settings-modal-panel{
+  background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  width:100%;max-width:520px;max-height:88vh;overflow-y:auto;
+  display:flex;flex-direction:column;
+  box-shadow:0 24px 64px rgba(0,0,0,.8);
+}
+.settings-modal-wide{max-width:680px}
+.settings-modal-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 20px 12px;border-bottom:1px solid var(--border);flex-shrink:0;
+}
+.settings-modal-title{
+  font-family:var(--font-ui);font-size:14px;font-weight:700;
+  letter-spacing:2px;text-transform:uppercase;color:var(--ice);
+}
+.settings-modal-body{padding:20px}
+.settings-modal-body .cfg-row{margin-bottom:14px}
+.settings-modal-note{
+  font-family:var(--font-ui);font-size:11px;color:var(--text-muted);
+  line-height:1.6;margin-top:8px;
+}
+.settings-modal-steps{
+  font-family:var(--font-ui);font-size:12px;color:var(--text-muted);
+  padding-left:18px;line-height:1.7;display:flex;flex-direction:column;gap:3px;
+}
+.settings-modal-steps a{color:var(--ice-dim);text-decoration:underline}
+.settings-modal-steps strong{color:var(--text)}
+.settings-modal-steps code{
+  background:var(--surface2);padding:1px 5px;border-radius:3px;
+  font-size:11px;color:var(--ice-dim);
+}
+.settings-modal-steps em{color:var(--text-muted)}
+.settings-modal-footer{
+  display:flex;align-items:center;gap:10px;
+  padding:12px 20px 16px;border-top:1px solid var(--border);flex-shrink:0;
+}
+
+.cfg-unit{color:var(--text-muted);font-size:12px;font-family:var(--font-ui)}
+
+@media(max-width:640px){
+  .settings-tools-row{display:none} /* modals not needed on mobile — no keyboard */
+  .settings-tool-card{min-width:140px;padding:12px 14px}
+  .settings-modal-panel{max-height:92dvh;border-radius:10px}
+  .settings-modal-overlay{padding:12px}
+  .settings-action-row{gap:14px}
+}
 </style>
 </head>
 <body>
@@ -1028,31 +1108,20 @@ input[type=number]{width:84px}
 <div id="settings-page" class="page">
   <div class="settings-header">SETTINGS</div>
 
-  <div class="settings-section">
-    <div class="settings-section-title">Global Defaults</div>
-    <div class="cfg-row"><span class="cfg-label">Default Play Duration</span><input type="number" id="cfg-default-duration" min="5" max="600" value="60"><span style="color:var(--text-muted);font-size:13px">seconds per song</span></div>
-    <div class="cfg-row"><span class="cfg-label">Fade Out Duration</span><input type="number" id="cfg-fade-duration" min="0" max="15" value="3"><span style="color:var(--text-muted);font-size:13px">seconds</span></div>
-    <div class="cfg-row"><span class="cfg-label">Fade In Duration</span><input type="number" id="cfg-fadein-duration" min="0" max="10" value="2"><span style="color:var(--text-muted);font-size:13px">seconds (0 = instant)</span></div>
-    <div class="cfg-row"><span class="cfg-label">Announcement Fade</span><input type="number" id="cfg-announce-duration" min="1" max="30" value="8"><span style="color:var(--text-muted);font-size:13px">seconds (slow fade for PA announcements)</span></div>
-    <div><button class="btn btn-primary" onclick="saveGlobalConfig()">SAVE DEFAULTS</button></div>
-  </div>
-
-  <div class="settings-section kbd-section-mobile-hide">
-    <div class="settings-section-title">Keyboard Shortcuts</div>
-    <div class="kbd-space-note"><kbd>SPACE</kbd><span>Always reserved — play/pause the last active event.</span></div>
-    <table class="kbd-table"><thead><tr><th>Event</th><th style="width:110px;text-align:center">Key</th></tr></thead><tbody id="kbd-tbody"></tbody></table>
-    <div class="cfg-row">
-      <button class="btn btn-primary" onclick="saveKbdConfig()">SAVE SHORTCUTS</button>
-      <button class="btn btn-secondary" onclick="resetKbdDefaults()">RESET TO DEFAULTS</button>
-    </div>
-  </div>
-
+  <!-- ── PRIMARY: Song Library ───────────────────── -->
   <div class="settings-section">
     <div class="settings-section-title">Song Library</div>
-    <!-- Add song trigger -->
-    <div class="add-song-form" style="padding:14px 0 6px">
-      <button class="btn btn-primary" onclick="openAddSongModal()" style="font-size:13px;padding:9px 20px">+ ADD SONG</button>
-      <span style="font-family:var(--font-ui);font-size:11px;color:var(--text-muted);margin-left:12px">Search YouTube or paste a URL — preview &amp; set clip times before adding</span>
+
+    <!-- Action row: Add Song + API Key -->
+    <div class="settings-action-row">
+      <div class="settings-action-group">
+        <button class="btn btn-primary" onclick="openAddSongModal()" style="font-size:13px;padding:9px 20px">+ ADD SONG</button>
+        <div class="settings-action-hint">Search YouTube or paste a URL — set clip times before adding</div>
+      </div>
+      <div class="settings-action-group kbd-section-mobile-hide yt-api-section">
+        <button class="btn btn-secondary" onclick="openApiKeyModal()" id="api-key-modal-btn">🔑 YouTube API Key</button>
+        <div class="settings-action-hint" id="api-key-hint">Required for in-app search</div>
+      </div>
     </div>
 
     <!-- Search / filter / sort toolbar -->
@@ -1087,37 +1156,30 @@ input[type=number]{width:84px}
     </div>
     <!-- Mobile card list (shown instead of table on small screens) -->
     <div class="song-cards" id="song-cards"></div>
-  </div>
 
-  <div class="settings-section kbd-section-mobile-hide yt-api-section">
-    <div class="settings-section-title">YouTube API Key</div>
-    <div style="font-family:var(--font-ui);font-size:12px;color:var(--text-muted);margin-bottom:10px;line-height:1.7">
-      <div style="margin-bottom:6px">Required for in-app YouTube search. Free — no billing needed for typical use. Your key is stored locally, never sent anywhere except YouTube's own API.</div>
-      <div style="font-weight:700;color:var(--text);margin-bottom:4px">How to get your key:</div>
-      <ol style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:3px">
-        <li>Go to <a href="https://console.cloud.google.com/apis/library/youtube.googleapis.com" target="_blank" style="color:var(--ice-dim)">Google Cloud Console → YouTube Data API v3</a></li>
-        <li>Sign in with any Google account, then click <strong>Enable</strong></li>
-        <li>In the left sidebar go to <strong>APIs &amp; Services → Credentials</strong></li>
-        <li>Click <strong>+ Create Credentials → API key</strong></li>
-        <li>Copy the key (starts with <code style="background:var(--surface2);padding:1px 5px;border-radius:3px">AIza…</code>) and paste it below</li>
-        <li><em style="color:var(--text-muted)">Optional but recommended: click Edit API key → restrict it to "YouTube Data API v3" only</em></li>
-      </ol>
-    </div>
-    <div class="yt-api-key-row">
-      <input type="text" id="yt-api-key-input" class="yt-api-key-input" placeholder="AIza…" autocomplete="off" spellcheck="false">
-      <button class="btn btn-primary" onclick="saveYtApiKey()">SAVE</button>
-      <button class="btn btn-secondary" onclick="clearYtApiKey()">CLEAR</button>
-    </div>
-    <div id="yt-api-key-status" style="font-family:var(--font-ui);font-size:11px;margin-top:6px;color:var(--text-muted)"></div>
-  </div>
-
-  <div class="settings-section">
-    <div class="settings-section-title">Import / Export</div>
+    <!-- Import / Export / Reset — directly below the table -->
     <div class="io-bar">
-      <span class="io-bar-label">Backup or restore all settings &amp; song library</span>
-      <button class="btn btn-secondary" onclick="exportSettings()">↓ EXPORT .JSON</button>
-      <label class="btn btn-secondary" style="cursor:pointer">↑ IMPORT .JSON<input type="file" accept=".json" onchange="importSettings(event)" style="display:none"></label>
-      <button class="btn btn-danger" onclick="resetToDefaultSongs()" title="Wipe current song library and reload the built-in default songs">↺ RESET TO DEFAULT</button>
+      <span class="io-bar-label">Backup &amp; Restore</span>
+      <button class="btn btn-secondary" onclick="exportSettings()">↓ Export</button>
+      <label class="btn btn-secondary" style="cursor:pointer">↑ Import<input type="file" accept=".json" onchange="importSettings(event)" style="display:none"></label>
+      <button class="btn btn-danger" onclick="resetToDefaultSongs()" title="Wipe current library and reload defaults from repo">↺ Reset to Default</button>
+    </div>
+  </div>
+
+  <!-- ── SECONDARY: Config modals row ────────────── -->
+  <div class="settings-section settings-tools-row kbd-section-mobile-hide">
+    <div class="settings-section-title">Configuration</div>
+    <div class="settings-tools-btns">
+      <div class="settings-tool-card" onclick="openPlaybackModal()">
+        <div class="stc-icon">⚙</div>
+        <div class="stc-label">Playback Settings</div>
+        <div class="stc-hint">Durations, fades</div>
+      </div>
+      <div class="settings-tool-card" onclick="openKbdModal()">
+        <div class="stc-icon">⌨</div>
+        <div class="stc-label">Keyboard Shortcuts</div>
+        <div class="stc-hint">Customise all keys</div>
+      </div>
     </div>
   </div>
 </div>
@@ -2592,7 +2654,7 @@ async function loadDefaultSongs(){
 //  INIT
 // ══════════════════════════════════════════════════
 (async function init(){
-  load();checkWarning();checkAdsNotice();loadConfigUI();
+  load();checkWarning();checkAdsNotice();loadConfigUI();updateApiKeyHint();
   if(songs.length === 0){
     // Show a loading state while fetching defaults
     document.getElementById('events-layout').innerHTML =
@@ -2626,12 +2688,12 @@ function saveYtApiKey(){
   const val=document.getElementById('yt-api-key-input').value.trim();
   if(!val){showToast('Enter a key first');return;}
   localStorage.setItem('arenaDJ_ytApiKey',val);
-  updateApiKeyStatus();showToast('✓ YouTube API key saved');
+  updateApiKeyStatus();updateApiKeyHint();showToast('✓ YouTube API key saved');
 }
 function clearYtApiKey(){
   localStorage.removeItem('arenaDJ_ytApiKey');
   document.getElementById('yt-api-key-input').value='';
-  updateApiKeyStatus();showToast('API key cleared');
+  updateApiKeyStatus();updateApiKeyHint();showToast('API key cleared');
 }
 function updateApiKeyStatus(){
   const key=getYtApiKey();
@@ -2643,7 +2705,7 @@ function updateApiKeyStatus(){
   if(status)status.textContent=key?'✓ Key saved ('+key.slice(0,8)+'…) — search is available. Paste a new key above to replace it.':'No key set — URL paste still works without one.';
   if(status)status.style.color=key?'var(--green)':'var(--text-muted)';
 }
-function asmSwitchToApiKeySetting(){closeAddSongModal();switchPage('settings');}
+function asmSwitchToApiKeySetting(){closeAddSongModal();switchPage('settings');setTimeout(openApiKeyModal,80);}
 
 // ── Modal open/close ───────────────────────────────
 function openAddSongModal(){
@@ -3024,6 +3086,64 @@ document.addEventListener('keydown',e=>{
   }
 });
 
+
+// ══════════════════════════════════════════════════
+//  SETTINGS MODALS
+// ══════════════════════════════════════════════════
+function handleSettingsOverlayClick(e, id){
+  if(e.target===document.getElementById(id))
+    document.getElementById(id).classList.remove('open');
+}
+
+// Playback modal
+function openPlaybackModal(){
+  loadConfigUI(); // ensure fields are up to date
+  document.getElementById('playback-modal').classList.add('open');
+}
+function closePlaybackModal(){
+  document.getElementById('playback-modal').classList.remove('open');
+}
+
+// Keyboard modal
+function openKbdModal(){
+  buildKbdSettingsGrid(); // rebuild in case songs/shortcuts changed
+  document.getElementById('kbd-modal').classList.add('open');
+}
+function closeKbdModal(){
+  document.getElementById('kbd-modal').classList.remove('open');
+}
+
+// API key modal
+function openApiKeyModal(){
+  // Clear input so user can paste fresh key; show current status
+  const input=document.getElementById('yt-api-key-input');
+  if(input)input.value='';
+  updateApiKeyStatus();
+  document.getElementById('api-key-modal').classList.add('open');
+  setTimeout(()=>{ if(input)input.focus(); },120);
+}
+function closeApiKeyModal(){
+  document.getElementById('api-key-modal').classList.remove('open');
+}
+
+// Update the API key button hint when status changes
+function updateApiKeyHint(){
+  const hint=document.getElementById('api-key-hint');
+  if(!hint)return;
+  const hasKey=!!getYtApiKey();
+  hint.textContent=hasKey?'✓ Search enabled':'Required for in-app search';
+  hint.classList.toggle('key-set',hasKey);
+}
+
+// Close settings modals on Escape
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    ['playback-modal','kbd-modal','api-key-modal'].forEach(id=>{
+      document.getElementById(id)?.classList.remove('open');
+    });
+  }
+});
+
 // ── PWA Service Worker (v4 — network-first) ─────────
 if ('serviceWorker' in navigator) {
   // Derive the exact directory this page is served from.
@@ -3130,6 +3250,84 @@ if ('serviceWorker' in navigator) {
       </div>
     </div>
 
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     PLAYBACK SETTINGS MODAL
+     ══════════════════════════════════════════════════ -->
+<div id="playback-modal" class="settings-modal-overlay" onclick="handleSettingsOverlayClick(event,'playback-modal')">
+  <div class="settings-modal-panel">
+    <div class="settings-modal-header">
+      <span class="settings-modal-title">⚙ PLAYBACK SETTINGS</span>
+      <button class="asm-close" onclick="closePlaybackModal()">✕</button>
+    </div>
+    <div class="settings-modal-body">
+      <div class="cfg-row"><span class="cfg-label">Default Play Duration</span><input type="number" id="cfg-default-duration" min="5" max="600" value="60"><span class="cfg-unit">seconds per song</span></div>
+      <div class="cfg-row"><span class="cfg-label">Fade Out Duration</span><input type="number" id="cfg-fade-duration" min="0" max="15" value="3"><span class="cfg-unit">seconds</span></div>
+      <div class="cfg-row"><span class="cfg-label">Fade In Duration</span><input type="number" id="cfg-fadein-duration" min="0" max="10" value="2"><span class="cfg-unit">seconds (0 = instant)</span></div>
+      <div class="cfg-row"><span class="cfg-label">Announcement Fade</span><input type="number" id="cfg-announce-duration" min="1" max="30" value="8"><span class="cfg-unit">seconds — slow fade for PA announcements</span></div>
+      <p class="settings-modal-note">Default Play Duration is the fallback for any song without an explicit clip end time set. Per-song clip times override it.</p>
+    </div>
+    <div class="settings-modal-footer">
+      <button class="btn btn-secondary" onclick="closePlaybackModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveGlobalConfig();closePlaybackModal()">SAVE</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     KEYBOARD SHORTCUTS MODAL
+     ══════════════════════════════════════════════════ -->
+<div id="kbd-modal" class="settings-modal-overlay" onclick="handleSettingsOverlayClick(event,'kbd-modal')">
+  <div class="settings-modal-panel settings-modal-wide">
+    <div class="settings-modal-header">
+      <span class="settings-modal-title">⌨ KEYBOARD SHORTCUTS</span>
+      <button class="asm-close" onclick="closeKbdModal()">✕</button>
+    </div>
+    <div class="settings-modal-body">
+      <div class="kbd-space-note" style="margin-bottom:12px"><kbd>SPACE</kbd><span>Always reserved — play/pause the last active event.</span></div>
+      <table class="kbd-table"><thead><tr><th>Action</th><th style="width:220px;text-align:center">Key</th></tr></thead><tbody id="kbd-tbody"></tbody></table>
+    </div>
+    <div class="settings-modal-footer">
+      <button class="btn btn-secondary" onclick="resetKbdDefaults()">Reset to Defaults</button>
+      <div style="flex:1"></div>
+      <button class="btn btn-secondary" onclick="closeKbdModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveKbdConfig();closeKbdModal()">SAVE</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     YOUTUBE API KEY MODAL
+     ══════════════════════════════════════════════════ -->
+<div id="api-key-modal" class="settings-modal-overlay" onclick="handleSettingsOverlayClick(event,'api-key-modal')">
+  <div class="settings-modal-panel">
+    <div class="settings-modal-header">
+      <span class="settings-modal-title">🔑 YOUTUBE API KEY</span>
+      <button class="asm-close" onclick="closeApiKeyModal()">✕</button>
+    </div>
+    <div class="settings-modal-body">
+      <p class="settings-modal-note" style="margin-bottom:12px">Required for in-app YouTube search. Free — no billing needed for typical use. Your key is stored locally and never sent anywhere except YouTube's own API.</p>
+      <div style="font-weight:700;color:var(--text);font-family:var(--font-ui);font-size:12px;letter-spacing:1px;margin-bottom:8px">HOW TO GET YOUR KEY</div>
+      <ol class="settings-modal-steps">
+        <li>Go to <a href="https://console.cloud.google.com/apis/library/youtube.googleapis.com" target="_blank">Google Cloud Console → YouTube Data API v3</a></li>
+        <li>Sign in with any Google account, then click <strong>Enable</strong></li>
+        <li>In the left sidebar go to <strong>APIs &amp; Services → Credentials</strong></li>
+        <li>Click <strong>+ Create Credentials → API key</strong></li>
+        <li>Copy the key (starts with <code>AIza…</code>) and paste it below</li>
+        <li><em>Optional but recommended: click Edit API key → restrict to "YouTube Data API v3" only</em></li>
+      </ol>
+      <div class="yt-api-key-row" style="margin-top:16px">
+        <input type="text" id="yt-api-key-input" class="yt-api-key-input" placeholder="AIza…" autocomplete="off" spellcheck="false">
+        <button class="btn btn-danger" onclick="clearYtApiKey()">Clear</button>
+      </div>
+      <div id="yt-api-key-status" style="font-family:var(--font-ui);font-size:11px;margin-top:8px;color:var(--text-muted)"></div>
+    </div>
+    <div class="settings-modal-footer">
+      <button class="btn btn-secondary" onclick="closeApiKeyModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveYtApiKey();closeApiKeyModal()">SAVE KEY</button>
+    </div>
   </div>
 </div>
 
