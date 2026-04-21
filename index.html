@@ -637,9 +637,9 @@ kbd{background:var(--surface2);border:1px solid var(--border);border-radius:3px;
 .up-next-dropdown.is-desktop-popup{
   position:fixed !important;
   width:380px !important;
-  max-height:420px !important;
+  /* No max-height or overflow on the panel — let it size to content */
   height:auto !important;
-  overflow:hidden !important;  /* clip to border-radius, list scrolls internally */
+  overflow:unset !important;
   display:flex !important;
   flex-direction:column !important;
   background:#1a1f2b !important;
@@ -648,11 +648,16 @@ kbd{background:var(--surface2);border:1px solid var(--border);border-radius:3px;
   border-radius:9px !important;
   z-index:9999 !important;
 }
+/* Clip corners on header and search without clipping the list */
+.up-next-dropdown.is-desktop-popup .und-header{
+  border-radius:9px 9px 0 0;
+}
+/* The list scrolls, capped at 320px — panel grows to fit header+search+list */
 .up-next-dropdown.is-desktop-popup .und-list{
   overflow-y:auto !important;
-  flex:1 !important;
-  min-height:60px !important;
-  max-height:340px !important;
+  max-height:320px !important;
+  min-height:40px !important;
+  border-radius:0 0 9px 9px;
 }
 .up-next-dropdown.is-desktop-popup .und-search-wrap{
   display:block;flex-shrink:0;
