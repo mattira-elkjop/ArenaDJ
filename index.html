@@ -2078,7 +2078,7 @@ function makeEventBtn(id){
       <div class="up-next-dropdown" id="upnext-dd-${id}"></div>
     </div>`;
   btn.querySelector('.zone-left').addEventListener('click',e=>{e.stopPropagation();handleZoneLeft(id);});
-  btn.querySelector('.zone-right').addEventListener('click',e=>{e.stopPropagation();handleMidClick(id);});
+  btn.querySelector('.zone-right').addEventListener('click',e=>{e.stopPropagation();handleZoneRight(id);});
   btn.querySelector('.zone-mid').addEventListener('click',e=>{e.stopPropagation();handleMidClick(id);});
   addSwipeGesture(btn,id);
   const strip=btn.querySelector('.up-next-strip');
