@@ -316,8 +316,8 @@ kbd{background:var(--surface2);border:1px solid var(--border);border-radius:3px;
 .event-row.standard .event-btn,.event-row.misc .event-btn{min-height:clamp(50px,7vh,90px);flex:1}
 
 /* EVENT BUTTON */
-.event-btn{position:relative;background:linear-gradient(135deg, var(--surface) 0%, var(--team-btn-tint,var(--surface)) 100%);border:1px solid var(--border);border-radius:7px;overflow:hidden;display:flex;flex-direction:column;user-select:none;cursor:pointer;transition:border-color .2s,background .2s,box-shadow .2s}
-.event-btn::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--btn-accent,var(--ice-dim));opacity:1;transition:height .15s;z-index:1}
+.event-btn{position:relative;background:linear-gradient(135deg, var(--surface) 0%, var(--team-btn-tint,var(--surface)) 100%);border:1px solid var(--border);border-radius:7px;overflow:visible;display:flex;flex-direction:column;user-select:none;cursor:pointer;transition:border-color .2s,background .2s,box-shadow .2s}
+.event-btn::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--btn-accent,var(--ice-dim));opacity:1;transition:height .15s;z-index:1;border-radius:7px 7px 0 0}
 .event-btn:hover{border-color:var(--btn-accent,var(--ice))}
 .event-btn:hover::before{height:4px}
 .event-btn.playing{border-color:var(--btn-accent,var(--team-primary));background:var(--surface2);box-shadow:0 0 18px var(--team-primary-glow,rgba(200,232,255,.12)),0 0 4px var(--team-primary-glow,rgba(200,232,255,.2))}
@@ -512,7 +512,7 @@ kbd{background:var(--surface2);border:1px solid var(--border);border-radius:3px;
   .und-search:focus{border-color:var(--ice-dim)}
 
   /* Scrollable list */
-  .und-list{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .und-list{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;background:#13161f}
 
   .und-item{
     padding:14px 16px;
@@ -621,28 +621,26 @@ kbd{background:var(--surface2);border:1px solid var(--border);border-radius:3px;
 .up-next-strip.no-songs .shuffle-next-btn{display:none}
 .up-next-strip.no-songs .up-next-chevron{display:none}
 
-/* UP NEXT dropdown — mobile: absolute inside button */
+/* UP NEXT dropdown — absolute inside button, escapes via overflow:visible on parent */
 .up-next-dropdown{
   position:absolute;
-  bottom:calc(100% + 4px);
+  bottom:calc(100% + 2px);
   left:0;right:0;
-  background:var(--surface2);
+  background:#13161f;
   border:1px solid var(--border);
   border-radius:7px;
-  z-index:500;
-  overflow:hidden;
-  box-shadow:0 -6px 20px rgba(0,0,0,.55),0 2px 8px rgba(0,0,0,.3);
-  display:none;
-  max-height:200px;
+  z-index:2000;
   overflow-y:auto;
+  box-shadow:0 -8px 24px rgba(0,0,0,.7),0 2px 8px rgba(0,0,0,.4);
+  display:none;
+  max-height:280px;
 }
 .up-next-dropdown.open{display:block}
 
-/* Desktop dropdown — simple absolute inside button */
+/* Desktop — slightly more height available */
 @media(min-width:641px){
   .up-next-dropdown{
-    max-height:220px;
-    overflow-y:auto;
+    max-height:320px;
   }
 }
 .und-header{
@@ -2328,6 +2326,29 @@ function toggleUpNextDropdown(eid){
     let backdrop=document.getElementById('und-backdrop');
     if(!backdrop){backdrop=document.createElement('div');backdrop.id='und-backdrop';backdrop.className='und-backdrop';backdrop.addEventListener('click',closeAllDropdowns);document.body.appendChild(backdrop);}
     backdrop.classList.add('open');
+  } else {
+    // Cap dropdown height so it never scrolls behind the nav/hint bar above
+    // Measure from the top of the Up Next strip down to the top of page-wrap
+    const strip=dd.closest('.up-next-strip');
+    const pageWrap=document.getElementById('page-wrap');
+    if(strip){
+      const stripTop=strip.getBoundingClientRect().top;
+      // Measure bottom of the lowest visible bar above the events area
+      // (hint strip or arrange bar, whichever is lower/visible)
+      let areaTop=0;
+      const hintWrap=document.querySelector('.kbd-hint-wrap');
+      const arrangeBar=document.getElementById('layout-arrange-bar');
+      if(arrangeBar&&arrangeBar.style.display!=='none'){
+        areaTop=arrangeBar.getBoundingClientRect().bottom;
+      } else if(hintWrap){
+        areaTop=hintWrap.getBoundingClientRect().bottom;
+      } else if(pageWrap){
+        areaTop=pageWrap.getBoundingClientRect().top;
+      }
+      // Available space between bottom of hint bar and top of strip, minus gap
+      const available=Math.max(80, stripTop - areaTop - 8);
+      dd.style.maxHeight=available+'px';
+    }
   }
   dd.classList.add('open');
 }
@@ -2392,7 +2413,10 @@ function selectNextSong(eid, songId){
 }
 
 function closeAllDropdowns(){
-  document.querySelectorAll('.up-next-dropdown.open').forEach(d=>d.classList.remove('open'));
+  document.querySelectorAll('.up-next-dropdown.open').forEach(d=>{
+    d.classList.remove('open');
+    d.style.maxHeight='';
+  });
   const backdrop=document.getElementById('und-backdrop');
   if(backdrop)backdrop.classList.remove('open');
   openDropdownEid=null;
