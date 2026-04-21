@@ -2157,9 +2157,9 @@ function closeAllDropdowns(){
   openDropdownEid=null;
 }
 
-// Close dropdown when clicking outside
+// Close dropdown when clicking outside the strip or the dropdown panel itself
 document.addEventListener('click',e=>{
-  if(openDropdownEid&&!e.target.closest('.up-next-strip')){
+  if(openDropdownEid&&!e.target.closest('.up-next-strip')&&!e.target.closest('.up-next-dropdown')){
     closeAllDropdowns();
   }
 });
