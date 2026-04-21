@@ -35,6 +35,10 @@
   /* iOS safe areas when running as installed PWA (notch, home indicator) */
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
+  /* Team branding overrides — set by team.json if ?team= param present */
+  --team-primary: var(--ice);
+  --team-primary-dim: var(--ice-dim);
+  --team-secondary: var(--amber);
 }
 /* In standalone mode, pad the top nav for the status bar */
 @media (display-mode: standalone) {
@@ -51,11 +55,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 
 /* NAV */
 nav{display:flex;align-items:center;background:var(--surface);border-bottom:1px solid var(--border);padding:0 16px;height:52px;flex-shrink:0}
-.nav-logo{font-family:var(--font-display);font-size:28px;letter-spacing:4px;color:var(--ice);text-shadow:0 0 16px rgba(200,232,255,.4);margin-right:auto}
-.nav-logo span{color:var(--amber)}
+.nav-logo{font-family:var(--font-display);font-size:28px;letter-spacing:4px;color:var(--team-primary);text-shadow:0 0 16px rgba(200,232,255,.15);margin-right:auto}
+.nav-logo span{color:var(--team-secondary)}
 .nav-tab{font-family:var(--font-ui);font-size:13px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);padding:0 16px;height:52px;display:flex;align-items:center;cursor:pointer;border-bottom:2px solid transparent;transition:color .2s,border-color .2s;white-space:nowrap}
 .nav-tab:hover{color:var(--text)}
-.nav-tab.active{color:var(--ice);border-bottom-color:var(--ice)}
+.nav-tab.active{color:var(--team-primary);border-bottom-color:var(--team-primary)}
 
 /* MOBILE NAV — bottom bar replaces top tabs on small screens */
 @media(max-width:640px){
@@ -78,7 +82,7 @@ nav{display:flex;align-items:center;background:var(--surface);border-bottom:1px 
     -webkit-tap-highlight-color:transparent;
   }
   .mobile-nav-tab .mnt-icon{font-size:18px;line-height:1}
-  .mobile-nav-tab.active{color:var(--ice);border-top-color:var(--ice)}
+  .mobile-nav-tab.active{color:var(--team-primary);border-top-color:var(--team-primary)}
 }
 @media(min-width:641px){
   #mobile-nav{display:none}
@@ -647,8 +651,8 @@ input[type=text]:focus,input[type=number]:focus,select:focus{border-color:var(--
 input[type=text]{min-width:200px}
 input[type=number]{width:84px}
 .btn{font-family:var(--font-ui);font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;border-radius:5px;padding:8px 16px;cursor:pointer;transition:background .15s,color .15s,border-color .15s;border:1px solid transparent}
-.btn-primary{background:var(--ice);color:var(--bg);border-color:var(--ice)}
-.btn-primary:hover{background:var(--ice-dim);border-color:var(--ice-dim)}
+.btn-primary{background:var(--team-primary);color:var(--bg);border-color:var(--team-primary)}
+.btn-primary:hover{background:var(--team-primary-dim);border-color:var(--team-primary-dim)}
 .btn-secondary{background:transparent;color:var(--text-muted);border-color:var(--border)}
 .btn-secondary:hover{color:var(--text);border-color:var(--text-muted)}
 .btn-danger{background:transparent;color:var(--red);border-color:var(--red)}
@@ -1031,13 +1035,50 @@ input[type=number]{width:84px}
   .settings-modal-overlay{padding:12px}
   .settings-action-row{gap:14px}
 }
+
+/* Team logo in nav */
+.nav-team-logo{height:36px;max-width:160px;object-fit:contain;display:block}
+
+/* Contact form */
+.cf-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cf-field{display:flex;flex-direction:column;gap:5px}
+.cf-full{grid-column:1/-1}
+.cf-label{font-family:var(--font-ui);font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted)}
+.cf-input{
+  background:var(--surface2);border:1px solid var(--border);border-radius:5px;
+  color:var(--text);font-family:var(--font-body);font-size:13px;
+  padding:7px 11px;outline:none;transition:border-color .15s;width:100%;min-width:unset;
+}
+.cf-input:focus{border-color:var(--ice-dim)}
+.cf-textarea{resize:vertical;min-height:70px;font-family:var(--font-body)}
+.cf-colors{display:flex;flex-direction:column;gap:8px}
+.cf-color-row{display:flex;align-items:center;gap:8px}
+.cf-color-row input[type=color]{
+  width:36px;height:36px;border:1px solid var(--border);border-radius:5px;
+  background:none;cursor:pointer;padding:2px;flex-shrink:0;
+}
+.cf-color-text{max-width:120px;font-family:monospace;letter-spacing:1px}
+.cf-color-label{font-family:var(--font-ui);font-size:11px;color:var(--text-muted);white-space:nowrap}
+.cf-logo-requirements{
+  background:rgba(200,232,255,.05);border:1px solid var(--border);
+  border-radius:6px;padding:12px 14px;
+  font-family:var(--font-ui);font-size:11px;color:var(--text-muted);line-height:1.7;
+}
+.cf-logo-requirements strong{color:var(--text);display:block;margin-bottom:6px}
+.cf-logo-requirements ul{padding-left:16px;margin:0}
+.cf-logo-requirements li{margin-bottom:2px}
+
+@media(max-width:640px){
+  .cf-grid{grid-template-columns:1fr}
+  .cf-full{grid-column:1}
+}
 </style>
 </head>
 <body>
 <div id="app">
 
 <nav>
-  <div class="nav-logo">ARENA <span>DJ</span></div>
+  <div class="nav-logo" id="nav-logo">ARENA <span>DJ</span></div>
   <div class="nav-tab active" data-page="live">⬤ LIVE</div>
   <div class="nav-tab" data-page="settings">⚙ SETTINGS</div>
   <div class="nav-tab" data-page="help">? HELP</div>
@@ -1284,6 +1325,16 @@ input[type=number]{width:84px}
       <div class="help-h2">Import &amp; Export</div>
       <p>Use <strong>Export .JSON</strong> to save a full backup of your songs, settings, and shortcuts. Use <strong>Import .JSON</strong> to restore on the same or a different device. Files from older versions are migrated automatically.</p>
       <div class="help-tip"><strong>Tip:</strong> Export a backup before making large changes to your library.</div>
+    </div>
+
+    <div class="help-section">
+      <div class="help-h2">Get Your Own Branded Version</div>
+      <p>Arena DJ is <strong>free to try</strong> — use it as-is for your own talkoot sessions and personal use. If your club or organisation wants to use it officially, with your own team logo, team colors, and a customised song library set up for you, that's available as a paid service.</p>
+      <p>Pricing is agreed case by case depending on the size of your organisation and how many teams you run. There's no subscription — it's a one-time setup fee.</p>
+      <div style="margin:16px 0 8px">
+        <button class="btn btn-primary" onclick="openContactModal()" style="font-size:14px;padding:10px 24px">📬 Get in touch</button>
+      </div>
+      <p style="font-size:13px">Or email directly: <a href="mailto:matti.rantakangas+arenadj@gmail.com" style="color:var(--team-primary)">matti.rantakangas+arenadj@gmail.com</a></p>
     </div>
 
     <div class="help-section">
@@ -3138,11 +3189,113 @@ function updateApiKeyHint(){
 // Close settings modals on Escape
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){
-    ['playback-modal','kbd-modal','api-key-modal'].forEach(id=>{
+    ['playback-modal','kbd-modal','api-key-modal','contact-modal'].forEach(id=>{
       document.getElementById(id)?.classList.remove('open');
     });
   }
 });
+
+
+// ══════════════════════════════════════════════════
+//  TEAM BRANDING — ?team=teamname support
+// ══════════════════════════════════════════════════
+(async function applyTeamBranding(){
+  const params = new URLSearchParams(window.location.search);
+  const teamId = params.get('team');
+  if(!teamId) return; // no team param — use default Arena DJ branding
+
+  try {
+    const base = window.location.href.split('?')[0].replace(/[^/]*$/, '');
+    const res = await fetch(base + 'teams/' + teamId + '.json?_=' + Date.now());
+    if(!res.ok) throw new Error('Team not found');
+    const team = await res.json();
+
+    // Apply CSS variable overrides
+    const root = document.documentElement;
+    if(team.colors?.primary)   root.style.setProperty('--team-primary',     team.colors.primary);
+    if(team.colors?.primaryDim)root.style.setProperty('--team-primary-dim', team.colors.primaryDim);
+    if(team.colors?.secondary) root.style.setProperty('--team-secondary',   team.colors.secondary);
+
+    // Replace nav logo with team logo or team name
+    const logoEl = document.getElementById('nav-logo');
+    if(logoEl){
+      if(team.logoUrl){
+        logoEl.innerHTML = `<img src="${team.logoUrl}" alt="${esc(team.teamName||'')}" class="nav-team-logo">`;
+      } else if(team.teamName){
+        logoEl.innerHTML = esc(team.teamName);
+      }
+    }
+
+    // Update page title
+    if(team.teamName) document.title = team.teamName + ' — Arena DJ';
+
+    // Store team info for contact form
+    window._teamBranding = team;
+
+    console.log('[Arena DJ] Team branding applied:', teamId);
+  } catch(e) {
+    console.warn('[Arena DJ] Could not load team branding for:', teamId, e.message);
+  }
+})();
+
+// ══════════════════════════════════════════════════
+//  CONTACT / PRICING MODAL
+// ══════════════════════════════════════════════════
+function openContactModal(){
+  document.getElementById('contact-modal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeContactModal(){
+  document.getElementById('contact-modal').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+function buildContactMailto(){
+  const get = id => (document.getElementById(id)?.value||'').trim();
+  const org      = get('cf-org');
+  const country  = get('cf-country');
+  const teams    = get('cf-teams');
+  const contact  = get('cf-contact');
+  const email    = get('cf-email');
+  const phone    = get('cf-phone');
+  const color1   = get('cf-color1');
+  const color2   = get('cf-color2');
+  const color3   = get('cf-color3');
+  const notes    = get('cf-notes');
+
+  if(!org||!contact||!email){
+    showToast('Please fill in organisation, contact name, and email');
+    return;
+  }
+
+  const subject = encodeURIComponent('Arena DJ — Customisation enquiry: ' + org);
+  const body = encodeURIComponent(
+`Arena DJ — Customisation Enquiry
+=================================
+
+Organisation / Club: ${org}
+Country: ${country}
+Number of teams: ${teams}
+
+Contact person: ${contact}
+Email: ${email}
+Phone: ${phone}
+
+Team colours:
+  Primary:   ${color1}
+  Secondary: ${color2}
+  Accent:    ${color3}
+
+Notes / special requests:
+${notes||'—'}
+
+---
+Sent from Arena DJ contact form
+https://mattira-elkjop.github.io/ArenaDJ/`
+  );
+
+  window.location.href = `mailto:matti.rantakangas+arenadj@gmail.com?subject=${subject}&body=${body}`;
+}
 
 // ── PWA Service Worker (v4 — network-first) ─────────
 if ('serviceWorker' in navigator) {
@@ -3327,6 +3480,93 @@ if ('serviceWorker' in navigator) {
     <div class="settings-modal-footer">
       <button class="btn btn-secondary" onclick="closeApiKeyModal()">Cancel</button>
       <button class="btn btn-primary" onclick="saveYtApiKey();closeApiKeyModal()">SAVE KEY</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     CONTACT / CUSTOMISATION MODAL
+     ══════════════════════════════════════════════════ -->
+<div id="contact-modal" class="settings-modal-overlay" onclick="handleSettingsOverlayClick(event,'contact-modal')">
+  <div class="settings-modal-panel settings-modal-wide">
+    <div class="settings-modal-header">
+      <span class="settings-modal-title">📬 GET YOUR OWN BRANDED VERSION</span>
+      <button class="asm-close" onclick="closeContactModal()">✕</button>
+    </div>
+    <div class="settings-modal-body">
+      <p class="settings-modal-note" style="margin-bottom:16px;font-size:12px;line-height:1.7">
+        Fill in the form below and click <strong>Open Email</strong>. Your email client will open with everything pre-filled — just review and hit send.
+        After sending, <strong>attach your team logo</strong> to the email (see requirements below).
+      </p>
+
+      <div class="cf-grid">
+        <div class="cf-field cf-full">
+          <label class="cf-label">Organisation / Club name *</label>
+          <input type="text" id="cf-org" class="cf-input" placeholder="e.g. Malax IF Hockey" autocomplete="off">
+        </div>
+        <div class="cf-field">
+          <label class="cf-label">Country *</label>
+          <input type="text" id="cf-country" class="cf-input" placeholder="e.g. Finland" autocomplete="off">
+        </div>
+        <div class="cf-field">
+          <label class="cf-label">Number of teams</label>
+          <input type="text" id="cf-teams" class="cf-input" placeholder="e.g. 3" autocomplete="off">
+        </div>
+        <div class="cf-field">
+          <label class="cf-label">Contact person *</label>
+          <input type="text" id="cf-contact" class="cf-input" placeholder="Full name" autocomplete="off">
+        </div>
+        <div class="cf-field">
+          <label class="cf-label">Your email *</label>
+          <input type="text" id="cf-email" class="cf-input" placeholder="you@example.com" autocomplete="off">
+        </div>
+        <div class="cf-field cf-full">
+          <label class="cf-label">Phone (optional)</label>
+          <input type="text" id="cf-phone" class="cf-input" placeholder="+358 …" autocomplete="off">
+        </div>
+
+        <div class="cf-field cf-full">
+          <label class="cf-label">Team colours — paste hex codes (e.g. #003f8a)</label>
+          <div class="cf-colors">
+            <div class="cf-color-row">
+              <input type="color" id="cf-color1-pick" value="#003f8a" oninput="document.getElementById('cf-color1').value=this.value">
+              <input type="text"  id="cf-color1" class="cf-input cf-color-text" value="#003f8a" placeholder="Primary" oninput="document.getElementById('cf-color1-pick').value=this.value||'#000000'">
+              <span class="cf-color-label">Primary</span>
+            </div>
+            <div class="cf-color-row">
+              <input type="color" id="cf-color2-pick" value="#ffffff" oninput="document.getElementById('cf-color2').value=this.value">
+              <input type="text"  id="cf-color2" class="cf-input cf-color-text" value="#ffffff" placeholder="Secondary" oninput="document.getElementById('cf-color2-pick').value=this.value||'#000000'">
+              <span class="cf-color-label">Secondary</span>
+            </div>
+            <div class="cf-color-row">
+              <input type="color" id="cf-color3-pick" value="#c8a84b" oninput="document.getElementById('cf-color3').value=this.value">
+              <input type="text"  id="cf-color3" class="cf-input cf-color-text" value="#c8a84b" placeholder="Accent" oninput="document.getElementById('cf-color3-pick').value=this.value||'#000000'">
+              <span class="cf-color-label">Accent (optional)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="cf-field cf-full">
+          <label class="cf-label">Notes / special requests</label>
+          <textarea id="cf-notes" class="cf-input cf-textarea" placeholder="Anything else we should know — specific events, language preferences, etc." rows="3"></textarea>
+        </div>
+
+        <div class="cf-field cf-full">
+          <div class="cf-logo-requirements">
+            <strong>📎 Logo requirements</strong> — attach your logo to the email after clicking Open Email:
+            <ul>
+              <li>Format: PNG or SVG preferred</li>
+              <li>Transparent or white background recommended</li>
+              <li>Minimum 200×200 px, ideally 512×512 px or larger</li>
+              <li>The logo will appear in the top-left of the app replacing the "ARENA DJ" text</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="settings-modal-footer">
+      <button class="btn btn-secondary" onclick="closeContactModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="buildContactMailto()" style="font-size:13px;padding:9px 22px">📬 Open Email</button>
     </div>
   </div>
 </div>
