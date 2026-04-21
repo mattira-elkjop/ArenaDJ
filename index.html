@@ -2098,21 +2098,35 @@ function toggleUpNextDropdown(eid){
     let left = rect.left + rect.width / 2 - panelW / 2;
     left = Math.max(margin, Math.min(left, vpW - panelW - margin));
 
-    // Prefer opening above; fall back to below
-    // Always open upward from the strip.
-    // Cap the list height so the panel fits in the space above the strip.
-    const headerH   = 42;   // und-header approx height
-    const searchH   = 50;   // und-search-wrap approx height
-    const spaceAbove = rect.top - margin; // available px above the strip
-    const maxListH  = Math.max(80, spaceAbove - headerH - searchH - 8);
-    const listEl = dd.querySelector('.und-list');
-    if(listEl) listEl.style.maxHeight = maxListH + 'px';
+    // Use the page-wrap element to find the exact usable vertical area
+    // (below nav+NP bar, above mobile nav / bottom of viewport)
+    const pageWrap = document.getElementById('page-wrap');
+    const pwRect   = pageWrap ? pageWrap.getBoundingClientRect() : {top:0, bottom:vpH};
+    const areaTop  = pwRect.top + margin;   // top of usable live area
+    const areaBot  = pwRect.bottom - margin; // bottom of usable live area
 
-    const panelH = Math.min(spaceAbove - 8, headerH + searchH + maxListH);
-    const top    = rect.top - panelH - 8;
+    const headerH  = 44;  // und-header height
+    const searchH  = 52;  // und-search-wrap height
+    const overhead = headerH + searchH + 8;
+
+    // Maximum list height = full usable area minus overhead, capped at 360px
+    const maxListH = Math.min(360, areaBot - areaTop - overhead);
+    const listEl   = dd.querySelector('.und-list');
+    if(listEl) listEl.style.maxHeight = Math.max(80, maxListH) + 'px';
+
+    const panelH = overhead + Math.max(80, maxListH);
+
+    // Open upward from strip if space allows, else as high as possible
+    let top = rect.top - panelH - 8;
+    // Clamp so panel never goes above the usable area top
+    top = Math.max(areaTop, top);
+    // If panel would extend below the strip, shift it up
+    if(top + panelH > areaBot) top = areaBot - panelH;
+    // Final clamp
+    top = Math.max(areaTop, top);
 
     dd.style.left = left + 'px';
-    dd.style.top  = Math.max(margin, top) + 'px';
+    dd.style.top  = top + 'px';
 
     dd.classList.add('open');
     setTimeout(()=>{ if(searchEl)searchEl.focus(); },80);
