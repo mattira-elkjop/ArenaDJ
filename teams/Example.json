@@ -1,0 +1,10 @@
+{
+  "teamName": "Example Hockey Club",
+  "shortName": "EHC",
+  "colors": {
+    "primary": "#003f8a",
+    "primaryDim": "#002d66",
+    "secondary": "#c8a84b"
+  },
+  "logoUrl": "./teams/example-logo.png"
+}
