@@ -1,0 +1,10 @@
+{
+  "teamName": "Malax IF Hockey",
+  "shortName": "MIF",
+  "colors": {
+    "primary": "#00239c",
+    "primaryDim": "#ffd700",
+    "secondary": "#ffffff"
+  },
+  "logoUrl": "./teams/malaxif.png"
+}
