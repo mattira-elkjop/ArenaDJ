@@ -272,7 +272,8 @@ nav{display:flex;align-items:center;background:var(--team-primary);border-bottom
 #live-page.active{display:flex}
 
 /* KBD HINT */
-.kbd-hint{padding:3px 16px;background:var(--bg);border-bottom:1px solid var(--border);display:flex;gap:12px;align-items:center;flex-wrap:wrap;flex-shrink:0}
+.kbd-hint-wrap{display:flex;align-items:center;background:var(--bg);border-bottom:1px solid var(--border);flex-shrink:0}
+.kbd-hint{padding:3px 16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;flex:1}
 .kbd-item{display:flex;align-items:center;gap:5px;font-family:var(--font-ui);font-size:10px;color:var(--text-muted)}
 kbd{background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:1px 5px;font-size:10px;font-family:monospace;color:var(--text)}
 @media (max-height:680px){.kbd-hint{display:none}}
@@ -353,7 +354,7 @@ kbd{background:var(--surface2);border:1px solid var(--border);border-radius:3px;
 /* ── MOBILE LIVE LAYOUT ──────────────────────────── */
 /* Portrait phone: 2-column grid, large tap targets */
 @media(max-width:640px){
-  .kbd-hint{display:none}
+  .kbd-hint-wrap{display:none}
 
   .events-layout{
     display:grid !important;
@@ -569,7 +570,7 @@ kbd{background:var(--surface2);border:1px solid var(--border);border-radius:3px;
   /* Hide desktop table on mobile */
   .song-table-wrap{display:none}
   /* Hide all keyboard shortcut UI on mobile — no physical keyboard */
-  .kbd-hint{display:none!important}
+  .kbd-hint-wrap{display:none!important}
   .kbd-section-mobile-hide{display:none}
   .event-kbd-badge{display:none}
   .gnp-spacebar-btn{display:none}
@@ -637,51 +638,13 @@ kbd{background:var(--surface2);border:1px solid var(--border);border-radius:3px;
 }
 .up-next-dropdown.open{display:block}
 
-/* Desktop dropdown popup */
-.up-next-dropdown.is-desktop-popup{
-  position:fixed !important;
-  width:380px !important;
-  height:auto !important;
-  display:flex !important;
-  flex-direction:column !important;
-  overflow:hidden !important;
-  background:#0e1118 !important;
-  border:1px solid #3a4255 !important;
-  box-shadow:0 12px 40px rgba(0,0,0,.97),0 2px 12px rgba(0,0,0,.9) !important;
-  border-radius:9px !important;
-  z-index:9999 !important;
+/* Desktop dropdown — simple absolute inside button */
+@media(min-width:641px){
+  .up-next-dropdown{
+    max-height:220px;
+    overflow-y:auto;
+  }
 }
-.up-next-dropdown.is-desktop-popup .und-header{
-  flex-shrink:0;
-  background:#0e1118;
-  border-bottom:1px solid #2a3040;
-  border-radius:9px 9px 0 0;
-}
-.up-next-dropdown.is-desktop-popup .und-search-wrap{
-  display:block;flex-shrink:0;
-  padding:8px 10px;
-  background:#0e1118;
-  border-bottom:1px solid #2a3040;
-}
-.up-next-dropdown.is-desktop-popup .und-search{
-  width:100%;background:#1c2130;border:1px solid #3a4255;
-  border-radius:5px;color:var(--text);font-family:var(--font-body);
-  font-size:13px;padding:7px 10px;outline:none;box-sizing:border-box;
-}
-.up-next-dropdown.is-desktop-popup .und-search:focus{border-color:var(--ice-dim)}
-.up-next-dropdown.is-desktop-popup .und-list{
-  overflow-y:scroll !important;
-  flex:1 !important;
-  background:#0e1118 !important;
-  /* max-height set dynamically by JS */
-}
-.up-next-dropdown.is-desktop-popup .und-item{
-  font-size:13px;padding:8px 12px;
-  background:#0e1118;
-  border-bottom:1px solid #1a2030;
-}
-.up-next-dropdown.is-desktop-popup .und-item:hover{background:#1c2535 !important}
-.up-next-dropdown.is-desktop-popup .und-item.is-next{background:#112035 !important}
 .und-header{
   display:flex;align-items:center;justify-content:space-between;
   padding:6px 10px;
@@ -1328,7 +1291,8 @@ input[type=number]{width:84px}
 
 <!-- LIVE PAGE -->
 <div id="live-page" class="page active">
-  <div class="kbd-hint" id="kbd-hint-strip">
+  <div class="kbd-hint-wrap">
+    <div class="kbd-hint" id="kbd-hint-strip"></div>
     <button class="arrange-toggle-btn kbd-section-mobile-hide" id="arrange-toggle-btn" onclick="toggleArrangeMode()" title="Arrange event buttons">⊞ Arrange</button>
   </div>
   <div class="layout-arrange-bar" id="layout-arrange-bar" style="display:none">
@@ -2334,101 +2298,33 @@ function toggleUpNextDropdown(eid){
   const dd=document.getElementById(`upnext-dd-${eid}`);if(!dd)return;
   const isMobile=window.innerWidth<=640;
 
-  // Build the dropdown content
-  function buildList(filterText){
+  function buildList(){
     const pool=songs.filter(s=>s.event===eid);
-    const filtered=filterText?pool.filter(s=>s.title.toLowerCase().includes(filterText.toLowerCase())):pool;
     const currentNext=nextSong[eid];
-    return filtered.map(s=>{
+    return pool.map(s=>{
       const isNext=currentNext&&s.id===currentNext.id;
       return `<div class="und-item${isNext?' is-next':''}" onclick="event.stopPropagation();selectNextSong('${eid}','${s.id}')">
-        <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:${isMobile?'15px':'12px'}">${esc(s.title)}</span>
-        ${s.startAt>0?`<span style="color:var(--text-muted);font-size:${isMobile?'12px':'10px'};flex-shrink:0;margin-left:6px">▶${fmt(s.startAt)}</span>`:''}
+        <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(s.title)}</span>
+        ${s.startAt>0?`<span style="color:var(--text-muted);font-size:10px;flex-shrink:0;margin-left:6px">▶${fmt(s.startAt)}</span>`:''}
         <span class="und-next-badge">NEXT</span>
       </div>`;
-    }).join('')||`<div style="padding:16px;text-align:center;color:var(--text-muted);font-family:var(--font-ui);font-size:12px">No matches</div>`;
+    }).join('')||`<div style="padding:12px;text-align:center;color:var(--text-muted);font-family:var(--font-ui);font-size:12px">No songs</div>`;
   }
 
-  const searchId=`und-search-${eid}`;
   dd.innerHTML=`
     <div class="und-header">
       <span class="und-header-label">Choose Next — ${EVENT_DEFS.find(d=>d.id===eid)?.label||eid}</span>
       <button class="und-close-btn" onclick="event.stopPropagation();closeAllDropdowns()">✕</button>
     </div>
-    <div class="und-search-wrap"><input class="und-search" id="${searchId}" type="text" placeholder="Search songs…" autocomplete="off"></div>
-    <div class="und-list" id="und-list-${eid}">${buildList('')}</div>
+    <div class="und-list" id="und-list-${eid}">${buildList()}</div>
   `;
 
-  // Wire search (both mobile and desktop)
-  const searchEl=document.getElementById(searchId);
-  if(searchEl){
-    searchEl.addEventListener('input',e=>{
-      document.getElementById(`und-list-${eid}`).innerHTML=buildList(e.target.value);
-    });
-    searchEl.addEventListener('click',e=>e.stopPropagation());
-  }
-
   if(isMobile){
-    // Mobile: absolute inside button + backdrop
-    dd.style.cssText='';  // clear any fixed positioning from previous desktop use
     let backdrop=document.getElementById('und-backdrop');
     if(!backdrop){backdrop=document.createElement('div');backdrop.id='und-backdrop';backdrop.className='und-backdrop';backdrop.addEventListener('click',closeAllDropdowns);document.body.appendChild(backdrop);}
     backdrop.classList.add('open');
-    setTimeout(()=>{ if(searchEl)searchEl.focus(); },200);
-  } else {
-    // Desktop: move dropdown to body so it's free of all parent CSS constraints
-    const strip = dd.closest('.up-next-strip');
-    const rect  = strip ? strip.getBoundingClientRect() : {left:0,right:0,top:0,bottom:0,width:0};
-
-    // Move to body if not already there; remember original parent for restore
-    if(dd.parentElement !== document.body){
-      dd._origParent = dd.parentElement;
-      document.body.appendChild(dd);
-    }
-    dd.classList.add('is-desktop-popup');
-
-    const panelW = 380;
-    const margin = 8;
-    const vpW    = window.innerWidth;
-    const vpH    = window.innerHeight;
-
-    // Centre horizontally on the strip, clamped to viewport
-    let left = rect.left + rect.width / 2 - panelW / 2;
-    left = Math.max(margin, Math.min(left, vpW - panelW - margin));
-
-    // Use the page-wrap element to find the exact usable vertical area
-    // (below nav+NP bar, above mobile nav / bottom of viewport)
-    const pageWrap = document.getElementById('page-wrap');
-    const pwRect   = pageWrap ? pageWrap.getBoundingClientRect() : {top:0, bottom:vpH};
-    const areaTop  = pwRect.top + margin;   // top of usable live area
-    const areaBot  = pwRect.bottom - margin; // bottom of usable live area
-
-    const headerH  = 44;  // und-header height
-    const searchH  = 52;  // und-search-wrap height
-    const overhead = headerH + searchH + 8;
-
-    // Maximum list height = full usable area minus overhead, capped at 360px
-    const maxListH = Math.min(360, Math.max(80, areaBot - areaTop - overhead));
-    const panelH   = overhead + maxListH;
-
-    // Set explicit height on panel and list so flex+overflow:hidden works
-    dd.style.height    = panelH + 'px';
-    dd.style.maxHeight = panelH + 'px';
-    const listEl = dd.querySelector('.und-list');
-    if(listEl) listEl.style.maxHeight = maxListH + 'px';
-
-    // Position: open upward from the strip, clamped to usable area
-    let top = rect.top - panelH - 8;
-    top = Math.max(areaTop, top);
-    if(top + panelH > areaBot) top = areaBot - panelH;
-    top = Math.max(areaTop, top);
-
-    dd.style.left = left + 'px';
-    dd.style.top  = top + 'px';
-
-    dd.classList.add('open');
-    setTimeout(()=>{ if(searchEl)searchEl.focus(); },80);
   }
+  dd.classList.add('open');
 }
 
 // ── Swipe gesture for event buttons (mobile) ──────
@@ -2491,17 +2387,7 @@ function selectNextSong(eid, songId){
 }
 
 function closeAllDropdowns(){
-  document.querySelectorAll('.up-next-dropdown.open').forEach(d=>{
-    d.classList.remove('open');
-    d.classList.remove('is-desktop-popup');
-    d.style.left=''; d.style.top=''; d.style.width=''; d.style.height=''; d.style.maxHeight='';
-    const l=d.querySelector('.und-list');if(l)l.style.maxHeight='';
-    // Return to original parent if it was moved to body
-    if(d._origParent && d.parentElement===document.body){
-      d._origParent.appendChild(d);
-      d._origParent=null;
-    }
-  });
+  document.querySelectorAll('.up-next-dropdown.open').forEach(d=>d.classList.remove('open'));
   const backdrop=document.getElementById('und-backdrop');
   if(backdrop)backdrop.classList.remove('open');
   openDropdownEid=null;
