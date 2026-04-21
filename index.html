@@ -55,7 +55,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 
 /* NAV */
 nav{display:flex;align-items:center;background:var(--surface);border-bottom:1px solid var(--border);padding:0 16px;height:52px;flex-shrink:0}
-.nav-logo{font-family:var(--font-display);font-size:28px;letter-spacing:4px;color:var(--team-primary);text-shadow:0 0 16px rgba(200,232,255,.15);margin-right:auto}
+.nav-logo{font-family:var(--font-display);font-size:28px;letter-spacing:4px;color:var(--team-primary);text-shadow:0 0 16px rgba(200,232,255,.15);margin-right:auto;max-width:240px}
 .nav-logo span{color:var(--team-secondary)}
 .nav-tab{font-family:var(--font-ui);font-size:13px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);padding:0 16px;height:52px;display:flex;align-items:center;cursor:pointer;border-bottom:2px solid transparent;transition:color .2s,border-color .2s;white-space:nowrap}
 .nav-tab:hover{color:var(--text)}
@@ -275,9 +275,24 @@ kbd{background:var(--surface2);border:1px solid var(--border);border-radius:3px;
   gap:clamp(5px,.8vh,12px);
   padding:clamp(7px,1vh,16px) clamp(10px,1.2vw,20px);
   overflow-y:auto;
-  /* Prevent overflow from forcing scrollbar */
   min-height:0;
+  /* Team logo watermark — set via JS when ?team= is active */
+  position:relative;
 }
+.events-layout::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background-image:var(--team-logo-url, none);
+  background-repeat:no-repeat;
+  background-position:center center;
+  background-size:min(50vh, 50vw) auto;
+  opacity:0.07;
+  pointer-events:none;
+  z-index:0;
+}
+/* Ensure event buttons sit above the watermark */
+.event-group{position:relative;z-index:1;}
 .event-group{display:flex;flex-direction:column;gap:clamp(3px,.4vh,6px)}
 .event-group-label{
   font-family:var(--font-ui);
@@ -1037,7 +1052,14 @@ input[type=number]{width:84px}
 }
 
 /* Team logo in nav */
-.nav-team-logo{height:36px;max-width:160px;object-fit:contain;display:block}
+.nav-team-logo{
+  height:44px;max-height:44px;max-width:200px;
+  object-fit:contain;display:block;
+  filter:drop-shadow(0 0 8px rgba(255,255,255,.15));
+}
+@media(max-width:640px){
+  .nav-team-logo{height:34px;max-width:140px}
+}
 
 /* Contact form */
 .cf-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -2265,6 +2287,7 @@ function clearKbdInput(id){
 
 function buildKbdSettingsGrid(){
   const tbody=document.getElementById('kbd-tbody');if(!tbody)return;
+  tbody.innerHTML=''; // clear before rebuild — prevents duplication on repeated calls
   // Section: Event triggers
   const hdrEvent=document.createElement('tr');
   hdrEvent.innerHTML='<td colspan="2" class="kbd-section-header">Event Triggers</td>';
@@ -3223,6 +3246,10 @@ document.addEventListener('keydown',e=>{
     if(team.colors?.primary)   root.style.setProperty('--team-primary',     team.colors.primary);
     if(team.colors?.primaryDim)root.style.setProperty('--team-primary-dim', team.colors.primaryDim);
     if(team.colors?.secondary) root.style.setProperty('--team-secondary',   team.colors.secondary);
+    // Set watermark logo URL for live page background
+    if(team.logoUrl){
+      root.style.setProperty('--team-logo-url', `url('${team.logoUrl}')`);
+    }
 
     // Replace nav logo with team logo or team name
     const logoEl = document.getElementById('nav-logo');
