@@ -554,7 +554,7 @@
     },
     {
       "id": "mo4xlga0h5oqz3e35me",
-      "title": "Hockey Arena Organ - Gnistan 122",
+      "title": "Hockey Arena Organ 1",
       "videoId": "b5wLgGEsXkA",
       "event": "intermission",
       "startAt": 6,
@@ -562,7 +562,7 @@
     },
     {
       "id": "mo4xlga0coyswx4nd",
-      "title": "Hockey Arena Organ - Gnistan 122",
+      "title": "Hockey Arena Organ 2",
       "videoId": "f7LU8A19USE",
       "event": "intermission",
       "startAt": 6,
@@ -570,7 +570,7 @@
     },
     {
       "id": "mo4xlga04ervqheo2u5",
-      "title": "Hockey Arena Organ - Gnistan 122",
+      "title": "Hockey Arena Organ 3",
       "videoId": "BVAoP114ApY",
       "event": "intermission",
       "startAt": 6,
@@ -578,7 +578,7 @@
     },
     {
       "id": "mo4xlga0x66ujwg5ms",
-      "title": "Hockey Arena Organ - Gnistan 122",
+      "title": "Hockey Arena Organ 4",
       "videoId": "frHfFbADVyI",
       "event": "intermission",
       "startAt": 6,
@@ -1332,8 +1332,8 @@
       "cols": 3,
       "size": "S",
       "cells": [
-        "match_intro",
         "warmup",
+        "match_intro",
         "final"
       ]
     },
@@ -1354,7 +1354,7 @@
     },
     {
       "cols": 2,
-      "size": "M",
+      "size": "L",
       "cells": [
         "pp_home",
         "box_home"
