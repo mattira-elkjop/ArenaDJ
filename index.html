@@ -356,18 +356,22 @@ kbd{background:var(--surface2);border:1px solid var(--border);border-radius:3px;
   .kbd-hint{display:none}
 
   .events-layout{
-    display:grid;
+    display:grid !important;
     grid-template-columns:1fr 1fr;
     gap:8px;
     padding:10px;
     align-content:start;
     overflow-y:auto;
     -webkit-overflow-scrolling:touch;
-    flex-direction:unset;
   }
-  .event-group{display:contents}
-  .event-group-label{display:none}
-  .event-row{display:contents}
+  /* On mobile: each layout-row-grid becomes a 2-col grid spanning full width */
+  .layout-row-grid{
+    display:grid !important;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    grid-column:1/-1;
+  }
+  .layout-row{display:contents !important}
 
   .event-btn{
     min-height:90px;
@@ -1148,6 +1152,113 @@ input[type=number]{width:84px}
   .cf-grid{grid-template-columns:1fr}
   .cf-full{grid-column:1}
 }
+
+/* ══ LAYOUT SYSTEM ════════════════════════════════ */
+/* Each row is its own grid */
+.layout-row{display:flex;flex-direction:column;flex-shrink:0}
+.layout-row-grid{
+  display:grid;
+  flex:1;
+  gap:clamp(5px,.7vw,10px);
+}
+/* Size presets applied via inline minHeight on layout-row */
+
+/* Row controls bar (arrange mode) */
+.layout-row-controls{
+  display:flex;align-items:center;gap:4px;
+  padding:4px 8px;background:rgba(200,232,255,.06);
+  border-bottom:1px solid var(--border);flex-shrink:0;
+  font-family:var(--font-ui);font-size:11px;
+}
+.lrc-label{color:var(--text-muted);font-size:10px;letter-spacing:1px;text-transform:uppercase;white-space:nowrap}
+.lrc-btn{
+  background:var(--surface2);border:1px solid var(--border);
+  color:var(--text-muted);font-family:var(--font-ui);font-size:11px;font-weight:700;
+  padding:3px 8px;border-radius:4px;cursor:pointer;transition:all .15s;
+}
+.lrc-btn:hover{border-color:var(--team-accent);color:var(--team-accent)}
+.lrc-btn.active{background:var(--team-accent);color:var(--bg);border-color:var(--team-accent)}
+.lrc-del{
+  margin-left:auto;background:none;border:1px solid transparent;
+  color:var(--text-muted);font-size:13px;cursor:pointer;padding:2px 6px;
+  border-radius:4px;transition:all .15s;
+}
+.lrc-del:hover{border-color:var(--red);color:var(--red)}
+
+/* Empty drop cell */
+.layout-empty-cell{
+  border:2px dashed var(--border);border-radius:7px;
+  min-height:60px;display:flex;align-items:center;justify-content:center;
+  color:var(--text-muted);font-family:var(--font-ui);font-size:11px;
+  letter-spacing:1px;text-transform:uppercase;
+  transition:border-color .15s,background .15s;
+}
+.layout-empty-cell.drop-over{border-color:var(--team-accent);background:rgba(200,232,255,.05)}
+
+/* Drag handle on buttons */
+.arrange-handle{
+  position:absolute;top:4px;right:4px;z-index:10;
+  color:rgba(255,255,255,.4);font-size:14px;cursor:grab;
+  background:rgba(0,0,0,.3);border-radius:3px;padding:1px 4px;
+  line-height:1.4;
+  transition:color .15s,background .15s;
+}
+.arrange-handle:hover{color:var(--text);background:rgba(0,0,0,.6)}
+.event-btn.arrange-mode{cursor:default}
+.event-btn.dragging{opacity:.4}
+.event-btn.drop-over{outline:2px solid var(--team-accent);outline-offset:-2px}
+
+/* Add row button */
+.layout-add-row-wrap{
+  display:none;justify-content:center;
+  padding:8px 0 12px;flex-shrink:0;
+}
+.layout-add-row-btn{
+  background:rgba(200,232,255,.06);border:1px dashed var(--border);
+  color:var(--text-muted);font-family:var(--font-ui);font-size:12px;font-weight:700;
+  letter-spacing:2px;text-transform:uppercase;padding:8px 32px;
+  border-radius:6px;cursor:pointer;transition:all .15s;
+}
+.layout-add-row-btn:hover{border-color:var(--team-accent);color:var(--team-accent);background:rgba(200,232,255,.08)}
+
+/* Arrange info bar */
+.layout-arrange-bar{
+  display:none;align-items:center;gap:12px;
+  padding:6px 16px;background:rgba(200,232,255,.05);
+  border-bottom:1px solid var(--border);flex-shrink:0;
+}
+.layout-arrange-hint{
+  font-family:var(--font-ui);font-size:11px;color:var(--text-muted);flex:1;
+}
+.layout-arrange-hint strong{color:var(--team-accent)}
+
+/* Arrange toggle in kbd-hint bar */
+.arrange-toggle-btn{
+  margin-left:auto;flex-shrink:0;
+  background:none;border:1px solid var(--border);color:var(--text-muted);
+  font-family:var(--font-ui);font-size:10px;font-weight:700;letter-spacing:1px;
+  text-transform:uppercase;padding:3px 10px;border-radius:4px;cursor:pointer;
+  transition:all .15s;
+}
+.arrange-toggle-btn:hover{border-color:var(--team-accent);color:var(--team-accent)}
+.arrange-toggle-btn.active{border-color:var(--team-accent);color:var(--team-accent);background:rgba(200,232,255,.08)}
+
+/* Override events-layout for new row system */
+.events-layout{
+  display:flex !important;
+  flex-direction:column;
+  gap:clamp(5px,.8vh,12px);
+  padding:clamp(7px,1vh,16px) clamp(10px,1.2vw,20px);
+  overflow-y:auto;
+  min-height:0;
+  position:relative;
+}
+/* Mobile: ignore layout system, use fixed 2-col grid */
+@media(max-width:640px){
+  .layout-row{display:contents}
+  .layout-row-grid{display:contents}
+  .layout-row-controls,.layout-arrange-bar,.arrange-toggle-btn,.layout-add-row-wrap{display:none!important}
+}
 </style>
 </head>
 <body>
@@ -1217,8 +1328,17 @@ input[type=number]{width:84px}
 
 <!-- LIVE PAGE -->
 <div id="live-page" class="page active">
-  <div class="kbd-hint" id="kbd-hint-strip"></div>
+  <div class="kbd-hint" id="kbd-hint-strip">
+    <button class="arrange-toggle-btn kbd-section-mobile-hide" id="arrange-toggle-btn" onclick="toggleArrangeMode()" title="Arrange event buttons">⊞ Arrange</button>
+  </div>
+  <div class="layout-arrange-bar" id="layout-arrange-bar" style="display:none">
+    <span class="layout-arrange-hint">Drag buttons to reorder · Set columns and size per row · <strong>+ Add Row</strong> to create new rows</span>
+    <button class="btn btn-primary btn-sm" onclick="saveLayout()">✓ DONE</button>
+  </div>
   <div class="events-layout" id="events-layout"></div>
+  <div class="layout-add-row-wrap" id="layout-add-row-wrap" style="display:none">
+    <button class="layout-add-row-btn" onclick="layoutAddRow()">+ Add Row</button>
+  </div>
 </div>
 
 <!-- SETTINGS PAGE -->
@@ -1458,6 +1578,14 @@ input[type=number]{width:84px}
 // ══════════════════════════════════════════════════
 const CURRENT_VERSION = 7;
 
+const DEFAULT_LAYOUT = [
+  {cols:4, size:'M', cells:['match_intro','warmup','intermission','final']},
+  {cols:2, size:'L', cells:['goal_home','goal_away']},
+  {cols:3, size:'M', cells:['pp_home','box_home','timeout']},
+  {cols:2, size:'S', cells:['hit','maintenance']},
+];
+
+
 const EVENT_GROUPS = [
   {label:'Match Flow',  rows:[['match_intro','warmup','intermission','final']]},
   {label:'Goals',       rows:[['goal_home','goal_away']], rowClass:'goals'},
@@ -1487,6 +1615,7 @@ function getPillColor(id){
 //  STATE
 // ══════════════════════════════════════════════════
 let songs          = [];
+let layoutConfig   = null; // null = use DEFAULT_LAYOUT
 let globalConfig   = {defaultDuration:60,fadeDuration:3,fadeInDuration:2,announceFadeDuration:8};
 let kbdConfig      = {};
 let eventQueues    = {};
@@ -1513,12 +1642,15 @@ let libFilterEvents= new Set();// event IDs to filter (empty = show all)
 //  STORAGE
 // ══════════════════════════════════════════════════
 function save(){
+  localStorage.setItem('arenaDJ_layout', JSON.stringify(layoutConfig||DEFAULT_LAYOUT));
   localStorage.setItem('arenaDJ_songs',  JSON.stringify(songs));
   localStorage.setItem('arenaDJ_config', JSON.stringify(globalConfig));
   localStorage.setItem('arenaDJ_kbd',    JSON.stringify(kbdConfig));
 }
 function load(){
   try{
+    const ly=localStorage.getItem('arenaDJ_layout');
+    if(ly) layoutConfig=JSON.parse(ly);
     const s=localStorage.getItem('arenaDJ_songs');  if(s) songs=JSON.parse(s);
     const c=localStorage.getItem('arenaDJ_config'); if(c) globalConfig={...globalConfig,...JSON.parse(c)};
     const k=localStorage.getItem('arenaDJ_kbd');    if(k) kbdConfig=JSON.parse(k);
@@ -1931,68 +2063,231 @@ function fmt(s){s=Math.floor(s||0);return Math.floor(s/60)+':'+(s%60).toString()
 // ══════════════════════════════════════════════════
 //  EVENT BUTTONS
 // ══════════════════════════════════════════════════
-function buildEventButtons(){
-  const layout=document.getElementById('events-layout');layout.innerHTML='';
-  EVENT_GROUPS.forEach(group=>{
-    const groupEl=document.createElement('div');groupEl.className='event-group';
-    groupEl.innerHTML=`<div class="event-group-label">${group.label}</div>`;
-    group.rows.forEach(rowIds=>{
-      const rowEl=document.createElement('div');rowEl.className='event-row '+(group.rowClass||'standard');
-      rowIds.forEach(id=>{
-        const def=EVENT_DEFS.find(d=>d.id===id);if(!def)return;
-        const count=songs.filter(s=>s.event===id).length;
-        const key=kbdConfig[id]||'';
-        const song=nextSong[id];
-        const upText=!count?'No songs':(song?song.title:'—');
-        const hasSong=count&&song;
-        const btn=document.createElement('div');
-        btn.className=`event-btn ${def.cls}`;btn.id=`evtbtn-${id}`;
-        btn.innerHTML=`
-          <span class="swipe-hint-left" aria-hidden="true">↺</span>
-          <span class="swipe-hint-right" aria-hidden="true">⏭</span>
-          <div class="btn-zones">
-            <div class="zone-left" title="↺ Replay">↺</div>
-            <div class="zone-mid">
-              <div class="event-btn-label">${def.label}</div>
-              ${def.sub?`<div class="event-btn-sub">${def.sub}</div>`:''}
-              <div class="event-btn-meta">
-                <span class="event-song-count">${count} song${count!==1?'s':''}</span>
-                <span style="display:flex;align-items:center;gap:5px">
-                  ${key?`<span class="event-kbd-badge">${key.toUpperCase()}</span>`:''}
-                  <span class="event-status-icon" id="icon-${id}">
-                    <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6,4 20,12 6,20"/></svg>
-                  </span>
-                </span>
-              </div>
-            </div>
-            <div class="zone-right" title="⏭ Skip">⏭</div>
-          </div>
-          <div class="up-next-strip${!count?' no-songs':''}" id="upnext-${id}">
-            <span class="up-next-label">UP NEXT</span>
-            <span class="up-next-title${hasSong?' has-song':''}">${upText}</span>
-            <span class="up-next-chevron">▾</span>
-            <button class="shuffle-next-btn" title="Shuffle next song" onclick="event.stopPropagation();shuffleNext('${id}')">⟳</button>
-            <div class="up-next-dropdown" id="upnext-dd-${id}"></div>
-          </div>`;
-        btn.querySelector('.zone-left').addEventListener('click',e=>{e.stopPropagation();handleZoneLeft(id);});
-        btn.querySelector('.zone-right').addEventListener('click',e=>{e.stopPropagation();handleZoneRight(id);});
-        btn.querySelector('.zone-mid').addEventListener('click',e=>{e.stopPropagation();handleMidClick(id);});
-        // Swipe gesture on the whole button (mobile)
-        addSwipeGesture(btn, id);
-        // Up-next strip click → open/close song picker dropdown
-        const strip=btn.querySelector('.up-next-strip');
-        if(strip) strip.addEventListener('click',e=>{
-          if(e.target.classList.contains('shuffle-next-btn')||e.target.closest('.shuffle-next-btn'))return;
-          e.stopPropagation();
-          toggleUpNextDropdown(id);
-        });
-        rowEl.appendChild(btn);
-      });
-      groupEl.appendChild(rowEl);
-    });
-    layout.appendChild(groupEl);
+// Size preset heights (desktop)
+const SIZE_HEIGHTS = {S:'clamp(48px,6vh,70px)', M:'clamp(70px,9vh,110px)', L:'clamp(100px,13vh,155px)', XL:'clamp(140px,18vh,210px)'};
+const SIZE_LABELS  = {S:'S', M:'M', L:'L', XL:'XL'};
+let   arrangeMode  = false;
+let   dragSrcRow   = null, dragSrcIdx = null; // drag state
+
+function getLayout(){ return layoutConfig || DEFAULT_LAYOUT; }
+
+function makeEventBtn(id){
+  const def=EVENT_DEFS.find(d=>d.id===id);if(!def)return null;
+  const count=songs.filter(s=>s.event===id).length;
+  const key=kbdConfig[id]||'';
+  const song=nextSong[id];
+  const upText=!count?'No songs':(song?song.title:'—');
+  const hasSong=count&&song;
+  const btn=document.createElement('div');
+  btn.className=`event-btn ${def.cls}`;btn.id=`evtbtn-${id}`;
+  btn.dataset.eid=id;
+  btn.innerHTML=`
+    <span class="swipe-hint-left" aria-hidden="true">↺</span>
+    <span class="swipe-hint-right" aria-hidden="true">⏭</span>
+    <div class="btn-zones">
+      <div class="zone-left" title="↺ Replay">↺</div>
+      <div class="zone-mid">
+        <div class="event-btn-label">${def.label}</div>
+        ${def.sub?`<div class="event-btn-sub">${def.sub}</div>`:''}
+        <div class="event-btn-meta">
+          <span class="event-song-count">${count} song${count!==1?'s':''}</span>
+          <span style="display:flex;align-items:center;gap:5px">
+            ${key?`<span class="event-kbd-badge">${esc(key)}</span>`:''}
+            <span class="event-status-icon" id="icon-${id}">
+              <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6,4 20,12 6,20"/></svg>
+            </span>
+          </span>
+        </div>
+      </div>
+      <div class="zone-right" title="⏭ Skip">⏭</div>
+    </div>
+    <div class="up-next-strip${!count?' no-songs':''}" id="upnext-${id}">
+      <span class="up-next-label">UP NEXT</span>
+      <span class="up-next-title${hasSong?' has-song':''}">${esc(upText)}</span>
+      <span class="up-next-chevron">▾</span>
+      <button class="shuffle-next-btn" title="Shuffle next song" onclick="event.stopPropagation();shuffleNext('${id}')">⟳</button>
+      <div class="up-next-dropdown" id="upnext-dd-${id}"></div>
+    </div>`;
+  btn.querySelector('.zone-left').addEventListener('click',e=>{e.stopPropagation();handleZoneLeft(id);});
+  btn.querySelector('.zone-right').addEventListener('click',e=>{e.stopPropagation();handleMidClick(id);});
+  btn.querySelector('.zone-mid').addEventListener('click',e=>{e.stopPropagation();handleMidClick(id);});
+  addSwipeGesture(btn,id);
+  const strip=btn.querySelector('.up-next-strip');
+  if(strip) strip.addEventListener('click',e=>{
+    if(e.target.closest('.shuffle-next-btn'))return;
+    e.stopPropagation();toggleUpNextDropdown(id);
   });
+  return btn;
+}
+
+function buildEventButtons(){
+  const layout=document.getElementById('events-layout');
+  layout.innerHTML='';
+  const rows=getLayout();
+  const isMobile=window.innerWidth<=640;
+
+  rows.forEach((row,ri)=>{
+    const rowEl=document.createElement('div');
+    rowEl.className='layout-row';
+    rowEl.dataset.ri=ri;
+    if(!isMobile){
+      rowEl.style.gridTemplateColumns=`repeat(${row.cols},1fr)`;
+      rowEl.style.minHeight=SIZE_HEIGHTS[row.size]||SIZE_HEIGHTS.M;
+    }
+
+    if(arrangeMode && !isMobile){
+      // Row controls bar
+      const ctrl=document.createElement('div');
+      ctrl.className='layout-row-controls';
+      ctrl.innerHTML=`
+        <span class="lrc-label">Columns:</span>
+        ${[1,2,3,4].map(n=>`<button class="lrc-btn${row.cols===n?' active':''}" onclick="layoutSetCols(${ri},${n})">${n}</button>`).join('')}
+        <span class="lrc-label" style="margin-left:10px">Size:</span>
+        ${['S','M','L','XL'].map(s=>`<button class="lrc-btn${row.size===s?' active':''}" onclick="layoutSetSize(${ri},'${s}')">${s}</button>`).join('')}
+        <button class="lrc-del" onclick="layoutDeleteRow(${ri})" title="Delete row (only if empty)">✕</button>`;
+      rowEl.appendChild(ctrl);
+    }
+
+    // Cells
+    const grid=document.createElement('div');
+    grid.className='layout-row-grid';
+    if(!isMobile){
+      grid.style.gridTemplateColumns=`repeat(${row.cols},1fr)`;
+    }
+
+    row.cells.forEach((id,ci)=>{
+      if(!id){
+        // Empty cell — drop target only
+        const empty=document.createElement('div');
+        empty.className='layout-empty-cell';
+        empty.dataset.ri=ri;empty.dataset.ci=ci;
+        if(arrangeMode) wireDropTarget(empty,ri,ci);
+        grid.appendChild(empty);
+        return;
+      }
+      const btn=makeEventBtn(id);
+      if(!btn)return;
+      btn.dataset.ri=ri;btn.dataset.ci=ci;
+      if(arrangeMode && !isMobile){
+        btn.classList.add('arrange-mode');
+        const handle=document.createElement('div');
+        handle.className='arrange-handle';
+        handle.textContent='⠿';
+        handle.title='Drag to move';
+        btn.appendChild(handle);
+        wireDrag(btn,ri,ci);
+      }
+      if(arrangeMode) wireDropTarget(btn,ri,ci);
+      grid.appendChild(btn);
+    });
+
+    rowEl.appendChild(grid);
+    layout.appendChild(rowEl);
+  });
+
+  // Add row button
+  const addWrap=document.getElementById('layout-add-row-wrap');
+  if(addWrap) addWrap.style.display=arrangeMode&&!isMobile?'flex':'none';
+  const arrangeBar=document.getElementById('layout-arrange-bar');
+  if(arrangeBar) arrangeBar.style.display=arrangeMode&&!isMobile?'flex':'none';
+
   buildKbdHintStrip();
+}
+
+// ── Arrange mode toggle ────────────────────────────────────────────────────
+function toggleArrangeMode(){
+  arrangeMode=!arrangeMode;
+  const btn=document.getElementById('arrange-toggle-btn');
+  if(btn){
+    btn.textContent=arrangeMode?'🔓 Arranging…':'⊞ Arrange';
+    btn.classList.toggle('active',arrangeMode);
+  }
+  buildEventButtons();
+}
+function saveLayout(){
+  layoutConfig=[...getLayout()];
+  save();
+  arrangeMode=false;
+  const btn=document.getElementById('arrange-toggle-btn');
+  if(btn){btn.textContent='⊞ Arrange';btn.classList.remove('active');}
+  buildEventButtons();
+  showToast('✓ Layout saved');
+}
+
+// ── Row controls ──────────────────────────────────────────────────────────
+function layoutSetCols(ri,cols){
+  const ly=getLayout();
+  const row=ly[ri];if(!row)return;
+  if(cols<row.cols){
+    // Shrinking — only allow if trailing cells are empty
+    for(let i=cols;i<row.cells.length;i++){
+      if(row.cells[i]){showToast('Move or clear buttons in removed columns first');return;}
+    }
+    row.cells=row.cells.slice(0,cols);
+  } else {
+    // Growing — pad with nulls
+    while(row.cells.length<cols) row.cells.push(null);
+  }
+  row.cols=cols;
+  layoutConfig=ly;
+  buildEventButtons();
+}
+function layoutSetSize(ri,size){
+  const ly=getLayout();
+  if(ly[ri]) ly[ri].size=size;
+  layoutConfig=ly;
+  buildEventButtons();
+}
+function layoutDeleteRow(ri){
+  const ly=getLayout();
+  const row=ly[ri];if(!row)return;
+  if(row.cells.some(c=>c)){showToast('Row must be empty before deleting');return;}
+  ly.splice(ri,1);
+  layoutConfig=ly;
+  buildEventButtons();
+}
+function layoutAddRow(){
+  const ly=getLayout();
+  ly.push({cols:4,size:'M',cells:[null,null,null,null]});
+  layoutConfig=ly;
+  buildEventButtons();
+  // Scroll to bottom
+  document.getElementById('events-layout').scrollTop=99999;
+}
+
+// ── Drag and drop ─────────────────────────────────────────────────────────
+function wireDrag(btn,ri,ci){
+  btn.setAttribute('draggable','true');
+  btn.addEventListener('dragstart',e=>{
+    dragSrcRow=ri;dragSrcIdx=ci;
+    e.dataTransfer.effectAllowed='move';
+    setTimeout(()=>btn.classList.add('dragging'),0);
+  });
+  btn.addEventListener('dragend',()=>{
+    btn.classList.remove('dragging');
+    document.querySelectorAll('.drop-over').forEach(el=>el.classList.remove('drop-over'));
+  });
+}
+function wireDropTarget(el,ri,ci){
+  el.addEventListener('dragover',e=>{
+    e.preventDefault();e.dataTransfer.dropEffect='move';
+    el.classList.add('drop-over');
+  });
+  el.addEventListener('dragleave',()=>el.classList.remove('drop-over'));
+  el.addEventListener('drop',e=>{
+    e.preventDefault();el.classList.remove('drop-over');
+    if(dragSrcRow===null||dragSrcIdx===null)return;
+    if(dragSrcRow===ri&&dragSrcIdx===ci)return;
+    const ly=getLayout();
+    const srcId=ly[dragSrcRow]?.cells[dragSrcIdx];
+    const dstId=ly[ri]?.cells[ci];
+    // Swap
+    if(ly[dragSrcRow]) ly[dragSrcRow].cells[dragSrcIdx]=dstId||null;
+    if(ly[ri])         ly[ri].cells[ci]=srcId||null;
+    layoutConfig=ly;
+    dragSrcRow=null;dragSrcIdx=null;
+    buildEventButtons();
+  });
 }
 
 function setActiveBtn(eid,active){
@@ -2719,7 +3014,7 @@ async function resetToDefaultSongs(){
 }
 
 function exportSettings(){
-  const blob=new Blob([JSON.stringify({songs,globalConfig,kbdConfig,version:CURRENT_VERSION},null,2)],{type:'application/json'});
+  const blob=new Blob([JSON.stringify({songs,globalConfig,kbdConfig,layoutConfig:layoutConfig||DEFAULT_LAYOUT,version:CURRENT_VERSION},null,2)],{type:'application/json'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='arena-dj-settings.json';a.click();URL.revokeObjectURL(a.href);
   showToast('Settings exported (v'+CURRENT_VERSION+')');
 }
@@ -2733,6 +3028,7 @@ function importSettings(e){
       if(data.songs)songs=data.songs;
       if(data.globalConfig)globalConfig={...globalConfig,...data.globalConfig};
       if(data.kbdConfig)kbdConfig={...kbdConfig,...data.kbdConfig};
+      if(data.layoutConfig)layoutConfig=data.layoutConfig;
       EVENT_DEFS.forEach(def=>{if(!(def.id in kbdConfig))kbdConfig[def.id]=def.defaultKey;});
       EVENT_DEFS.forEach(def=>{delete eventQueues[def.id];delete eventQueuePos[def.id];});
       save();loadConfigUI();buildKbdSettingsGrid();renderSongTable();buildEventButtons();refreshAllPeeks();
