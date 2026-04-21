@@ -312,7 +312,7 @@ kbd{background:var(--surface2);border:1px solid var(--border);border-radius:3px;
 
 /* EVENT BUTTON */
 .event-btn{position:relative;background:linear-gradient(135deg, var(--surface) 0%, var(--team-btn-tint,var(--surface)) 100%);border:1px solid var(--border);border-radius:7px;overflow:hidden;display:flex;flex-direction:column;user-select:none;cursor:pointer;transition:border-color .2s,background .2s,box-shadow .2s}
-.event-btn::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--team-accent-bar,var(--btn-accent,var(--ice)));opacity:.6;transition:opacity .2s,height .2s;z-index:1}
+.event-btn::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--btn-accent,var(--ice));opacity:.6;transition:opacity .2s,height .2s;z-index:1}
 .event-btn:hover{border-color:var(--btn-accent,var(--ice))}
 .event-btn:hover::before{opacity:1;height:5px}
 .event-btn.playing{border-color:var(--btn-accent,var(--team-primary));background:var(--surface2);box-shadow:0 0 18px var(--team-primary-glow,rgba(200,232,255,.12)),0 0 4px var(--team-primary-glow,rgba(200,232,255,.2))}
@@ -612,7 +612,7 @@ kbd{background:var(--surface2);border:1px solid var(--border);border-radius:3px;
 .up-next-strip.no-songs .shuffle-next-btn{display:none}
 .up-next-strip.no-songs .up-next-chevron{display:none}
 
-/* UP NEXT dropdown */
+/* UP NEXT dropdown — mobile: absolute inside button */
 .up-next-dropdown{
   position:absolute;
   bottom:calc(100% + 4px);
@@ -628,6 +628,32 @@ kbd{background:var(--surface2);border:1px solid var(--border);border-radius:3px;
   overflow-y:auto;
 }
 .up-next-dropdown.open{display:block}
+
+/* Desktop: fixed-position panel, much wider than the button */
+@media(min-width:641px){
+  .up-next-dropdown{
+    position:fixed;
+    /* left/top/width set dynamically by JS via inline style */
+    width:380px;
+    max-height:420px;
+    box-shadow:0 8px 32px rgba(0,0,0,.7),0 2px 8px rgba(0,0,0,.4);
+    border-radius:9px;
+  }
+  .und-search-wrap{
+    display:block;
+    padding:8px 10px;
+    border-bottom:1px solid var(--border);
+    background:var(--surface);
+  }
+  .und-search{
+    width:100%;background:var(--surface2);border:1px solid var(--border);
+    border-radius:5px;color:var(--text);font-family:var(--font-body);
+    font-size:13px;padding:7px 10px;outline:none;box-sizing:border-box;
+  }
+  .und-search:focus{border-color:var(--ice-dim)}
+  .und-list{overflow-y:auto;max-height:340px}
+  .und-item{font-size:12px;padding:7px 10px}
+}
 .und-header{
   display:flex;align-items:center;justify-content:space-between;
   padding:6px 10px;
@@ -2010,25 +2036,51 @@ function toggleUpNextDropdown(eid){
       <span class="und-header-label">Choose Next — ${EVENT_DEFS.find(d=>d.id===eid)?.label||eid}</span>
       <button class="und-close-btn" onclick="event.stopPropagation();closeAllDropdowns()">✕</button>
     </div>
-    ${isMobile?`<div class="und-search-wrap"><input class="und-search" id="${searchId}" type="text" placeholder="Search songs…" autocomplete="off"></div>`:''}
+    <div class="und-search-wrap"><input class="und-search" id="${searchId}" type="text" placeholder="Search songs…" autocomplete="off"></div>
     <div class="und-list" id="und-list-${eid}">${buildList('')}</div>
   `;
 
+  // Wire search (both mobile and desktop)
+  const searchEl=document.getElementById(searchId);
+  if(searchEl){
+    searchEl.addEventListener('input',e=>{
+      document.getElementById(`und-list-${eid}`).innerHTML=buildList(e.target.value);
+    });
+    searchEl.addEventListener('click',e=>e.stopPropagation());
+  }
+
   if(isMobile){
-    // Show backdrop
+    // Mobile: absolute inside button + backdrop
+    dd.style.cssText='';  // clear any fixed positioning from previous desktop use
     let backdrop=document.getElementById('und-backdrop');
     if(!backdrop){backdrop=document.createElement('div');backdrop.id='und-backdrop';backdrop.className='und-backdrop';backdrop.addEventListener('click',closeAllDropdowns);document.body.appendChild(backdrop);}
     backdrop.classList.add('open');
-    // Wire search
-    const searchEl=document.getElementById(searchId);
-    if(searchEl){
-      searchEl.addEventListener('input',e=>{
-        document.getElementById(`und-list-${eid}`).innerHTML=buildList(e.target.value);
-      });
-      searchEl.addEventListener('click',e=>e.stopPropagation());
-      setTimeout(()=>searchEl.focus(),200);
+    setTimeout(()=>{ if(searchEl)searchEl.focus(); },200);
+  } else {
+    // Desktop: fixed position panel, computed from the strip's screen coordinates
+    const strip=dd.closest('.up-next-strip');
+    const rect=strip ? strip.getBoundingClientRect() : dd.getBoundingClientRect();
+    const panelW=380;
+    const margin=8;
+    const vpW=window.innerWidth;
+
+    // Centre the panel on the strip, clamped inside viewport
+    let left=rect.left + rect.width/2 - panelW/2;
+    left=Math.max(margin, Math.min(left, vpW - panelW - margin));
+
+    // Open above the strip; if not enough room above, open below
+    const panelH=Math.min(420, songs.filter(s=>s.event===eid).length * 38 + 80);
+    let top;
+    if(rect.top - panelH - 8 > 0){
+      top = rect.top - panelH - 8;   // above
+    } else {
+      top = rect.bottom + 8;          // below
     }
+
+    dd.style.cssText=`left:${left}px;top:${top}px;width:${panelW}px;`;
+    setTimeout(()=>{ if(searchEl)searchEl.focus(); },80);
   }
+
   dd.classList.add('open');
 }
 
@@ -2092,7 +2144,10 @@ function selectNextSong(eid, songId){
 }
 
 function closeAllDropdowns(){
-  document.querySelectorAll('.up-next-dropdown.open').forEach(d=>d.classList.remove('open'));
+  document.querySelectorAll('.up-next-dropdown.open').forEach(d=>{
+    d.classList.remove('open');
+    d.style.cssText=''; // clear desktop positioning
+  });
   const backdrop=document.getElementById('und-backdrop');
   if(backdrop)backdrop.classList.remove('open');
   openDropdownEid=null;
