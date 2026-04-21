@@ -637,12 +637,13 @@ kbd{background:var(--surface2);border:1px solid var(--border);border-radius:3px;
 @media(min-width:641px){
   .up-next-dropdown{
     position:fixed;
-    /* left/top/width set dynamically by JS via inline style */
     width:380px;
     max-height:420px;
     box-shadow:0 8px 32px rgba(0,0,0,.7),0 2px 8px rgba(0,0,0,.4);
     border-radius:9px;
+    display:none;
   }
+  .up-next-dropdown.open{display:flex;flex-direction:column;}
   .und-search-wrap{
     display:block;
     padding:8px 10px;
@@ -655,7 +656,7 @@ kbd{background:var(--surface2);border:1px solid var(--border);border-radius:3px;
     font-size:13px;padding:7px 10px;outline:none;box-sizing:border-box;
   }
   .und-search:focus{border-color:var(--ice-dim)}
-  .und-list{overflow-y:auto;max-height:340px}
+  .und-list{overflow-y:auto;flex:1;min-height:0}
   .und-item{font-size:12px;padding:7px 10px}
 }
 .und-header{
@@ -2081,7 +2082,9 @@ function toggleUpNextDropdown(eid){
       top = rect.bottom + 8;          // below
     }
 
-    dd.style.cssText=`left:${left}px;top:${top}px;width:${panelW}px;`;
+    dd.style.left  = left + 'px';
+    dd.style.top   = top  + 'px';
+    dd.style.width = panelW + 'px';
     setTimeout(()=>{ if(searchEl)searchEl.focus(); },80);
   }
 
@@ -2150,7 +2153,7 @@ function selectNextSong(eid, songId){
 function closeAllDropdowns(){
   document.querySelectorAll('.up-next-dropdown.open').forEach(d=>{
     d.classList.remove('open');
-    d.style.cssText=''; // clear desktop positioning
+    d.style.left=''; d.style.top=''; d.style.width='';
   });
   const backdrop=document.getElementById('und-backdrop');
   if(backdrop)backdrop.classList.remove('open');
