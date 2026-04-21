@@ -2303,18 +2303,24 @@ function resetKbdDefaults(){
 //  GLOBAL CONFIG
 // ══════════════════════════════════════════════════
 function saveGlobalConfig(){
-  globalConfig.defaultDuration=parseInt(document.getElementById('cfg-default-duration').value)||60;
-  globalConfig.fadeDuration=parseInt(document.getElementById('cfg-fade-duration').value)||3;
-  globalConfig.announceFadeDuration=parseInt(document.getElementById('cfg-announce-duration').value)||8;
-  globalConfig.fadeInDuration=parseInt(document.getElementById('cfg-fadein-duration').value);
-  if(isNaN(globalConfig.fadeInDuration))globalConfig.fadeInDuration=2;
+  // Inputs live inside the Playback modal — guard against null if modal not yet open
+  const v=id=>document.getElementById(id);
+  if(v('cfg-default-duration'))   globalConfig.defaultDuration=parseInt(v('cfg-default-duration').value)||60;
+  if(v('cfg-fade-duration'))      globalConfig.fadeDuration=parseInt(v('cfg-fade-duration').value)||3;
+  if(v('cfg-announce-duration'))  globalConfig.announceFadeDuration=parseInt(v('cfg-announce-duration').value)||8;
+  if(v('cfg-fadein-duration')){
+    globalConfig.fadeInDuration=parseInt(v('cfg-fadein-duration').value);
+    if(isNaN(globalConfig.fadeInDuration))globalConfig.fadeInDuration=2;
+  }
   save();showToast('Global settings saved');
 }
 function loadConfigUI(){
-  document.getElementById('cfg-default-duration').value=globalConfig.defaultDuration;
-  document.getElementById('cfg-fade-duration').value=globalConfig.fadeDuration;
-  document.getElementById('cfg-fadein-duration').value=(globalConfig.fadeInDuration??2);
-  const annEl=document.getElementById('cfg-announce-duration');if(annEl)annEl.value=globalConfig.announceFadeDuration??8;
+  // Inputs live inside the Playback modal — only populate when modal is open
+  const v=id=>document.getElementById(id);
+  if(v('cfg-default-duration'))  v('cfg-default-duration').value=globalConfig.defaultDuration;
+  if(v('cfg-fade-duration'))     v('cfg-fade-duration').value=globalConfig.fadeDuration;
+  if(v('cfg-fadein-duration'))   v('cfg-fadein-duration').value=(globalConfig.fadeInDuration??2);
+  if(v('cfg-announce-duration')) v('cfg-announce-duration').value=globalConfig.announceFadeDuration??8;
   updateApiKeyStatus();
 }
 
