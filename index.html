@@ -1042,6 +1042,11 @@ input[type=number]{width:84px}
 }
 .settings-modal-body{padding:20px}
 .settings-modal-body .cfg-row{margin-bottom:14px}
+@media(max-width:640px){
+  .settings-modal-panel{max-height:92dvh}
+  .settings-modal-body input[type=number]{font-size:16px;width:100%;box-sizing:border-box}
+  .cfg-row{flex-direction:column;align-items:flex-start;gap:6px}
+}
 .settings-modal-note{
   font-family:var(--font-ui);font-size:11px;color:var(--text-muted);
   line-height:1.6;margin-top:8px;
@@ -1065,7 +1070,7 @@ input[type=number]{width:84px}
 .cfg-unit{color:var(--text-muted);font-size:12px;font-family:var(--font-ui)}
 
 @media(max-width:640px){
-  .settings-tools-row{display:none} /* modals not needed on mobile — no keyboard */
+  /* settings-tools-row stays visible on mobile for playback settings */
   .settings-tool-card{min-width:140px;padding:12px 14px}
   .settings-modal-panel{max-height:92dvh;border-radius:10px}
   .settings-modal-overlay{padding:12px}
@@ -1368,7 +1373,7 @@ input[type=number]{width:84px}
   </div>
 
   <!-- ── SECONDARY: Config modals row ────────────── -->
-  <div class="settings-section settings-tools-row kbd-section-mobile-hide">
+  <div class="settings-section settings-tools-row">
     <div class="settings-section-title">Configuration</div>
     <div class="settings-tools-btns">
       <div class="settings-tool-card" onclick="openPlaybackModal()">
@@ -1376,7 +1381,7 @@ input[type=number]{width:84px}
         <div class="stc-label">Playback Settings</div>
         <div class="stc-hint">Durations, fades</div>
       </div>
-      <div class="settings-tool-card" onclick="openKbdModal()">
+      <div class="settings-tool-card kbd-section-mobile-hide" onclick="openKbdModal()">
         <div class="stc-icon">⌨</div>
         <div class="stc-label">Keyboard Shortcuts</div>
         <div class="stc-hint">Customise all keys</div>
