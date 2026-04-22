@@ -356,40 +356,35 @@ kbd{background:var(--surface2);border:1px solid var(--border);border-radius:3px;
 @media(max-width:640px){
   .kbd-hint-wrap{display:none}
 
+  /* Flat 2-col grid — layout-row and layout-row-grid are both transparent (display:contents)
+     so every .event-btn becomes a direct grid child with uniform row height */
   .events-layout{
     display:grid !important;
-    grid-template-columns:1fr 1fr;
+    grid-template-columns:1fr 1fr !important;
+    grid-auto-rows:90px !important;
     gap:8px;
     padding:10px;
     align-content:start;
     overflow-y:auto;
     overflow-x:hidden;
     -webkit-overflow-scrolling:touch;
+    flex-direction:unset !important;
   }
-  /* On mobile: ignore all desktop layout — fixed 2-col grid, no inline styles respected */
-  .layout-row-grid{
-    display:grid !important;
-    grid-template-columns:1fr 1fr !important;
-    gap:8px;
-    grid-column:1/-1;
-    min-height:0 !important;
-    height:auto !important;
-  }
-  .layout-row{display:contents !important;min-height:0 !important;height:auto !important}
-  /* Force fixed button height on portrait mobile — override ALL desktop size settings */
+  .layout-row{display:contents !important}
+  .layout-row-grid{display:contents !important}
+  .layout-row-controls{display:none !important}
+  .layout-empty-cell{display:none !important}
+
+  /* Every button is a flat grid child — fixed 90px, no stretching */
   .event-btn{
-    min-height:90px !important;
-    max-height:90px !important;
-    height:90px !important;
+    min-height:unset !important;
+    max-height:unset !important;
+    height:100% !important;
     border-radius:10px;
-    /* Swipe feedback */
     transition:transform .15s ease,border-color .2s,background .2s,box-shadow .2s;
   }
-  /* Undo the layout-row-grid column count set as inline style by JS on desktop */
   .event-btn.swipe-left{transform:translateX(-6px)}
   .event-btn.swipe-right{transform:translateX(6px)}
-
-  .event-row.goals .event-btn{min-height:100px}
 
   /* Hide desktop click-zones on mobile — swipe replaces them */
   .zone-left,.zone-right{display:none}
