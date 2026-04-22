@@ -356,8 +356,8 @@ kbd{background:var(--surface2);border:1px solid var(--border);border-radius:3px;
 @media(max-width:640px){
   .kbd-hint-wrap{display:none}
 
-  /* Flat 2-col grid — layout-row and layout-row-grid are both transparent (display:contents)
-     so every .event-btn becomes a direct grid child with uniform row height */
+  /* Flat 2-col grid — layout-row and layout-row-grid are transparent (display:contents)
+     so every .event-btn is a direct grid child sized by grid-auto-rows */
   .events-layout{
     display:grid !important;
     grid-template-columns:1fr 1fr !important;
@@ -375,11 +375,12 @@ kbd{background:var(--surface2);border:1px solid var(--border);border-radius:3px;
   .layout-row-controls{display:none !important}
   .layout-empty-cell{display:none !important}
 
-  /* Every button is a flat grid child — fixed 90px, no stretching */
+  /* Fixed size — do NOT use height:100% as that stretches to grid track */
   .event-btn{
-    min-height:unset !important;
-    max-height:unset !important;
-    height:100% !important;
+    min-height:90px !important;
+    max-height:90px !important;
+    height:90px !important;
+    overflow:hidden !important;
     border-radius:10px;
     transition:transform .15s ease,border-color .2s,background .2s,box-shadow .2s;
   }
