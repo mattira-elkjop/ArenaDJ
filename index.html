@@ -363,16 +363,20 @@ kbd{background:var(--surface2);border:1px solid var(--border);border-radius:3px;
     padding:10px;
     align-content:start;
     overflow-y:auto;
+    overflow-x:hidden;
     -webkit-overflow-scrolling:touch;
   }
-  /* On mobile: each layout-row-grid becomes a 2-col grid spanning full width */
+  /* On mobile: ignore all desktop layout — fixed 2-col grid, no inline styles respected */
   .layout-row-grid{
     display:grid !important;
-    grid-template-columns:1fr 1fr;
+    grid-template-columns:1fr 1fr !important;
     gap:8px;
     grid-column:1/-1;
+    min-height:unset !important;
   }
-  .layout-row{display:contents !important}
+  .layout-row{display:contents !important;min-height:unset !important}
+  /* Reset any inline min-height set by the desktop size system */
+  .event-btn{min-height:90px !important;max-height:none !important}
 
   .event-btn{
     min-height:90px;
@@ -1384,6 +1388,11 @@ input[type=number]{width:84px}
         <div class="stc-label">Keyboard Shortcuts</div>
         <div class="stc-hint">Customise all keys</div>
       </div>
+      <div class="settings-tool-card" onclick="openEventNamesModal()">
+        <div class="stc-icon">✏</div>
+        <div class="stc-label">Event Names</div>
+        <div class="stc-hint">Rename event buttons</div>
+      </div>
     </div>
   </div>
 </div>
@@ -1574,6 +1583,17 @@ const EVENT_DEFS = [
   {id:'maintenance', label:'MAINTENANCE',  sub:'Ice / Board Repair',cls:'evt-maintenance',   defaultKey:''},
 ];
 
+// Returns the display label/sub for an event, respecting user customisation
+function getEventLabel(id){
+  const def=EVENT_DEFS.find(d=>d.id===id);
+  return (eventNames[id]?.label)||(def?.label)||id;
+}
+function getEventSub(id){
+  const def=EVENT_DEFS.find(d=>d.id===id);
+  if(id in eventNames&&'sub' in eventNames[id]) return eventNames[id].sub;
+  return def?.sub||'';
+}
+
 function getPillColor(id){
   return {match_intro:'#00d4ff',warmup:'#ab8fff',intermission:'var(--blue)',final:'var(--ice)',goal_home:'var(--green)',goal_away:'var(--red)',pp_home:'var(--amber)',box_home:'#ff7043',timeout:'#26c6da',hit:'#ff4f7b',maintenance:'#8899aa'}[id]||'var(--ice-dim)';
 }
@@ -1583,6 +1603,7 @@ function getPillColor(id){
 // ══════════════════════════════════════════════════
 let songs          = [];
 let layoutConfig   = null; // null = use DEFAULT_LAYOUT
+let eventNames     = {};   // {id: {label, sub}} overrides for event display names
 let globalConfig   = {defaultDuration:60,fadeDuration:3,fadeInDuration:2,announceFadeDuration:8};
 let kbdConfig      = {};
 let eventQueues    = {};
@@ -1610,6 +1631,7 @@ let libFilterEvents= new Set();// event IDs to filter (empty = show all)
 // ══════════════════════════════════════════════════
 function save(){
   localStorage.setItem('arenaDJ_layout', JSON.stringify(layoutConfig||DEFAULT_LAYOUT));
+  localStorage.setItem('arenaDJ_eventNames', JSON.stringify(eventNames));
   localStorage.setItem('arenaDJ_songs',  JSON.stringify(songs));
   localStorage.setItem('arenaDJ_config', JSON.stringify(globalConfig));
   localStorage.setItem('arenaDJ_kbd',    JSON.stringify(kbdConfig));
@@ -1618,6 +1640,8 @@ function load(){
   try{
     const ly=localStorage.getItem('arenaDJ_layout');
     if(ly) layoutConfig=JSON.parse(ly);
+    const en=localStorage.getItem('arenaDJ_eventNames');
+    if(en) eventNames=JSON.parse(en);
     const s=localStorage.getItem('arenaDJ_songs');  if(s) songs=JSON.parse(s);
     const c=localStorage.getItem('arenaDJ_config'); if(c) globalConfig={...globalConfig,...JSON.parse(c)};
     const k=localStorage.getItem('arenaDJ_kbd');    if(k) kbdConfig=JSON.parse(k);
@@ -2120,6 +2144,8 @@ function buildEventButtons(){
     grid.className='layout-row-grid';
     if(!isMobile){
       grid.style.gridTemplateColumns=`repeat(${row.cols},1fr)`;
+    } else {
+      grid.style.gridTemplateColumns=''; // clear any previously set desktop value
     }
 
     row.cells.forEach((id,ci)=>{
@@ -2316,7 +2342,7 @@ function toggleUpNextDropdown(eid){
 
   dd.innerHTML=`
     <div class="und-header">
-      <span class="und-header-label">Choose Next — ${EVENT_DEFS.find(d=>d.id===eid)?.label||eid}</span>
+      <span class="und-header-label">Choose Next — ${getEventLabel(eid)}</span>
       <button class="und-close-btn" onclick="event.stopPropagation();closeAllDropdowns()">✕</button>
     </div>
     <div class="und-list" id="und-list-${eid}">${buildList()}</div>
@@ -2461,7 +2487,7 @@ function buildKbdHintStrip(){
   EVENT_DEFS.forEach(def=>{
     const k=kbdConfig[def.id];if(!k)return;
     const el=document.createElement('div');el.className='kbd-item';
-    el.innerHTML=`<kbd>${esc(k)}</kbd><span>${def.label}${def.sub?' — '+def.sub:''}</span>`;
+    el.innerHTML=`<kbd>${esc(k)}</kbd><span>${getEventLabel(def.id)}${getEventSub(def.id)?' — '+getEventSub(def.id):''}</span>`;
     strip.appendChild(el);
   });
   // Global action shortcuts
@@ -2596,7 +2622,7 @@ function findKbdConflict(combo, ownId){
     if(def.id===ownId)continue;
     const k=kbdConfig[def.id];
     if(k&&(k===combo||k.toLowerCase()===norm))
-      return def.label+(def.sub?' — '+def.sub:'');
+      return getEventLabel(def.id)+(getEventSub(def.id)?' — '+getEventSub(def.id):'');
   }
   // Check action shortcuts
   for(const a of ACTION_SHORTCUTS){
@@ -2621,7 +2647,7 @@ function buildKbdSettingsGrid(){
   hdrEvent.innerHTML='<td colspan="2" class="kbd-section-header">Event Triggers</td>';
   tbody.appendChild(hdrEvent);
   EVENT_DEFS.forEach(def=>{
-    tbody.appendChild(makeKbdRow(def.id,def.label,def.sub,getPillColor(def.id),kbdConfig[def.id]||''));
+    tbody.appendChild(makeKbdRow(def.id,getEventLabel(def.id),getEventSub(def.id),getPillColor(def.id),kbdConfig[def.id]||''));
   });
   // Section: Global actions
   const hdrAction=document.createElement('tr');
@@ -2685,7 +2711,7 @@ function buildEventCheckboxes(containerId, checkedIds){
     const label=document.createElement('label');
     const isChecked=checkedIds&&checkedIds.includes(def.id);
     label.className='event-check-pill'+(isChecked?' checked':'');
-    label.innerHTML=`<input type="checkbox" value="${def.id}"${isChecked?' checked':''}><span class="ecp-dot" style="background:${color}"></span>${def.label}${def.sub?' — '+def.sub:''}`;
+    label.innerHTML=`<input type="checkbox" value="${def.id}"${isChecked?' checked':''}><span class="ecp-dot" style="background:${color}"></span>${getEventLabel(def.id)}${getEventSub(def.id)?' — '+getEventSub(def.id):''}`;
     label.querySelector('input').addEventListener('change',e=>{
       if(e.target.checked)label.classList.add('checked');else label.classList.remove('checked');
     });
@@ -2753,7 +2779,7 @@ function buildFilterDropdown(){
     const isSelected=libFilterEvents.has(def.id);
     const div=document.createElement('div');
     div.className='lib-filter-option'+(isSelected?' selected':'');
-    div.innerHTML=`<span class="fdot" style="background:${color}"></span>${def.label}${def.sub?' — '+def.sub:''}<span class="fcheck">✓</span>`;
+    div.innerHTML=`<span class="fdot" style="background:${color}"></span>${getEventLabel(def.id)}${getEventSub(def.id)?' — '+getEventSub(def.id):''}<span class="fcheck">✓</span>`;
     div.addEventListener('click',()=>{
       if(libFilterEvents.has(def.id))libFilterEvents.delete(def.id);else libFilterEvents.add(def.id);
       buildFilterDropdown();renderSongTable();
@@ -2820,7 +2846,7 @@ function renderSongTable(){
   } else {
     tbody.innerHTML=list.map(s=>{
       const def=EVENT_DEFS.find(e=>e.id===s.event);
-      const label=def?def.label+(def.sub?' — '+def.sub:''):s.event;
+      const label=def?getEventLabel(def.id)+(getEventSub(def.id)?' — '+getEventSub(def.id):'')+' ':s.event;
       const color=getPillColor(s.event);
       if(editingId===s.id){
         const isWarmup=s.event==='warmup';
@@ -2929,7 +2955,7 @@ async function resetToDefaultSongs(){
 }
 
 function exportSettings(){
-  const blob=new Blob([JSON.stringify({songs,globalConfig,kbdConfig,layoutConfig:layoutConfig||DEFAULT_LAYOUT,version:CURRENT_VERSION},null,2)],{type:'application/json'});
+  const blob=new Blob([JSON.stringify({songs,globalConfig,kbdConfig,layoutConfig:layoutConfig||DEFAULT_LAYOUT,eventNames,version:CURRENT_VERSION},null,2)],{type:'application/json'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='arena-dj-settings.json';a.click();URL.revokeObjectURL(a.href);
   showToast('Settings exported (v'+CURRENT_VERSION+')');
 }
@@ -2944,6 +2970,7 @@ function importSettings(e){
       if(data.globalConfig)globalConfig={...globalConfig,...data.globalConfig};
       if(data.kbdConfig)kbdConfig={...kbdConfig,...data.kbdConfig};
       if(data.layoutConfig)layoutConfig=data.layoutConfig;
+      if(data.eventNames)eventNames=data.eventNames;
       EVENT_DEFS.forEach(def=>{if(!(def.id in kbdConfig))kbdConfig[def.id]=def.defaultKey;});
       EVENT_DEFS.forEach(def=>{delete eventQueues[def.id];delete eventQueuePos[def.id];});
       save();loadConfigUI();buildKbdSettingsGrid();renderSongTable();buildEventButtons();refreshAllPeeks();
@@ -2963,7 +2990,7 @@ function buildHelpKbdGrid(){
   EVENT_DEFS.forEach(def=>{
     const k=kbdConfig[def.id];if(!k)return;
     const el=document.createElement('div');el.className='help-kbd-item';
-    el.innerHTML=`<kbd>${esc(k)}</kbd><span>${def.label}${def.sub?' — '+def.sub:''}</span>`;grid.appendChild(el);
+    el.innerHTML=`<kbd>${esc(k)}</kbd><span>${getEventLabel(def.id)}${getEventSub(def.id)?' — '+getEventSub(def.id):''}</span>`;grid.appendChild(el);
   });
   ACTION_SHORTCUTS.forEach(a=>{
     const k=kbdConfig[a.id];if(!k)return;
@@ -3549,7 +3576,7 @@ function updateApiKeyHint(){
 // Close settings modals on Escape
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){
-    ['playback-modal','kbd-modal','api-key-modal','contact-modal'].forEach(id=>{
+    ['playback-modal','kbd-modal','api-key-modal','contact-modal','event-names-modal'].forEach(id=>{
       document.getElementById(id)?.classList.remove('open');
     });
   }
@@ -3717,6 +3744,90 @@ https://mattira-elkjop.github.io/ArenaDJ/`
   );
 
   window.location.href = `mailto:matti.rantakangas+arenadj@gmail.com?subject=${subject}&body=${body}`;
+}
+
+
+// ══════════════════════════════════════════════════
+//  EVENT NAMES MODAL
+// ══════════════════════════════════════════════════
+function openEventNamesModal(){
+  const body=document.getElementById('event-names-body');
+  body.innerHTML='';
+  body.style.cssText='padding:16px 20px;display:flex;flex-direction:column;gap:12px';
+  const note=document.createElement('p');
+  note.className='settings-modal-note';
+  note.textContent='Rename event buttons. Changes appear everywhere the event name is shown. Leave blank to use the default name.';
+  note.style.marginBottom='8px';
+  body.appendChild(note);
+
+  EVENT_DEFS.forEach(def=>{
+    const color=getPillColor(def.id);
+    const currentLabel=eventNames[def.id]?.label??'';
+    const currentSub  =eventNames[def.id]?.sub??'';
+    const defaultLabel=def.label;
+    const defaultSub  =def.sub;
+
+    const row=document.createElement('div');
+    row.style.cssText='display:grid;grid-template-columns:auto 1fr 1fr;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)';
+    row.innerHTML=`
+      <span style="display:flex;align-items:center;gap:6px;font-family:var(--font-ui);font-size:12px;color:var(--text-muted);white-space:nowrap;min-width:90px">
+        <span style="width:8px;height:8px;border-radius:50%;background:${color};flex-shrink:0;display:inline-block"></span>
+        ${def.label}
+      </span>
+      <input type="text" id="en-label-${def.id}" class="cf-input" value="${esc(currentLabel)}" placeholder="${esc(defaultLabel)}" autocomplete="off" style="font-size:13px">
+      <input type="text" id="en-sub-${def.id}"   class="cf-input" value="${esc(currentSub)}"   placeholder="${esc(defaultSub)||'Subtitle (optional)'}"  autocomplete="off" style="font-size:12px">
+    `;
+    body.appendChild(row);
+  });
+
+  // Column headers
+  const hdr=document.createElement('div');
+  hdr.style.cssText='display:grid;grid-template-columns:auto 1fr 1fr;gap:8px;font-family:var(--font-ui);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);padding-bottom:4px;border-bottom:1px solid var(--border)';
+  hdr.innerHTML='<span></span><span>Name</span><span>Subtitle</span>';
+  document.getElementById('event-names-body').insertBefore(hdr, document.getElementById('event-names-body').children[1]);
+
+  document.getElementById('event-names-modal').classList.add('open');
+}
+
+function closeEventNamesModal(){
+  document.getElementById('event-names-modal').classList.remove('open');
+}
+
+function saveEventNames(){
+  EVENT_DEFS.forEach(def=>{
+    const labelEl=document.getElementById(`en-label-${def.id}`);
+    const subEl  =document.getElementById(`en-sub-${def.id}`);
+    const label=(labelEl?.value||'').trim();
+    const sub  =(subEl?.value||'').trim();
+    if(label||sub!==undefined){
+      // Only store if different from default; store sub even if empty (to allow clearing)
+      if(label===def.label&&sub===def.sub){
+        delete eventNames[def.id];
+      } else {
+        eventNames[def.id]={label:label||def.label, sub};
+      }
+    }
+  });
+  save();
+  buildEventButtons();
+  buildKbdSettingsGrid();
+  buildKbdHintStrip();
+  renderSongTable();
+  buildFilterDropdown();
+  closeEventNamesModal();
+  showToast('✓ Event names saved');
+}
+
+function resetEventNames(){
+  eventNames={};
+  save();
+  buildEventButtons();
+  buildKbdSettingsGrid();
+  buildKbdHintStrip();
+  renderSongTable();
+  buildFilterDropdown();
+  closeEventNamesModal();
+  showToast('Event names reset to defaults');
 }
 
 // ── PWA Service Worker (v4 — network-first) ─────────
@@ -3989,6 +4100,25 @@ if ('serviceWorker' in navigator) {
     <div class="settings-modal-footer">
       <button class="btn btn-secondary" onclick="closeContactModal()">Cancel</button>
       <button class="btn btn-primary" onclick="buildContactMailto()" style="font-size:13px;padding:9px 22px">📬 Open Email</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     EVENT NAMES MODAL
+     ══════════════════════════════════════════════════ -->
+<div id="event-names-modal" class="settings-modal-overlay" onclick="handleSettingsOverlayClick(event,'event-names-modal')">
+  <div class="settings-modal-panel">
+    <div class="settings-modal-header">
+      <span class="settings-modal-title">✏ EVENT NAMES</span>
+      <button class="asm-close" onclick="closeEventNamesModal()">✕</button>
+    </div>
+    <div class="settings-modal-body" id="event-names-body"></div>
+    <div class="settings-modal-footer">
+      <button class="btn btn-secondary" onclick="resetEventNames()">Reset to Defaults</button>
+      <div style="flex:1"></div>
+      <button class="btn btn-secondary" onclick="closeEventNamesModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveEventNames()">SAVE</button>
     </div>
   </div>
 </div>
