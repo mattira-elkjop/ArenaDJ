@@ -356,14 +356,11 @@ kbd{background:var(--surface2);border:1px solid var(--border);border-radius:3px;
 @media(max-width:640px){
   .kbd-hint-wrap{display:none}
 
-  /* Flat 2-col grid — all wrappers transparent so every .event-btn is a direct child.
-     align-items:start + grid-auto-rows:auto prevents tracks from stretching to fill
-     the full events-layout height (which is flex:1 from desktop CSS). */
+  /* 2-col grid — buttons are direct children (added by JS, no wrappers on mobile) */
   .events-layout{
     display:grid !important;
     grid-template-columns:1fr 1fr !important;
     grid-auto-rows:auto !important;
-    align-items:start !important;
     align-content:start !important;
     gap:8px !important;
     padding:10px !important;
@@ -371,16 +368,11 @@ kbd{background:var(--surface2);border:1px solid var(--border);border-radius:3px;
     overflow-x:hidden !important;
     -webkit-overflow-scrolling:touch;
     flex:unset !important;
-    flex-direction:unset !important;
     height:auto !important;
     min-height:0 !important;
   }
-  .layout-row{display:contents !important}
-  .layout-row-grid{display:contents !important}
-  .layout-row-controls{display:none !important}
-  .layout-empty-cell{display:none !important}
 
-  /* Button: exact fixed height via flex column — zones + strip = 92px total */
+  /* Button: flex column, zones fixed height, strip always visible */
   .event-btn{
     display:flex !important;
     flex-direction:column !important;
@@ -389,8 +381,8 @@ kbd{background:var(--surface2);border:1px solid var(--border);border-radius:3px;
     border-radius:10px;
     transition:transform .15s ease,border-color .2s,background .2s,box-shadow .2s;
   }
-  .event-btn .btn-zones{flex:0 0 68px !important;min-height:0 !important;overflow:hidden !important}
-  .event-btn .up-next-strip{flex:0 0 24px !important;min-height:0 !important}
+  .event-btn .btn-zones{flex:0 0 66px !important;overflow:hidden !important}
+  .event-btn .up-next-strip{flex:0 0 26px !important}
   .event-btn.swipe-left{transform:translateX(-6px)}
   .event-btn.swipe-right{transform:translateX(6px)}
 
@@ -2146,20 +2138,37 @@ function buildEventButtons(){
   // Detect mobile: portrait ≤640px OR landscape phone (≤900px wide AND ≤500px tall)
   const isMobile=window.innerWidth<=640||(window.innerHeight<=500&&window.innerWidth<=900);
 
+  if(isMobile){
+    // ── MOBILE: flat list of buttons directly in events-layout ──────────
+    // No wrappers — avoids display:contents browser bugs entirely
+    rows.forEach((row,ri)=>{
+      row.cells.forEach((id,ci)=>{
+        if(!id) return; // skip empty cells on mobile
+        const btn=makeEventBtn(id);
+        if(!btn) return;
+        btn.dataset.ri=ri; btn.dataset.ci=ci;
+        layout.appendChild(btn);
+      });
+    });
+
+    // Update arrange/add-row bar visibility
+    const arrangeBar=document.getElementById('layout-arrange-bar');
+    if(arrangeBar) arrangeBar.style.display='none';
+    const addWrap=document.getElementById('layout-add-row-wrap');
+    if(addWrap) addWrap.style.display='none';
+    buildKbdHintStrip();
+    return; // skip desktop layout
+  }
+
+  // ── DESKTOP: full layout-row / layout-row-grid structure ─────────────
   rows.forEach((row,ri)=>{
     const rowEl=document.createElement('div');
     rowEl.className='layout-row';
     rowEl.dataset.ri=ri;
-    if(!isMobile){
-      rowEl.style.gridTemplateColumns=`repeat(${row.cols},1fr)`;
-      rowEl.style.minHeight=SIZE_HEIGHTS[row.size]||SIZE_HEIGHTS.M;
-    } else {
-      rowEl.style.minHeight='';
-      rowEl.style.gridTemplateColumns='';
-    }
+    rowEl.style.gridTemplateColumns=`repeat(${row.cols},1fr)`;
+    rowEl.style.minHeight=SIZE_HEIGHTS[row.size]||SIZE_HEIGHTS.M;
 
-    if(arrangeMode && !isMobile){
-      // Row controls bar
+    if(arrangeMode){
       const ctrl=document.createElement('div');
       ctrl.className='layout-row-controls';
       ctrl.innerHTML=`
@@ -2171,29 +2180,23 @@ function buildEventButtons(){
       rowEl.appendChild(ctrl);
     }
 
-    // Cells
     const grid=document.createElement('div');
     grid.className='layout-row-grid';
-    if(!isMobile){
-      grid.style.gridTemplateColumns=`repeat(${row.cols},1fr)`;
-    } else {
-      grid.style.gridTemplateColumns=''; // clear any previously set desktop value
-    }
+    grid.style.gridTemplateColumns=`repeat(${row.cols},1fr)`;
 
     row.cells.forEach((id,ci)=>{
       if(!id){
-        // Empty cell — drop target only
         const empty=document.createElement('div');
         empty.className='layout-empty-cell';
-        empty.dataset.ri=ri;empty.dataset.ci=ci;
+        empty.dataset.ri=ri; empty.dataset.ci=ci;
         if(arrangeMode) wireDropTarget(empty,ri,ci);
         grid.appendChild(empty);
         return;
       }
       const btn=makeEventBtn(id);
-      if(!btn)return;
-      btn.dataset.ri=ri;btn.dataset.ci=ci;
-      if(arrangeMode && !isMobile){
+      if(!btn) return;
+      btn.dataset.ri=ri; btn.dataset.ci=ci;
+      if(arrangeMode){
         btn.classList.add('arrange-mode');
         const handle=document.createElement('div');
         handle.className='arrange-handle';
