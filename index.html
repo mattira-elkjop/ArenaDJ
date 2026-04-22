@@ -356,37 +356,41 @@ kbd{background:var(--surface2);border:1px solid var(--border);border-radius:3px;
 @media(max-width:640px){
   .kbd-hint-wrap{display:none}
 
-  /* Flat 2-col grid — all wrappers transparent so every .event-btn is a direct child */
+  /* Flat 2-col grid — all wrappers transparent so every .event-btn is a direct child.
+     align-items:start + grid-auto-rows:auto prevents tracks from stretching to fill
+     the full events-layout height (which is flex:1 from desktop CSS). */
   .events-layout{
     display:grid !important;
     grid-template-columns:1fr 1fr !important;
+    grid-auto-rows:auto !important;
+    align-items:start !important;
+    align-content:start !important;
     gap:8px !important;
     padding:10px !important;
-    align-content:start !important;
     overflow-y:auto !important;
     overflow-x:hidden !important;
     -webkit-overflow-scrolling:touch;
+    flex:unset !important;
     flex-direction:unset !important;
+    height:auto !important;
+    min-height:0 !important;
   }
   .layout-row{display:contents !important}
   .layout-row-grid{display:contents !important}
   .layout-row-controls{display:none !important}
   .layout-empty-cell{display:none !important}
 
-  /* Button: fixed flex column, strip always visible at bottom, no overflow clipping */
+  /* Button: exact fixed height via flex column — zones + strip = 92px total */
   .event-btn{
     display:flex !important;
     flex-direction:column !important;
-    min-height:0 !important;
-    max-height:none !important;
-    height:auto !important;
+    width:100% !important;
     overflow:visible !important;
     border-radius:10px;
     transition:transform .15s ease,border-color .2s,background .2s,box-shadow .2s;
   }
-  /* btn-zones fills available space, strip stays at fixed 24px */
-  .event-btn .btn-zones{flex:0 0 68px !important;overflow:hidden}
-  .event-btn .up-next-strip{flex-shrink:0 !important;min-height:24px !important}
+  .event-btn .btn-zones{flex:0 0 68px !important;min-height:0 !important;overflow:hidden !important}
+  .event-btn .up-next-strip{flex:0 0 24px !important;min-height:0 !important}
   .event-btn.swipe-left{transform:translateX(-6px)}
   .event-btn.swipe-right{transform:translateX(6px)}
 
