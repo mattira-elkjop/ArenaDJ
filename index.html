@@ -376,15 +376,16 @@ kbd{background:var(--surface2);border:1px solid var(--border);border-radius:3px;
     height:auto !important;
   }
   .layout-row{display:contents !important;min-height:0 !important;height:auto !important}
-  /* Reset any inline min-height set by the desktop size system */
-  .event-btn{min-height:90px !important;max-height:none !important}
-
+  /* Force fixed button height on portrait mobile — override ALL desktop size settings */
   .event-btn{
-    min-height:90px;
+    min-height:90px !important;
+    max-height:90px !important;
+    height:90px !important;
     border-radius:10px;
     /* Swipe feedback */
     transition:transform .15s ease,border-color .2s,background .2s,box-shadow .2s;
   }
+  /* Undo the layout-row-grid column count set as inline style by JS on desktop */
   .event-btn.swipe-left{transform:translateX(-6px)}
   .event-btn.swipe-right{transform:translateX(6px)}
 
@@ -422,7 +423,7 @@ kbd{background:var(--surface2);border:1px solid var(--border);border-radius:3px;
 }
 
 /* Landscape phone — wider, so use more columns */
-@media(max-width:900px) and (orientation:landscape) and (max-height:500px){
+@media(max-width:900px) and (orientation:landscape) and (max-height:500px), (max-height:500px) and (max-width:900px){
   .events-layout{
     display:grid !important;
     grid-template-columns:1fr 1fr 1fr !important;
@@ -462,7 +463,7 @@ kbd{background:var(--surface2);border:1px solid var(--border);border-radius:3px;
 }
 
 /* Landscape phone: 4 columns, shorter buttons */
-@media(max-width:900px) and (orientation:landscape) and (max-height:500px){
+@media(max-width:900px) and (orientation:landscape) and (max-height:500px), (max-height:500px) and (max-width:900px){
   .kbd-hint{display:none}
   .events-layout{
     display:grid;
@@ -2102,8 +2103,8 @@ function makeEventBtn(id){
     <div class="btn-zones">
       <div class="zone-left" title="↺ Replay">↺</div>
       <div class="zone-mid">
-        <div class="event-btn-label">${def.label}</div>
-        ${def.sub?`<div class="event-btn-sub">${def.sub}</div>`:''}
+        <div class="event-btn-label">${getEventLabel(id)}</div>
+        ${getEventSub(id)?`<div class="event-btn-sub">${getEventSub(id)}</div>`:''}
         <div class="event-btn-meta">
           <span class="event-song-count">${count} song${count!==1?'s':''}</span>
           <span style="display:flex;align-items:center;gap:5px">
@@ -2139,7 +2140,8 @@ function buildEventButtons(){
   const layout=document.getElementById('events-layout');
   layout.innerHTML='';
   const rows=getLayout();
-  const isMobile=window.innerWidth<=640;
+  // Detect mobile: portrait ≤640px OR landscape phone (≤900px wide AND ≤500px tall)
+  const isMobile=window.innerWidth<=640||(window.innerHeight<=500&&window.innerWidth<=900);
 
   rows.forEach((row,ri)=>{
     const rowEl=document.createElement('div');
@@ -2148,6 +2150,9 @@ function buildEventButtons(){
     if(!isMobile){
       rowEl.style.gridTemplateColumns=`repeat(${row.cols},1fr)`;
       rowEl.style.minHeight=SIZE_HEIGHTS[row.size]||SIZE_HEIGHTS.M;
+    } else {
+      rowEl.style.minHeight='';
+      rowEl.style.gridTemplateColumns='';
     }
 
     if(arrangeMode && !isMobile){
@@ -2349,7 +2354,8 @@ function toggleUpNextDropdown(eid){
   if(!count)return;
   openDropdownEid=eid;
   const dd=document.getElementById(`upnext-dd-${eid}`);if(!dd)return;
-  const isMobile=window.innerWidth<=640;
+  // Detect mobile: portrait ≤640px OR landscape phone (≤900px wide AND ≤500px tall)
+  const isMobile=window.innerWidth<=640||(window.innerHeight<=500&&window.innerWidth<=900);
 
   function buildList(){
     const pool=songs.filter(s=>s.event===eid);
@@ -3778,38 +3784,51 @@ function openEventNamesModal(){
   const body=document.getElementById('event-names-body');
   body.innerHTML='';
   body.style.cssText='padding:16px 20px;display:flex;flex-direction:column;gap:12px';
+  const isMob=window.innerWidth<=640;
+
   const note=document.createElement('p');
   note.className='settings-modal-note';
   note.textContent='Rename event buttons. Changes appear everywhere the event name is shown. Leave blank to use the default name.';
   note.style.marginBottom='8px';
   body.appendChild(note);
 
+  // Column headers (desktop only)
+  if(!isMob){
+    const hdr=document.createElement('div');
+    hdr.style.cssText='display:grid;grid-template-columns:auto 1fr 1fr;gap:8px;font-family:var(--font-ui);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);padding-bottom:4px;border-bottom:1px solid var(--border)';
+    hdr.innerHTML='<span></span><span>Name</span><span>Subtitle</span>';
+    body.appendChild(hdr);
+  }
+
   EVENT_DEFS.forEach(def=>{
     const color=getPillColor(def.id);
     const currentLabel=eventNames[def.id]?.label??'';
     const currentSub  =eventNames[def.id]?.sub??'';
-    const defaultLabel=def.label;
-    const defaultSub  =def.sub;
 
     const row=document.createElement('div');
-    const isMobEN=window.innerWidth<=640;
-    row.style.cssText=isMobEN?'display:flex;flex-direction:column;gap:5px;padding:10px 0;border-bottom:1px solid var(--border)':'display:grid;grid-template-columns:auto 1fr 1fr;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)';
-    row.innerHTML=`
-      <span style="display:flex;align-items:center;gap:6px;font-family:var(--font-ui);font-size:12px;color:var(--text-muted);white-space:nowrap;min-width:90px">
-        <span style="width:8px;height:8px;border-radius:50%;background:${color};flex-shrink:0;display:inline-block"></span>
-        ${def.label}
-      </span>
-      <input type="text" id="en-label-${def.id}" class="cf-input" value="${esc(currentLabel)}" placeholder="${esc(defaultLabel)}" autocomplete="off" style="font-size:16px" aria-label="Name">
-      <input type="text" id="en-sub-${def.id}"   class="cf-input" value="${esc(currentSub)}"   placeholder="${esc(defaultSub)||'Subtitle (optional)'}"  autocomplete="off" style="font-size:16px" aria-label="Subtitle">
-    `;
+    if(isMob){
+      // Mobile: stack vertically — label on top, two inputs below
+      row.style.cssText='display:flex;flex-direction:column;gap:6px;padding:12px 0;border-bottom:1px solid var(--border)';
+      row.innerHTML=`
+        <span style="display:flex;align-items:center;gap:6px;font-family:var(--font-ui);font-size:12px;color:var(--text-muted)">
+          <span style="width:8px;height:8px;border-radius:50%;background:${color};flex-shrink:0;display:inline-block"></span>
+          ${def.label}
+        </span>
+        <input type="text" id="en-label-${def.id}" class="cf-input" value="${esc(currentLabel)}" placeholder="${esc(def.label)}" autocomplete="off" style="font-size:16px" aria-label="Name">
+        <input type="text" id="en-sub-${def.id}"   class="cf-input" value="${esc(currentSub)}"   placeholder="${def.sub?esc(def.sub):'Subtitle (optional)'}" autocomplete="off" style="font-size:16px" aria-label="Subtitle">`;
+    } else {
+      // Desktop: 3-column grid
+      row.style.cssText='display:grid;grid-template-columns:auto 1fr 1fr;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)';
+      row.innerHTML=`
+        <span style="display:flex;align-items:center;gap:6px;font-family:var(--font-ui);font-size:12px;color:var(--text-muted);white-space:nowrap;min-width:90px">
+          <span style="width:8px;height:8px;border-radius:50%;background:${color};flex-shrink:0;display:inline-block"></span>
+          ${def.label}
+        </span>
+        <input type="text" id="en-label-${def.id}" class="cf-input" value="${esc(currentLabel)}" placeholder="${esc(def.label)}" autocomplete="off" style="font-size:13px" aria-label="Name">
+        <input type="text" id="en-sub-${def.id}"   class="cf-input" value="${esc(currentSub)}"   placeholder="${def.sub?esc(def.sub):'Subtitle (optional)'}" autocomplete="off" style="font-size:12px" aria-label="Subtitle">`;
+    }
     body.appendChild(row);
   });
-
-  // Column headers
-  const hdr=document.createElement('div');
-  if(isMobEN){hdr.style.display='none';} else { hdr.style.cssText='display:grid;grid-template-columns:auto 1fr 1fr;gap:8px;font-family:var(--font-ui);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);padding-bottom:4px;border-bottom:1px solid var(--border)';}
-  hdr.innerHTML='<span></span><span>Name</span><span>Subtitle</span>';
-  document.getElementById('event-names-body').insertBefore(hdr, document.getElementById('event-names-body').children[1]);
 
   document.getElementById('event-names-modal').classList.add('open');
 }
