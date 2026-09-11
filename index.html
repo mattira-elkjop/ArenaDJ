@@ -26,6 +26,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root{
+  /* Viewport units routed through vars so the UI auto-scale (CSS zoom) can counter-scale them */
+  --vh:1vh;--vw:1vw;--dvh:1dvh;
   --bg:#0a0c10;--surface:#111318;--surface2:#181c24;--border:#252a35;
   --ice:#c8e8ff;--ice-dim:#7ab8e0;--amber:#f5a623;--red:#e03535;
   --green:#2ec97a;--blue:#2e7cf6;--text:#e8edf5;--text-muted:#6b7585;
@@ -52,14 +54,14 @@
 @media (display-mode: standalone) {
   nav { padding-top: var(--safe-top); height: calc(52px + var(--safe-top)); }
   #mobile-nav { padding-bottom: var(--safe-bottom); }
-  #app { height: 100dvh; }
+  #app { height: calc(100 * var(--dvh)); }
 }
 @media (display-mode: standalone) and (max-width:640px) {
   #page-wrap { padding-bottom: calc(58px + var(--safe-bottom)); }
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--font-body);overflow:hidden}
-#app{display:flex;flex-direction:column;height:100vh;height:100dvh}
+#app{display:flex;flex-direction:column;height:calc(100 * var(--vh));height:calc(100 * var(--dvh))}
 
 /* NAV */
 nav{display:flex;align-items:center;background:var(--team-primary);border-bottom:1px solid var(--team-nav-border);padding:0 16px;height:52px;flex-shrink:0;transition:background .3s}
@@ -209,8 +211,8 @@ kbd{background:var(--surface2);border:1px solid var(--border);border-radius:3px;
 /* EVENTS LAYOUT — responsive, all buttons visible on PC without scroll */
 .events-layout{
   flex:1;display:flex;flex-direction:column;
-  gap:clamp(5px,.8vh,12px);
-  padding:clamp(7px,1vh,16px) clamp(10px,1.2vw,20px);
+  gap:clamp(5px,calc(.8 * var(--vh)),12px);
+  padding:clamp(7px,calc(1 * var(--vh)),16px) clamp(10px,calc(1.2 * var(--vw)),20px);
   overflow-y:auto;
   min-height:0;
   /* Team logo watermark — set via JS when ?team= is active */
@@ -223,25 +225,25 @@ kbd{background:var(--surface2);border:1px solid var(--border);border-radius:3px;
   background-image:var(--team-logo-url, none);
   background-repeat:no-repeat;
   background-position:center center;
-  background-size:min(50vh, 50vw) auto;
+  background-size:min(calc(50 * var(--vh)), calc(50 * var(--vw))) auto;
   opacity:0.07;
   pointer-events:none;
   z-index:0;
 }
 /* Ensure event buttons sit above the watermark */
 .event-group{position:relative;z-index:1;}
-.event-group{display:flex;flex-direction:column;gap:clamp(3px,.4vh,6px)}
+.event-group{display:flex;flex-direction:column;gap:clamp(3px,calc(.4 * var(--vh)),6px)}
 .event-group-label{
   font-family:var(--font-ui);
-  font-size:clamp(8px,.6vw,11px);
+  font-size:clamp(8px,calc(.6 * var(--vw)),11px);
   font-weight:700;letter-spacing:2px;text-transform:uppercase;
   color:var(--team-secondary);opacity:.7;padding-left:2px;line-height:1;
 }
-.event-row{display:flex;gap:clamp(5px,.7vw,10px)}
+.event-row{display:flex;gap:clamp(5px,calc(.7 * var(--vw)),10px)}
 /* Goals row — tallest */
-.event-row.goals .event-btn{min-height:clamp(56px,8.5vh,110px);flex:1}
+.event-row.goals .event-btn{min-height:clamp(56px,calc(8.5 * var(--vh)),110px);flex:1}
 /* Standard/misc rows */
-.event-row.standard .event-btn,.event-row.misc .event-btn{min-height:clamp(50px,7vh,90px);flex:1}
+.event-row.standard .event-btn,.event-row.misc .event-btn{min-height:clamp(50px,calc(7 * var(--vh)),90px);flex:1}
 
 /* EVENT BUTTON */
 .event-btn{position:relative;background:linear-gradient(135deg, var(--surface) 0%, var(--team-btn-tint,var(--surface)) 100%);border:1px solid var(--border);border-radius:7px;overflow:visible;display:flex;flex-direction:column;user-select:none;cursor:pointer;transition:border-color .2s,background .2s,box-shadow .2s}
@@ -251,10 +253,10 @@ kbd{background:var(--surface2);border:1px solid var(--border);border-radius:3px;
 .event-btn.playing{border-color:var(--btn-accent,var(--team-primary));background:var(--surface2);box-shadow:0 0 18px var(--team-primary-glow,rgba(200,232,255,.12)),0 0 4px var(--team-primary-glow,rgba(200,232,255,.2))}
 .event-btn.playing::before{opacity:1}
 .btn-zones{display:flex;flex:1}
-.zone-left,.zone-right{width:13%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:clamp(11px,1.1vw,16px);color:transparent;transition:background .15s,color .15s,border-color .15s;align-self:stretch}
+.zone-left,.zone-right{width:13%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:clamp(11px,calc(1.1 * var(--vw)),16px);color:transparent;transition:background .15s,color .15s,border-color .15s;align-self:stretch}
 .zone-left{border-right:1px solid transparent}
 .zone-right{border-left:1px solid transparent}
-.zone-mid{flex:1;display:flex;flex-direction:column;gap:2px;align-items:flex-start;padding:clamp(7px,.9vh,12px) clamp(8px,.8vw,13px) clamp(5px,.6vh,9px)}
+.zone-mid{flex:1;display:flex;flex-direction:column;gap:2px;align-items:flex-start;padding:clamp(7px,calc(.9 * var(--vh)),12px) clamp(8px,calc(.8 * var(--vw)),13px) clamp(5px,calc(.6 * var(--vh)),9px)}
 .event-btn:hover .zone-left{background:rgba(255,255,255,.04);color:var(--text-muted);border-right-color:var(--border)}
 .event-btn:hover .zone-right{background:rgba(255,255,255,.04);color:var(--text-muted);border-left-color:var(--border)}
 .zone-left:hover{background:rgba(255,255,255,.1)!important;color:var(--text)!important}
@@ -262,17 +264,17 @@ kbd{background:var(--surface2);border:1px solid var(--border);border-radius:3px;
 
 /* Button text scales with viewport */
 .event-btn-label{font-family:var(--font-display);letter-spacing:2px;color:var(--text);line-height:1;pointer-events:none}
-.event-row.goals .event-btn-label{font-size:clamp(16px,2vw,28px)}
-.event-row.standard .event-btn-label,.event-row.misc .event-btn-label{font-size:clamp(13px,1.5vw,22px)}
-.event-btn-sub{font-family:var(--font-ui);font-size:clamp(8px,.6vw,10px);letter-spacing:1.2px;text-transform:uppercase;color:var(--text-muted);pointer-events:none;margin-top:1px;line-height:1}
+.event-row.goals .event-btn-label{font-size:clamp(16px,calc(2 * var(--vw)),28px)}
+.event-row.standard .event-btn-label,.event-row.misc .event-btn-label{font-size:clamp(13px,calc(1.5 * var(--vw)),22px)}
+.event-btn-sub{font-family:var(--font-ui);font-size:clamp(8px,calc(.6 * var(--vw)),10px);letter-spacing:1.2px;text-transform:uppercase;color:var(--text-muted);pointer-events:none;margin-top:1px;line-height:1}
 .event-btn-meta{margin-top:auto;width:100%;display:flex;align-items:center;justify-content:space-between;pointer-events:none;padding-top:3px}
-.event-song-count{font-family:var(--font-ui);font-size:clamp(8px,.6vw,10px);color:var(--text-muted)}
-.event-kbd-badge{font-family:var(--font-ui);font-size:clamp(8px,.6vw,10px);color:var(--text-muted);background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:1px 4px}
-.event-status-icon{width:clamp(16px,1.4vw,22px);height:clamp(16px,1.4vw,22px);border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.05);transition:background .2s;flex-shrink:0}
+.event-song-count{font-family:var(--font-ui);font-size:clamp(8px,calc(.6 * var(--vw)),10px);color:var(--text-muted)}
+.event-kbd-badge{font-family:var(--font-ui);font-size:clamp(8px,calc(.6 * var(--vw)),10px);color:var(--text-muted);background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:1px 4px}
+.event-status-icon{width:clamp(16px,calc(1.4 * var(--vw)),22px);height:clamp(16px,calc(1.4 * var(--vw)),22px);border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.05);transition:background .2s;flex-shrink:0}
 .event-btn.playing .event-status-icon{background:var(--btn-accent,var(--ice))}
-.event-status-icon svg{width:clamp(7px,.55vw,9px);height:clamp(7px,.55vw,9px)}
+.event-status-icon svg{width:clamp(7px,calc(.55 * var(--vw)),9px);height:clamp(7px,calc(.55 * var(--vw)),9px)}
 @keyframes pulse{0%{transform:scale(1);opacity:.6}100%{transform:scale(2);opacity:0}}
-.event-btn.playing .event-status-icon::after{content:'';position:absolute;width:clamp(16px,1.4vw,22px);height:clamp(16px,1.4vw,22px);border-radius:50%;background:var(--btn-accent,var(--ice));animation:pulse 1.2s ease-out infinite;z-index:-1}
+.event-btn.playing .event-status-icon::after{content:'';position:absolute;width:clamp(16px,calc(1.4 * var(--vw)),22px);height:clamp(16px,calc(1.4 * var(--vw)),22px);border-radius:50%;background:var(--btn-accent,var(--ice));animation:pulse 1.2s ease-out infinite;z-index:-1}
 
 /* Mobile fallback */
 
@@ -514,7 +516,7 @@ input[type=number]{width:84px}
 .asm-panel{
   background:var(--surface);border:1px solid var(--border);
   border-radius:12px;width:100%;max-width:680px;
-  max-height:90vh;overflow-y:auto;
+  max-height:calc(90 * var(--vh));overflow-y:auto;
   display:flex;flex-direction:column;
   box-shadow:0 24px 64px rgba(0,0,0,.8);
 }
@@ -689,7 +691,7 @@ input[type=number]{width:84px}
 .settings-modal-overlay.open{display:flex}
 .settings-modal-panel{
   background:var(--surface);border:1px solid var(--border);border-radius:12px;
-  width:100%;max-width:520px;max-height:88vh;overflow-y:auto;
+  width:100%;max-width:520px;max-height:calc(88 * var(--vh));overflow-y:auto;
   display:flex;flex-direction:column;
   box-shadow:0 24px 64px rgba(0,0,0,.8);
 }
@@ -765,11 +767,11 @@ input[type=number]{width:84px}
 
 /* ══ LAYOUT SYSTEM ════════════════════════════════ */
 /* Each row is its own grid */
-.layout-row{display:flex;flex-direction:column;flex-shrink:0}
+.layout-row{display:flex;flex-direction:column;flex-shrink:0;flex-grow:var(--row-grow,0);flex-basis:auto}
 .layout-row-grid{
   display:grid;
   flex:1;
-  gap:clamp(5px,.7vw,10px);
+  gap:clamp(5px,calc(.7 * var(--vw)),10px);
 }
 /* Size presets applied via inline minHeight on layout-row */
 
@@ -857,8 +859,8 @@ input[type=number]{width:84px}
 .events-layout{
   display:flex !important;
   flex-direction:column;
-  gap:clamp(5px,.8vh,12px);
-  padding:clamp(7px,1vh,16px) clamp(10px,1.2vw,20px);
+  gap:clamp(5px,calc(.8 * var(--vh)),12px);
+  padding:clamp(7px,calc(1 * var(--vh)),16px) clamp(10px,calc(1.2 * var(--vw)),20px);
   overflow-y:auto;
   min-height:0;
   position:relative;
@@ -1016,7 +1018,7 @@ input[type=number]{width:84px}
     right:0 !important;
     top:auto !important;
     width:100% !important;
-    max-height:70vh !important;
+    max-height:calc(70 * var(--vh)) !important;
     border-radius:16px 16px 0 0 !important;
     border:none !important;
     border-top:1px solid var(--border) !important;
@@ -1138,7 +1140,7 @@ input[type=number]{width:84px}
   /* Full-screen modal on mobile */
   .asm-overlay{padding:0;align-items:flex-end}
   .asm-panel{
-    max-height:95dvh;border-radius:14px 14px 0 0;
+    max-height:calc(95 * var(--dvh));border-radius:14px 14px 0 0;
     border-bottom:none;
   }
   /* Player: fixed 16:9 ratio, full width */
@@ -1168,13 +1170,13 @@ input[type=number]{width:84px}
 
   .asm-api-notice a{color:var(--amber);text-decoration:underline}
 
-  .settings-modal-panel{max-height:92dvh}
+  .settings-modal-panel{max-height:calc(92 * var(--dvh))}
   .settings-modal-body input[type=number]{font-size:16px;width:100%;box-sizing:border-box}
   .cfg-row{flex-direction:column;align-items:flex-start;gap:6px}
 
   /* settings-tools-row stays visible on mobile for playback settings */
   .settings-tool-card{min-width:140px;padding:12px 14px}
-  .settings-modal-panel{max-height:92dvh;border-radius:10px}
+  .settings-modal-panel{max-height:calc(92 * var(--dvh));border-radius:10px}
   .settings-modal-overlay{padding:12px}
   .settings-action-row{gap:14px}
 
@@ -1688,6 +1690,13 @@ input[type=number]{width:84px}
       <div class="cfg-row"><span class="cfg-label">Fade Out Duration</span><input type="number" id="cfg-fade-duration" min="0" max="15" value="3"><span class="cfg-unit">seconds</span></div>
       <div class="cfg-row"><span class="cfg-label">Fade In Duration</span><input type="number" id="cfg-fadein-duration" min="0" max="10" value="2"><span class="cfg-unit">seconds (0 = instant)</span></div>
       <div class="cfg-row"><span class="cfg-label">Announcement Fade</span><input type="number" id="cfg-announce-duration" min="1" max="30" value="8"><span class="cfg-unit">seconds — slow fade for PA announcements</span></div>
+      <div class="cfg-row"><span class="cfg-label">UI Scale</span>
+        <select id="cfg-ui-scale" class="cfg-select">
+          <option value="auto">Auto (fit window)</option>
+          <option value="1">100%</option><option value="1.25">125%</option><option value="1.5">150%</option>
+          <option value="1.75">175%</option><option value="2">200%</option><option value="2.5">250%</option>
+        </select>
+        <span class="cfg-unit">desktop only — Auto scales the app so the Live page fills the window</span></div>
       <p class="settings-modal-note">Default Play Duration is the fallback for any song without an explicit clip end time set. Per-song clip times override it.</p>
     </div>
     <div class="settings-modal-footer">
@@ -1927,7 +1936,10 @@ function getPillColor(id){
 let songs          = [];
 let layoutConfig   = null; // null = use DEFAULT_LAYOUT
 let eventNames     = {};   // {id: {label, sub}} overrides for event display names
-let globalConfig   = {defaultDuration:60,fadeDuration:3,fadeInDuration:2,announceFadeDuration:8};
+let globalConfig   = {defaultDuration:60,fadeDuration:3,fadeInDuration:2,announceFadeDuration:8,uiScale:'auto'};
+// UI auto-scale reference (see applyUiScale)
+const UI_REF_W=1460, UI_REF_H=740, UI_SCALE_MIN=0.85, UI_SCALE_MAX=2.6;
+
 let kbdConfig      = {};
 let eventQueues    = {};
 let eventQueuePos  = {};
@@ -2470,7 +2482,7 @@ function fmt(s){s=Math.floor(s||0);return Math.floor(s/60)+':'+(s%60).toString()
 //  EVENT BUTTONS
 // ══════════════════════════════════════════════════
 // Size preset heights (desktop)
-const SIZE_HEIGHTS = {S:'clamp(48px,6vh,70px)', M:'clamp(70px,9vh,110px)', L:'clamp(100px,13vh,155px)', XL:'clamp(140px,18vh,210px)'};
+const SIZE_HEIGHTS = {S:'clamp(48px,calc(6 * var(--vh)),70px)', M:'clamp(70px,calc(9 * var(--vh)),110px)', L:'clamp(100px,calc(13 * var(--vh)),155px)', XL:'clamp(140px,calc(18 * var(--vh)),210px)'};
 const SIZE_LABELS  = {S:'S', M:'M', L:'L', XL:'XL'};
 let   arrangeMode  = false;
 let   dragSrcRow   = null, dragSrcIdx = null; // drag state
@@ -2562,6 +2574,8 @@ function buildEventButtons(){
     rowEl.dataset.ri=ri;
     rowEl.style.gridTemplateColumns=`repeat(${row.cols},1fr)`;
     rowEl.style.minHeight=SIZE_HEIGHTS[row.size]||SIZE_HEIGHTS.M;
+    // Rows grow to fill leftover vertical space, proportionally to their size preset
+    rowEl.style.setProperty('--row-grow',{S:1,M:1.5,L:2.1,XL:3}[row.size]||1.5);
 
     if(arrangeMode){
       const ctrl=document.createElement('div');
@@ -2803,7 +2817,7 @@ function toggleUpNextDropdown(eid){
         areaTop=pageWrap.getBoundingClientRect().top;
       }
       // Available space between bottom of hint bar and top of strip, minus gap
-      const available=Math.max(80, stripTop - areaTop - 8);
+      const available=Math.max(80, (stripTop - areaTop)/(window.__uiScale||1) - 8);
       dd.style.maxHeight=available+'px';
     }
   }
@@ -3118,6 +3132,7 @@ function saveGlobalConfig(){
   if(v('cfg-default-duration'))   globalConfig.defaultDuration=parseInt(v('cfg-default-duration').value)||60;
   if(v('cfg-fade-duration'))      globalConfig.fadeDuration=parseInt(v('cfg-fade-duration').value)||3;
   if(v('cfg-announce-duration'))  globalConfig.announceFadeDuration=parseInt(v('cfg-announce-duration').value)||8;
+  if(v('cfg-ui-scale')){ const s=v('cfg-ui-scale').value; globalConfig.uiScale=s==='auto'?'auto':(parseFloat(s)||'auto'); applyUiScale(); }
   if(v('cfg-fadein-duration')){
     globalConfig.fadeInDuration=parseInt(v('cfg-fadein-duration').value);
     if(isNaN(globalConfig.fadeInDuration))globalConfig.fadeInDuration=2;
@@ -3131,6 +3146,7 @@ function loadConfigUI(){
   if(v('cfg-fade-duration'))     v('cfg-fade-duration').value=globalConfig.fadeDuration;
   if(v('cfg-fadein-duration'))   v('cfg-fadein-duration').value=(globalConfig.fadeInDuration??2);
   if(v('cfg-announce-duration')) v('cfg-announce-duration').value=globalConfig.announceFadeDuration??8;
+  if(v('cfg-ui-scale')) v('cfg-ui-scale').value=(globalConfig.uiScale==='auto'||!globalConfig.uiScale)?'auto':String(globalConfig.uiScale);
   updateApiKeyStatus();
 }
 
@@ -3542,7 +3558,7 @@ window.addEventListener('error',e=>{ if(!window._arenaInitDone) showFatalError('
 
 (async function init(){
   try{
-    load();checkWarning();checkAdsNotice();loadConfigUI();updateApiKeyHint();
+    load();applyUiScale();checkWarning();checkAdsNotice();loadConfigUI();updateApiKeyHint();
     if(songs.length === 0){
       document.getElementById('events-layout').innerHTML =
         '<div style="color:var(--text-muted);font-family:var(--font-ui);font-size:13px;padding:32px;text-align:center">Loading default songs…</div>';
@@ -4300,6 +4316,38 @@ function resetEventNames(){
   closeEventNamesModal();
   showToast('Event names reset to defaults');
 }
+
+// ══════════════════════════════════════════════════
+//  UI SCALE — desktop auto-zoom so the Live page fills the window
+// ══════════════════════════════════════════════════
+// Reference design: the layout reads well at ~1460×740 CSS px (what a 2560px monitor at
+// 175% browser zoom works out to). Auto mode zooms the app so that reference fits the
+// window; the row flex-grow then fills any leftover height. Mobile never scales.
+window.__uiScale=1;
+function computeAutoUiScale(){
+  const vw=window.innerWidth, vh=window.innerHeight;
+  return Math.max(UI_SCALE_MIN, Math.min(UI_SCALE_MAX, Math.min(vw/UI_REF_W, vh/UI_REF_H)));
+}
+function applyUiScale(){
+  const supportsZoom=typeof CSS!=='undefined'&&CSS.supports&&CSS.supports('zoom','1');
+  const isMobileVp=window.innerWidth<=640||(window.innerHeight<=500&&window.innerWidth<=900);
+  let s=1;
+  if(supportsZoom&&!isMobileVp){
+    s=(globalConfig.uiScale==='auto'||!globalConfig.uiScale)?computeAutoUiScale():(parseFloat(globalConfig.uiScale)||1);
+    s=Math.round(s*100)/100;
+  }
+  window.__uiScale=s;
+  document.body.style.zoom=(s===1?'':String(s));
+  // Viewport units are NOT affected by CSS zoom, so counter-scale them via the root vars
+  const rs=document.documentElement.style;
+  if(s===1){rs.removeProperty('--vh');rs.removeProperty('--vw');rs.removeProperty('--dvh');}
+  else{rs.setProperty('--vh',(1/s)+'vh');rs.setProperty('--vw',(1/s)+'vw');rs.setProperty('--dvh',(1/s)+'dvh');}
+  // Layout geometry changed — rebuild button grid and rerender dropdown positions
+  if(typeof buildEventButtons==='function'&&window._arenaInitDone){ try{closeAllDropdowns();}catch(_){ } }
+}
+let _uiScaleResizeT=null;
+window.addEventListener('resize',()=>{clearTimeout(_uiScaleResizeT);_uiScaleResizeT=setTimeout(()=>{applyUiScale();if(window._arenaInitDone)buildEventButtons();},150);});
+applyUiScale();
 
 // ── PWA Service Worker (v4 — network-first) ─────────
 if ('serviceWorker' in navigator) {
