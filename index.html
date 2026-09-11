@@ -2139,6 +2139,7 @@ function playSong(song,eid){
 
   const fadeIn=Math.max(0,globalConfig.fadeInDuration||0);
   player.setVolume(fadeIn>0?0:100);
+  resetAdDetection();
   player.loadVideoById({videoId:song.videoId,startSeconds:startAt});
 
   scrubVideoDuration=0;
@@ -2268,6 +2269,7 @@ function resumePlayback(){
   if(fadeIn>0)player.setVolume(0);
   // Seek to where we paused, then play
   const seekPos=scrubOffset+scrubPausedElapsed;
+  noteUserSeek();
   player.seekTo(seekPos,true);
   player.playVideo();
   isPaused=false;currentEventId=lastEventId;
@@ -2292,6 +2294,23 @@ function updateSpaceBtn(playing){
 // ══════════════════════════════════════════════════
 //  PROGRESS & SCRUBBER
 // ══════════════════════════════════════════════════
+// ── Pre-roll ad compensation ──────────────────────────────────────────
+// YouTube may play an ad inside the same player before the song. During the ad
+// getCurrentTime() climbs from 0, then snaps back to our start point when the
+// content begins. Our clip window is wall-clock based, so without compensation
+// an 8 s ad eats 8 s of a 60 s clip and the fade-out/advance fires early.
+// We detect the backwards jump and re-anchor the window to the real position.
+let _lastYtTime=-1, _lastUserSeekAt=0, _resyncCount=0;
+function noteUserSeek(){_lastUserSeekAt=Date.now();}
+function resetAdDetection(){_lastYtTime=-1;_resyncCount=0;}
+function resyncWindowTo(t,why){
+  const realElapsed=Math.max(0,t-scrubOffset);
+  scrubPlayStart=Date.now()-realElapsed*1000;
+  if(currentEventId&&!isFullPlayEvent(currentEventId)) scheduleAdvance(globalConfig.fadeDuration||3);
+  _resyncCount++;
+  console.log('[Arena DJ] Clip window re-synced ('+why+') to '+realElapsed.toFixed(1)+'s');
+}
+
 function startProgress(){
   clearInterval(progressInterval);
   progressInterval=setInterval(tickProgress,200);
@@ -2301,7 +2320,26 @@ function tickProgress(){
   // Try to get real YT position for accuracy
   let videoPos=scrubOffset+elapsedInWindow();
   if(ytReady&&player&&player.getCurrentTime){
-    try{const t=player.getCurrentTime();if(t>0)videoPos=t;}catch(e){}
+    try{
+      const t=player.getCurrentTime();
+      if(t>0){
+        videoPos=t;
+        // Re-anchor the wall-clock clip window to the player's real position when:
+        //  (a) the first non-zero time arrives (covers slow buffering: t sits at 0 for seconds), or
+        //  (b) the time jumps by >1.5 s in either direction (pre-roll ad → content; the ad's
+        //      clock runs 0→N, then snaps to our startAt which may be above or below N).
+        // Ignore jumps caused by the user's own seeks, and stop after 2 resyncs per song.
+        const recentSeek=Date.now()-_lastUserSeekAt<1500;
+        const early=elapsedInWindow()<120;
+        if(!isPaused&&!recentSeek&&early&&_resyncCount<3){
+          if(_lastYtTime<0) resyncWindowTo(t,'first frame');
+          else if(Math.abs(t-_lastYtTime)>1.5 && Math.abs(t-scrubOffset)<2)
+            // A jump that lands at our startAt is the ad→song transition (loadVideoById startSeconds).
+            resyncWindowTo(t,'content start after pre-roll '+_lastYtTime.toFixed(1)+'→'+t.toFixed(1));
+        }
+        _lastYtTime=t;
+      }
+    }catch(e){}
   }
   // For fullPlay events, keep scrubWindowDuration in sync with actual video duration
   if(isFullPlayEvent(currentEventId)&&scrubVideoDuration>0){
@@ -2400,6 +2438,7 @@ function fmt(s){s=Math.floor(s||0);return Math.floor(s/60)+':'+(s%60).toString()
       const totVid=scrubVideoDuration||0;
       let seekTo=totVid>0?frac*totVid:scrubOffset+frac*scrubWindowDuration;
       seekTo=Math.max(scrubOffset,Math.min(seekTo,scrubOffset+scrubWindowDuration));
+      noteUserSeek();
       player.seekTo(seekTo,true);
       const newElapsed=seekTo-scrubOffset;
       scrubPlayStart=Date.now()-newElapsed*1000;
