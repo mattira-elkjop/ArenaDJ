@@ -209,14 +209,6 @@
       "duration": 0
     },
     {
-      "id": "mo4xlga0axs5ewxtdgv",
-      "title": "We will rock you - Queen",
-      "videoId": "6SdIVPs8gZ8",
-      "event": "intermission",
-      "startAt": 0,
-      "duration": 0
-    },
-    {
       "id": "mo4xlga0xs9mseqjn8k",
       "title": "I'm Shipping Up To Boston ..with lyrics - Dropkick Murphys",
       "videoId": "NsxcZol_FEE",
@@ -745,14 +737,6 @@
       "duration": 0
     },
     {
-      "id": "mo4xlga0dcamtw21d28",
-      "title": "Another One Bites The Dust - Queen",
-      "videoId": "Y09uL2qbYCg",
-      "event": "box_home",
-      "startAt": 0,
-      "duration": 0
-    },
-    {
       "id": "mo4xlga0uzmaxbgh8v8",
       "title": "All Right Now - Free",
       "videoId": "7cQ4jNDRTOo",
@@ -829,14 +813,6 @@
       "title": "Low - Flo Rida",
       "videoId": "uUL8a7eJCk8",
       "event": "intermission",
-      "startAt": 0,
-      "duration": 0
-    },
-    {
-      "id": "mo4xlga0hi6r6ulf869",
-      "title": "Bad To The Bone - George Thorogood And The Destroyers",
-      "videoId": "8KciRaANKmo",
-      "event": "goal_away",
       "startAt": 0,
       "duration": 0
     },
@@ -1025,14 +1001,6 @@
       "duration": 0
     },
     {
-      "id": "mo4xlga0blkjltcgfoj",
-      "title": "Bohemian Rhapsody - Queen",
-      "videoId": "bSnlKl_PoQU",
-      "event": "box_home",
-      "startAt": 248,
-      "duration": 0
-    },
-    {
       "id": "mo4xlga02awpqbz7po",
       "title": "Blinding Lights - The Weeknd",
       "videoId": "J7p4bzqLvCw",
@@ -1153,38 +1121,6 @@
       "duration": 0
     },
     {
-      "id": "mo4xlga0hn08kxlfad",
-      "title": "Don't You Worry Child - Swedish House Mafia",
-      "videoId": "3mWbRB3Y4R8",
-      "event": "intermission",
-      "startAt": 60,
-      "duration": 0
-    },
-    {
-      "id": "mo4xlga02h07ay6b2cp",
-      "title": "Save The World - Swedish House Mafia",
-      "videoId": "9TJGY8_22Kk",
-      "event": "goal_away",
-      "startAt": 35,
-      "duration": 0
-    },
-    {
-      "id": "mo4xlga07ou2dn48mt",
-      "title": "Antidote - Swedish House Mafia",
-      "videoId": "OPSnQzqDoec",
-      "event": "match_intro",
-      "startAt": 0,
-      "duration": 0
-    },
-    {
-      "id": "mo4xlga0be4oiypf49",
-      "title": "Antidote - Swedish House Mafia",
-      "videoId": "OPSnQzqDoec",
-      "event": "intermission",
-      "startAt": 0,
-      "duration": 0
-    },
-    {
       "id": "mo4xlga0ld5zt8mwyw",
       "title": "Scary Monsters And Nice Sprites - Skrillex",
       "videoId": "WSeNSzJ2-Jw",
@@ -1278,7 +1214,7 @@
       "videoId": "tMDFv5m18Pw",
       "event": "warmup",
       "startAt": 0,
-      "duration": 88
+      "duration": 0
     },
     {
       "id": "mo6wqnqt6giyu89m0sp",
@@ -1295,14 +1231,6 @@
       "event": "intermission",
       "startAt": 0,
       "duration": 77
-    },
-    {
-      "id": "mo6wygds164f8b6sdxs",
-      "title": "WWE: The Game - WWE & Motörhead",
-      "videoId": "FM2WB0AyAjA",
-      "event": "match_intro",
-      "startAt": 0,
-      "duration": 0
     }
   ],
   "globalConfig": {
@@ -1370,5 +1298,6 @@
       ]
     }
   ],
+  "eventNames": {},
   "version": 7
 }
