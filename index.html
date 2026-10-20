@@ -313,6 +313,7 @@ kbd{background:var(--surface2);border:1px solid var(--border);border-radius:3px;
 }
 .up-next-strip:hover:not(.no-songs){background:rgba(255,255,255,.03)}
 .up-next-label{font-family:var(--font-ui);font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);padding:0 6px;white-space:nowrap;flex-shrink:0;border-right:1px solid var(--border);height:100%;display:flex;align-items:center}
+.event-btn,.up-next-strip,.btn-zones,.zone-mid{min-width:0}
 .up-next-title{font-family:var(--font-ui);font-size:10px;color:var(--text-muted);padding:0 6px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .up-next-title.has-song{color:var(--text)}
 .up-next-chevron{font-size:9px;color:var(--text-muted);padding:0 5px;flex-shrink:0;opacity:.6}
@@ -867,6 +868,24 @@ input[type=number]{width:84px}
 }
 /* Mobile: ignore layout system, use fixed 2-col grid */
 
+
+/* ── Teams & matchup ─────────────────────────────── */
+.matchup-bar{display:flex;align-items:center;gap:8px;padding:6px 16px;border-bottom:1px solid var(--border);background:var(--bg);flex-shrink:0;font-family:var(--font-ui)}
+.matchup-bar.active{background:rgba(46,201,122,.06)}
+.matchup-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted)}
+.matchup-vs{font-size:11px;color:var(--text-muted);margin:0 4px}
+.matchup-select{font-family:var(--font-ui);font-size:13px;font-weight:600;padding:4px 8px;min-width:150px;max-width:240px}
+.matchup-bar.active .matchup-select{border-color:var(--green)}
+.matchup-clear{background:none;border:1px solid var(--border);color:var(--text-muted);border-radius:4px;padding:3px 9px;cursor:pointer;font-size:12px;margin-left:4px}
+.matchup-clear:hover{border-color:var(--red);color:var(--red)}
+.team-chip{display:inline-block;margin-left:5px;font-family:var(--font-ui);font-size:10px;font-weight:600;color:var(--text);background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:1px 7px;white-space:nowrap}
+.team-tag-edit{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:6px}
+.team-tag-edit-label{font-family:var(--font-ui);font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted)}
+.team-tag-check{display:inline-flex;align-items:center;gap:4px;font-family:var(--font-ui);font-size:12px;color:var(--text);background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:2px 9px;cursor:pointer}
+.team-tag-check input{margin:0}
+.team-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)}
+.team-row input[type=text]{flex:1;min-width:0}
+.team-row-count{font-family:var(--font-ui);font-size:11px;color:var(--text-muted);white-space:nowrap}
 /* ═══════════════════════════════════════════════════════════════
    MOBILE — PORTRAIT PHONE (≤640px)
    All rules for this breakpoint live here, last in the stylesheet so
@@ -874,6 +893,12 @@ input[type=number]{width:84px}
    Blocks are concatenated in their original source order.
    ═══════════════════════════════════════════════════════════════ */
 @media(max-width:640px){
+  /* Matchup bar on phones: compact, selects share the width */
+  .matchup-bar{padding:6px 10px;gap:6px}
+  .matchup-label{display:none}
+  .matchup-select{flex:1;min-width:0;max-width:none;font-size:14px;padding:6px 6px}
+  .matchup-vs{margin:0}
+
 
   nav{height:48px;padding:0 12px}
   .nav-logo{font-size:22px;letter-spacing:2px}
@@ -953,7 +978,7 @@ input[type=number]{width:84px}
   /* 2-col grid — buttons are direct children (added by JS, no wrappers on mobile) */
   .events-layout{
     display:grid !important;
-    grid-template-columns:1fr 1fr !important;
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
     grid-auto-rows:auto !important;
     align-content:start !important;
     gap:8px !important;
@@ -1200,14 +1225,14 @@ input[type=number]{width:84px}
 
   .events-layout{
     display:grid !important;
-    grid-template-columns:1fr 1fr 1fr !important;
+    grid-template-columns:repeat(3,minmax(0,1fr)) !important;
     gap:6px;
     padding:6px 10px;
     overflow-x:hidden;
   }
   .layout-row-grid{
     display:grid !important;
-    grid-template-columns:1fr 1fr 1fr !important;
+    grid-template-columns:repeat(3,minmax(0,1fr)) !important;
     gap:6px;
     grid-column:1/-1;
     min-height:0 !important;
@@ -1332,6 +1357,14 @@ input[type=number]{width:84px}
     <span class="layout-arrange-hint">Drag buttons to reorder · Set columns and size per row · <strong>+ Add Row</strong> to create new rows</span>
     <button class="btn btn-primary btn-sm" onclick="saveLayout()">✓ DONE</button>
   </div>
+  <div class="matchup-bar" id="matchup-bar" style="display:none">
+    <span class="matchup-label">Home</span>
+    <select id="matchup-home" class="matchup-select" onchange="setMatchup('home',this.value)"></select>
+    <span class="matchup-vs">vs</span>
+    <span class="matchup-label">Away</span>
+    <select id="matchup-away" class="matchup-select" onchange="setMatchup('away',this.value)"></select>
+    <button class="matchup-clear" id="matchup-clear" onclick="clearMatchup()" title="Clear matchup">✕</button>
+  </div>
   <div class="events-layout" id="events-layout"></div>
   <div class="layout-add-row-wrap" id="layout-add-row-wrap" style="display:none">
     <button class="layout-add-row-btn" onclick="layoutAddRow()">+ Add Row</button>
@@ -1418,6 +1451,11 @@ input[type=number]{width:84px}
         <div class="stc-icon">✏</div>
         <div class="stc-label">Event Names</div>
         <div class="stc-hint">Rename event buttons</div>
+      </div>
+      <div class="settings-tool-card" onclick="openTeamsModal()">
+        <div class="stc-icon">⚑</div>
+        <div class="stc-label">Teams</div>
+        <div class="stc-hint">Team-specific goal songs</div>
       </div>
     </div>
   </div>
@@ -1533,6 +1571,12 @@ input[type=number]{width:84px}
         <button class="btn btn-primary" onclick="openContactModal()" style="font-size:14px;padding:10px 24px">📬 Get in touch</button>
       </div>
       <p style="font-size:13px">Or email directly: <a href="mailto:matti.rantakangas+arenadj@gmail.com" style="color:var(--team-primary)">matti.rantakangas+arenadj@gmail.com</a></p>
+    </div>
+
+    <div class="help-section">
+      <div class="help-h2">Team Goal Songs</div>
+      <p>Different teams can have their own goal song. In <strong>Settings → Teams</strong> add the team names, then edit a goal song in the library and tick <strong>Team song for</strong>. On game day choose <strong>Home</strong> and <strong>Away</strong> above the event buttons: Goal Home and Goal Away then play each team's own songs. If a side has no team picked — or the team has no tagged song — the button plays the normal untagged goal songs.</p>
+      <p>The matchup survives a refresh or crash during the game, and clears itself automatically 6 hours after the last goal song, so the next game day starts clean. Tap <strong>✕</strong> to clear it manually.</p>
     </div>
 
     <div class="help-section">
@@ -1663,6 +1707,10 @@ input[type=number]{width:84px}
         <div class="asm-form-row">
           <label class="asm-label">Assign to Events</label>
           <div class="event-checkboxes" id="asm-event-checks"></div>
+        </div>
+        <div class="asm-form-row" id="asm-team-row" style="display:none">
+          <label class="asm-label">Team Song For <span style="text-transform:none;letter-spacing:0;opacity:.7">(optional — goal songs only)</span></label>
+          <div class="team-tag-edit" id="asm-team-checks" style="margin-top:0"></div>
         </div>
         <div class="asm-note">Each selected event gets its own entry so you can set different clip times per event later.</div>
       </div>
@@ -1851,6 +1899,27 @@ input[type=number]{width:84px}
 <!-- ══════════════════════════════════════════════════
      EVENT NAMES MODAL
      ══════════════════════════════════════════════════ -->
+<div id="teams-modal" class="settings-modal-overlay" onclick="handleSettingsOverlayClick(event,'teams-modal')">
+  <div class="settings-modal-panel">
+    <div class="settings-modal-header">
+      <span class="settings-modal-title">⚑ TEAMS</span>
+      <button class="asm-close" onclick="closeTeamsModal()">✕</button>
+    </div>
+    <div class="settings-modal-body">
+      <p class="settings-modal-note" style="margin-bottom:12px">Add the teams that play in your arena. Then tag goal songs with a team (edit the song in the library). On game day, pick Home and Away on the Live page — each goal button plays that team's songs, or the generic goal songs if no team is picked.</p>
+      <div id="teams-list"></div>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <input type="text" id="teams-new-name" placeholder="New team name" autocomplete="off" style="flex:1" onkeydown="if(event.key==='Enter'){event.preventDefault();addTeam();}">
+        <button class="btn btn-primary" onclick="addTeam()">+ ADD</button>
+      </div>
+    </div>
+    <div class="settings-modal-footer">
+      <div style="flex:1"></div>
+      <button class="btn btn-primary" onclick="closeTeamsModal()">DONE</button>
+    </div>
+  </div>
+</div>
+
 <div id="event-names-modal" class="settings-modal-overlay" onclick="handleSettingsOverlayClick(event,'event-names-modal')">
   <div class="settings-modal-panel">
     <div class="settings-modal-header">
@@ -1871,7 +1940,7 @@ input[type=number]{width:84px}
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
 // ══════════════════════════════════════════════════
-const CURRENT_VERSION = 7;
+const CURRENT_VERSION = 8;
 // Safe localStorage shim — some browsers (Safari private mode, "block all cookies", kiosk
 // setups) throw on any access. The app must still run, just without persistence.
 const LS=(()=>{
@@ -1925,6 +1994,12 @@ function getEventSub(id){
   if(id in eventNames&&'sub' in eventNames[id]) return eventNames[id].sub;
   return def?.sub||'';
 }
+// Live-only subtitle: goal buttons show tonight's team instead of the static subtitle
+function getLiveSub(id){
+  const side=GOAL_SIDE[id];
+  if(side){ const t=teamById(matchup[side]); if(t) return (side==='home'?'Home':'Away')+' — '+t.name; }
+  return getEventSub(id);
+}
 
 function getPillColor(id){
   return {match_intro:'#00d4ff',warmup:'#ab8fff',intermission:'var(--blue)',final:'var(--ice)',goal_home:'var(--green)',goal_away:'var(--red)',pp_home:'var(--amber)',box_home:'#ff7043',timeout:'#26c6da',hit:'#ff4f7b',maintenance:'#8899aa'}[id]||'var(--ice-dim)';
@@ -1935,6 +2010,12 @@ function getPillColor(id){
 // ══════════════════════════════════════════════════
 let songs          = [];
 let layoutConfig   = null; // null = use DEFAULT_LAYOUT
+// ── Teams & matchup ──────────────────────────────
+// teams:   [{id,name}] — ids are stable; only names are shown
+// matchup: {home:teamId|null, away:teamId|null, ts:ms} — game-day state, auto-expires
+let teams          = [];
+let matchup        = {home:null,away:null,ts:0};
+const MATCHUP_TTL_MS = 6*60*60*1000;   // 6 h after last set/use
 let eventNames     = {};   // {id: {label, sub}} overrides for event display names
 let globalConfig   = {defaultDuration:60,fadeDuration:3,fadeInDuration:2,announceFadeDuration:8,uiScale:'auto'};
 // UI auto-scale reference (see applyUiScale)
@@ -1970,7 +2051,9 @@ function save(){
   LS.setItem('arenaDJ_songs',  JSON.stringify(songs));
   LS.setItem('arenaDJ_config', JSON.stringify(globalConfig));
   LS.setItem('arenaDJ_kbd',    JSON.stringify(kbdConfig));
+  LS.setItem('arenaDJ_teams',  JSON.stringify(teams));
 }
+function saveMatchup(){ LS.setItem('arenaDJ_matchup', JSON.stringify(matchup)); }
 // Read one localStorage key safely: a corrupted value falls back to its default
 // instead of aborting the whole load (and taking every other setting down with it).
 function lsGet(key,fallback,validate){
@@ -1989,6 +2072,9 @@ function load(){
   songs       =lsGet('arenaDJ_songs',[],Array.isArray);
   globalConfig={...globalConfig,...lsGet('arenaDJ_config',{},isObj)};
   kbdConfig   =lsGet('arenaDJ_kbd',{},isObj);
+  teams       =lsGet('arenaDJ_teams',[],v=>Array.isArray(v)&&v.every(t=>t&&typeof t.id==='string'&&typeof t.name==='string'));
+  matchup     ={home:null,away:null,ts:0,...lsGet('arenaDJ_matchup',{},isObj)};
+  expireMatchupIfStale(false);
   EVENT_DEFS.forEach(d=>{if(!(d.id in kbdConfig)) kbdConfig[d.id]=d.defaultKey;});
   // Default keys for global action shortcuts
   const _actionDefaults={__next:'ArrowRight',__replay:'ArrowLeft',__announce:'f'};
@@ -2013,6 +2099,7 @@ const MIGRATIONS={
          if(d.kbdConfig) delete d.kbdConfig.pp_away; },
   3:d=>{}, 4:d=>{}, 5:d=>{},
   6:d=>{ if(d.songs) d.songs=stripWarmupTiming(d.songs); },
+  7:d=>{ if(!Array.isArray(d.teams)) d.teams=[]; },
 };
 const VALID_EVENT_IDS=new Set(EVENT_DEFS.map(d=>d.id));
 function migrateImport(data){
@@ -2031,6 +2118,15 @@ function migrateImport(data){
     if(!ok){console.warn('[Arena DJ] Ignoring invalid layoutConfig in import');delete data.layoutConfig;}
   }
   ['globalConfig','kbdConfig','eventNames'].forEach(k=>{ if(data[k]!==undefined&&!isObj(data[k])) delete data[k]; });
+  if(data.teams!==undefined){
+    data.teams=Array.isArray(data.teams)?data.teams.filter(t=>t&&typeof t.id==='string'&&typeof t.name==='string'&&t.name.trim()).map(t=>({id:t.id,name:t.name.trim()})):[];
+  }
+  if(data.songs){
+    const valid=new Set((data.teams||[]).map(t=>t.id));
+    data.songs.forEach(s=>{
+      if(s.teams!==undefined){ s.teams=Array.isArray(s.teams)?s.teams.filter(id=>typeof id==='string'&&(!data.teams||valid.has(id))):[]; if(!s.teams.length) delete s.teams; }
+    });
+  }
   data.version=CURRENT_VERSION;
   return data;
 }
@@ -2100,7 +2196,28 @@ function extractVideoId(input){
 // ══════════════════════════════════════════════════
 //  QUEUE
 // ══════════════════════════════════════════════════
-function buildQueue(eid){let arr=[...songs.filter(s=>s.event===eid)];const healthy=arr.filter(s=>!brokenSongs[s.videoId]);if(healthy.length) arr=healthy; /* retry broken only if nothing else left */for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
+// ── Team-aware song pool ──────────────────────────────────────────────
+// Goal buttons: if a team is set for that side and has tagged goal songs, use those
+// (from either goal event, deduped by video). Otherwise use the untagged ("generic")
+// songs of that button. Team-tagged songs never play unless their team is selected —
+// except as a last resort if a button would otherwise have no songs at all.
+const GOAL_SIDE={goal_home:'home',goal_away:'away'};
+const isTeamTagged=s=>Array.isArray(s.teams)&&s.teams.length>0;
+function teamById(id){return id?teams.find(t=>t.id===id)||null:null;}
+function teamSongs(teamId){
+  const seen=new Set();
+  return songs.filter(s=>GOAL_SIDE[s.event]&&isTeamTagged(s)&&s.teams.includes(teamId)&&!seen.has(s.videoId)&&seen.add(s.videoId));
+}
+function poolFor(eid){
+  const base=songs.filter(s=>s.event===eid);
+  const side=GOAL_SIDE[eid];
+  if(!side) return base;
+  const team=teamById(matchup[side]);
+  if(team){ const ts=teamSongs(team.id); if(ts.length) return ts; }
+  const generic=base.filter(s=>!isTeamTagged(s));
+  return generic.length?generic:base;
+}
+function buildQueue(eid){let arr=[...poolFor(eid)];const healthy=arr.filter(s=>!brokenSongs[s.videoId]);if(healthy.length) arr=healthy; /* retry broken only if nothing else left */for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
 function ensureQueue(eid){if(!eventQueues[eid]||!eventQueues[eid].length){eventQueues[eid]=buildQueue(eid);eventQueuePos[eid]=0;}}
 function consumeNext(eid){
   ensureQueue(eid);
@@ -2127,7 +2244,7 @@ function shuffleNext(eid){
   if(idx>-1&&idx!==pos){q[idx]=q[pos];q[pos]=pick;}
   nextSong[eid]=pick;updateUpNext(eid);showToast('🔀 Shuffled next song');
 }
-function refreshAllPeeks(){EVENT_DEFS.forEach(d=>{const c=songs.filter(s=>s.event===d.id).length;if(c>0)peekNext(d.id);else nextSong[d.id]=null;updateUpNext(d.id);});}
+function refreshAllPeeks(){EVENT_DEFS.forEach(d=>{const c=poolFor(d.id).length;if(c>0)peekNext(d.id);else nextSong[d.id]=null;updateUpNext(d.id);});}
 
 // ══════════════════════════════════════════════════
 //  PLAYBACK
@@ -2141,6 +2258,7 @@ function isFullPlayEvent(eid){
 }
 
 function playSong(song,eid){
+  if(GOAL_SIDE[eid]&&matchup[GOAL_SIDE[eid]]){matchup.ts=Date.now();saveMatchup();}
   if(!ytReady){showToast('Player loading — wait a moment');return;}
   clearTimers();
   currentSong=song;currentEventId=eid;lastEventId=eid;isPaused=false;
@@ -2268,7 +2386,7 @@ function spacebarAction(){
     }else if(state===2){resumePlayback();}
   }else if(isPaused&&currentSong&&lastEventId){resumePlayback();}
   else if(lastEventId){
-    const count=songs.filter(s=>s.event===lastEventId).length;
+    const count=poolFor(lastEventId).length;
     if(!count){showToast('No songs assigned to last event');return;}
     ensureActiveEvent(lastEventId);
     const song=nextSong[lastEventId]||peekNext(lastEventId);
@@ -2401,7 +2519,7 @@ function updateScrubberMarkers(){
 function updateNowPlaying(song,eid){
   const def=EVENT_DEFS.find(e=>e.id===eid);
   document.getElementById('gnp-title').textContent=song.title;
-  document.getElementById('gnp-event').textContent=def?def.label+(def.sub?' — '+def.sub:''):'';
+  document.getElementById('gnp-event').textContent=def?getEventLabel(eid)+(getLiveSub(eid)?' — '+getLiveSub(eid):''):'';
   document.getElementById('gnp-title').style.color='var(--ice)';
 }
 function updateNowPlayingPaused(){document.getElementById('gnp-title').style.color='var(--text-muted)';document.getElementById('gnp-event').textContent='PAUSED';}
@@ -2491,7 +2609,7 @@ function getLayout(){ return layoutConfig || DEFAULT_LAYOUT; }
 
 function makeEventBtn(id){
   const def=EVENT_DEFS.find(d=>d.id===id);if(!def)return null;
-  const count=songs.filter(s=>s.event===id).length;
+  const count=poolFor(id).length;
   const key=kbdConfig[id]||'';
   const song=nextSong[id];
   const upText=!count?'No songs':(song?song.title:'—');
@@ -2506,7 +2624,7 @@ function makeEventBtn(id){
       <div class="zone-left" title="↺ Replay">↺</div>
       <div class="zone-mid">
         <div class="event-btn-label">${getEventLabel(id)}</div>
-        ${getEventSub(id)?`<div class="event-btn-sub">${getEventSub(id)}</div>`:''}
+        ${getLiveSub(id)?`<div class="event-btn-sub">${esc(getLiveSub(id))}</div>`:''}
         <div class="event-btn-meta">
           <span class="event-song-count">${count} song${count!==1?'s':''}</span>
           <span style="display:flex;align-items:center;gap:5px">
@@ -2572,7 +2690,7 @@ function buildEventButtons(){
     const rowEl=document.createElement('div');
     rowEl.className='layout-row';
     rowEl.dataset.ri=ri;
-    rowEl.style.gridTemplateColumns=`repeat(${row.cols},1fr)`;
+    rowEl.style.gridTemplateColumns=`repeat(${row.cols},minmax(0,1fr))`;
     rowEl.style.minHeight=SIZE_HEIGHTS[row.size]||SIZE_HEIGHTS.M;
     // Rows grow to fill leftover vertical space, proportionally to their size preset
     rowEl.style.setProperty('--row-grow',{S:1,M:1.5,L:2.1,XL:3}[row.size]||1.5);
@@ -2591,7 +2709,7 @@ function buildEventButtons(){
 
     const grid=document.createElement('div');
     grid.className='layout-row-grid';
-    grid.style.gridTemplateColumns=`repeat(${row.cols},1fr)`;
+    grid.style.gridTemplateColumns=`repeat(${row.cols},minmax(0,1fr))`;
 
     row.cells.forEach((id,ci)=>{
       if(!id){
@@ -2746,7 +2864,7 @@ function ensureActiveEvent(eid){
 function updateUpNext(eid){
   const strip=document.getElementById(`upnext-${eid}`);if(!strip)return;
   const titleEl=strip.querySelector('.up-next-title');
-  const song=nextSong[eid];const count=songs.filter(s=>s.event===eid).length;
+  const song=nextSong[eid];const count=poolFor(eid).length;
   if(!count){
     strip.classList.add('no-songs');
     if(titleEl){titleEl.textContent='No songs';titleEl.classList.remove('has-song');}
@@ -2765,7 +2883,7 @@ let openDropdownEid = null;
 function toggleUpNextDropdown(eid){
   if(openDropdownEid===eid){closeAllDropdowns();return;}
   closeAllDropdowns();
-  const count=songs.filter(s=>s.event===eid).length;
+  const count=poolFor(eid).length;
   if(!count)return;
   openDropdownEid=eid;
   const dd=document.getElementById(`upnext-dd-${eid}`);if(!dd)return;
@@ -2773,7 +2891,7 @@ function toggleUpNextDropdown(eid){
   const isMobile=window.innerWidth<=640||(window.innerHeight<=500&&window.innerWidth<=900);
 
   function buildList(){
-    const pool=songs.filter(s=>s.event===eid);
+    const pool=poolFor(eid);
     const currentNext=nextSong[eid];
     return pool.map(s=>{
       const isNext=currentNext&&s.id===currentNext.id;
@@ -2868,7 +2986,7 @@ function addSwipeGesture(el, eid){
 }
 
 function selectNextSong(eid, songId){
-  const pool=songs.filter(s=>s.event===eid);
+  const pool=poolFor(eid);
   const song=pool.find(s=>s.id===songId);
   if(!song){closeAllDropdowns();return;}
   // Place chosen song at current queue position
@@ -2901,7 +3019,7 @@ document.addEventListener('click',e=>{
 });
 function handleMidClick(eid){
   if(!ytReady){showToast('YouTube player loading…');return;}
-  const count=songs.filter(s=>s.event===eid).length;
+  const count=poolFor(eid).length;
   if(!count){showToast('No songs assigned — add some in Settings');return;}
   const btn=document.getElementById(`evtbtn-${eid}`);
   const isActive=btn.classList.contains('playing');
@@ -2917,8 +3035,8 @@ function handleMidClick(eid){
     else{ensureActiveEvent(eid);isPaused=false;const song=nextSong[eid]||peekNext(eid);if(song){consumeNext(eid);playSong(song,eid);}}
   }
 }
-function handleZoneLeft(eid){if(!ytReady)return;if(!songs.filter(s=>s.event===eid).length){showToast('No songs assigned');return;}ensureActiveEvent(eid);isPaused=false;replayCurrent(eid);showToast('↺ Replaying');}
-function handleZoneRight(eid){if(!ytReady)return;if(!songs.filter(s=>s.event===eid).length){showToast('No songs assigned');return;}ensureActiveEvent(eid);isPaused=false;skipToNext(eid);showToast('⏭ Next song');}
+function handleZoneLeft(eid){if(!ytReady)return;if(!poolFor(eid).length){showToast('No songs assigned');return;}ensureActiveEvent(eid);isPaused=false;replayCurrent(eid);showToast('↺ Replaying');}
+function handleZoneRight(eid){if(!ytReady)return;if(!poolFor(eid).length){showToast('No songs assigned');return;}ensureActiveEvent(eid);isPaused=false;skipToNext(eid);showToast('⏭ Next song');}
 
 // ══════════════════════════════════════════════════
 //  KEYBOARD
@@ -2970,12 +3088,12 @@ document.addEventListener('keydown',e=>{
   // Configurable global action shortcuts
   if(kbdConfig['__next']&&combo===kbdConfig['__next']){
     e.preventDefault();
-    if(lastEventId&&songs.filter(s=>s.event===lastEventId).length){ensureActiveEvent(lastEventId);isPaused=false;skipToNext(lastEventId);showToast('⏭ Next song');}
+    if(lastEventId&&poolFor(lastEventId).length){ensureActiveEvent(lastEventId);isPaused=false;skipToNext(lastEventId);showToast('⏭ Next song');}
     return;
   }
   if(kbdConfig['__replay']&&combo===kbdConfig['__replay']){
     e.preventDefault();
-    if(lastEventId&&songs.filter(s=>s.event===lastEventId).length){ensureActiveEvent(lastEventId);isPaused=false;replayCurrent(lastEventId);showToast('↺ Replay');}
+    if(lastEventId&&poolFor(lastEventId).length){ensureActiveEvent(lastEventId);isPaused=false;replayCurrent(lastEventId);showToast('↺ Replay');}
     return;
   }
   if(kbdConfig['__announce']&&combo===kbdConfig['__announce']){
@@ -3163,11 +3281,22 @@ function buildEventCheckboxes(containerId, checkedIds){
     label.innerHTML=`<input type="checkbox" value="${def.id}"${isChecked?' checked':''}><span class="ecp-dot" style="background:${color}"></span>${getEventLabel(def.id)}${getEventSub(def.id)?' — '+getEventSub(def.id):''}`;
     label.querySelector('input').addEventListener('change',e=>{
       if(e.target.checked)label.classList.add('checked');else label.classList.remove('checked');
+      if(containerId==='asm-event-checks') updateAsmTeamRow();
     });
     wrap.appendChild(label);
   });
 }
 
+function updateAsmTeamRow(){
+  const row=document.getElementById('asm-team-row'),box=document.getElementById('asm-team-checks');
+  if(!row||!box)return;
+  const goal=getCheckedEvents('asm-event-checks').some(e=>GOAL_SIDE[e]);
+  row.style.display=(goal&&teams.length)?'':'none';
+  if(!box.dataset.built||box.dataset.built!==String(teams.map(t=>t.id+t.name))){
+    box.innerHTML=teams.map(t=>`<label class="team-tag-check"><input type="checkbox" value="${t.id}">${esc(t.name)}</label>`).join('');
+    box.dataset.built=String(teams.map(t=>t.id+t.name));
+  }
+}
 function getCheckedEvents(containerId){
   return [...document.querySelectorAll(`#${containerId} input[type=checkbox]:checked`)].map(el=>el.value);
 }
@@ -3201,6 +3330,11 @@ function saveEdit(id){
   if(!videoId){showToast('Invalid URL or video ID');return;}
   const oldEvent=s.event;
   Object.assign(s,{title,videoId,event,startAt,duration});
+  // Team tags only apply to goal songs
+  const tagWrap=document.getElementById(`e-teams-wrap-${id}`);
+  const tagIds=GOAL_SIDE[event]&&tagWrap?[...tagWrap.querySelectorAll('input:checked')].map(i=>i.value):[];
+  if(tagIds.length) s.teams=tagIds; else delete s.teams;
+  invalidateGoalQueues();
   editingId=null;
   delete eventQueues[oldEvent];delete eventQueuePos[oldEvent];
   if(oldEvent!==event){delete eventQueues[event];delete eventQueuePos[event];}
@@ -3303,7 +3437,7 @@ function renderSongTable(){
         const isWarmup=s.event==='warmup';
         return `<tr class="editing">
           <td><input class="edit-input" id="e-title-${s.id}" value="${esc(s.title)}"></td>
-          <td><select class="edit-input" id="e-event-${s.id}">${EVENT_DEFS.map(e=>`<option value="${e.id}"${s.event===e.id?' selected':''}>${e.label}${e.sub?' — '+e.sub:''}</option>`).join('')}</select></td>
+          <td><select class="edit-input" id="e-event-${s.id}" onchange="toggleTeamTagEdit('${s.id}',this.value)">${EVENT_DEFS.map(e=>`<option value="${e.id}"${s.event===e.id?' selected':''}>${e.label}${e.sub?' — '+e.sub:''}</option>`).join('')}</select>${teams.length?`<div class="team-tag-edit" id="e-teams-wrap-${s.id}" style="${GOAL_SIDE[s.event]?'':'display:none'}"><span class="team-tag-edit-label">Team song for:</span>${teams.map(t=>`<label class="team-tag-check"><input type="checkbox" value="${t.id}"${(s.teams||[]).includes(t.id)?' checked':''}>${esc(t.name)}</label>`).join('')}</div>`:''}</td>
           <td>${isWarmup?'<span style="color:var(--text-muted);font-size:11px;font-family:var(--font-ui)">Full song</span>':'<input type="number" class="edit-input edit-num" id="e-start-'+s.id+'" value="'+(s.startAt||0)+'" min="0"> s'}</td>
           <td>${isWarmup?'<span style="color:var(--text-muted);font-size:11px;font-family:var(--font-ui)">Full song</span>':'<input type="number" class="edit-input edit-num" id="e-dur-'+s.id+'" value="'+(s.duration||0)+'" min="0"> s'}</td>
           <td><input class="edit-input" id="e-url-${s.id}" value="${esc(s.videoId)}" placeholder="ID or URL" style="font-family:monospace;font-size:11px"></td>
@@ -3316,7 +3450,7 @@ function renderSongTable(){
       const isWarmup=s.event==='warmup';
       return `<tr>
         <td class="song-title-cell" title="${brokenSongs[s.videoId]?'YouTube refused to play this video this session ('+(YT_ERRORS[brokenSongs[s.videoId]]||'error '+brokenSongs[s.videoId])+'). Check the ID / availability.':esc(s.title)}">${brokenSongs[s.videoId]?'<span style="color:var(--amber);margin-right:5px" aria-label="Playback error">⚠</span>':''}${esc(s.title)}</td>
-        <td><span class="pill" style="color:${color};border-color:${color}">${esc(label)}</span></td>
+        <td><span class="pill" style="color:${color};border-color:${color}">${esc(label)}</span>${isTeamTagged(s)?s.teams.map(id=>teamById(id)).filter(Boolean).map(t=>`<span class="team-chip">${esc(t.name)}</span>`).join(''):''}</td>
         <td style="color:var(--text-muted)">${isWarmup?'<em>full song</em>':(s.startAt>0?fmt(s.startAt):'0:00')}</td>
         <td style="color:var(--text-muted)">${isWarmup?'<em>full song</em>':(s.duration>0?s.duration+'s':'default')}</td>
         <td style="color:var(--text-muted);font-family:monospace;font-size:11px">${esc(s.videoId)}</td>
@@ -3346,7 +3480,8 @@ function renderSongTable(){
       return `<div class="song-card" id="card-${s.id}">
         <div class="song-card-edit">
           <div class="song-card-edit-row"><label>Title</label><input id="e-title-${s.id}" value="${esc(s.title)}" autocomplete="off"></div>
-          <div class="song-card-edit-row"><label>Event</label><select id="e-event-${s.id}">${EVENT_DEFS.map(e=>`<option value="${e.id}"${s.event===e.id?' selected':''}>${e.label}${e.sub?' — '+e.sub:''}</option>`).join('')}</select></div>
+          <div class="song-card-edit-row"><label>Event</label><select id="e-event-${s.id}" onchange="toggleTeamTagEdit('${s.id}',this.value)">${EVENT_DEFS.map(e=>`<option value="${e.id}"${s.event===e.id?' selected':''}>${e.label}${e.sub?' — '+e.sub:''}</option>`).join('')}</select></div>
+          ${teams.length?`<div class="team-tag-edit" id="e-teams-wrap-${s.id}" style="${GOAL_SIDE[s.event]?'':'display:none'}"><span class="team-tag-edit-label">Team song for:</span>${teams.map(t=>`<label class="team-tag-check"><input type="checkbox" value="${t.id}"${(s.teams||[]).includes(t.id)?' checked':''}>${esc(t.name)}</label>`).join('')}</div>`:''}
           ${isWarmup?'<div style="font-family:var(--font-ui);font-size:11px;color:var(--text-muted)">Warm-Up songs always play the full song.</div>':`
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
             <div class="song-card-edit-row"><label>Start (sec)</label><input type="number" id="e-start-${s.id}" value="${s.startAt||0}" min="0"></div>
@@ -3365,7 +3500,7 @@ function renderSongTable(){
         <div class="song-card-info">
           <div class="song-card-title">${esc(s.title)}</div>
           <div class="song-card-meta">
-            <span class="pill" style="color:${color};border-color:${color};font-size:9px">${esc(label)}</span>
+            <span class="pill" style="color:${color};border-color:${color};font-size:9px">${esc(label)}</span>${isTeamTagged(s)?s.teams.map(id=>teamById(id)).filter(Boolean).map(t=>`<span class="team-chip">${esc(t.name)}</span>`).join(''):''}
             <span style="margin-left:6px">${esc(startInfo)}${esc(durInfo)}</span>
           </div>
         </div>
@@ -3406,7 +3541,7 @@ async function resetToDefaultSongs(){
 }
 
 function exportSettings(){
-  const blob=new Blob([JSON.stringify({songs,globalConfig,kbdConfig,layoutConfig:layoutConfig||DEFAULT_LAYOUT,eventNames,version:CURRENT_VERSION},null,2)],{type:'application/json'});
+  const blob=new Blob([JSON.stringify({songs,globalConfig,kbdConfig,layoutConfig:layoutConfig||DEFAULT_LAYOUT,eventNames,teams,version:CURRENT_VERSION},null,2)],{type:'application/json'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='arena-dj-settings.json';a.click();URL.revokeObjectURL(a.href);
   showToast('Settings exported (v'+CURRENT_VERSION+')');
 }
@@ -3422,6 +3557,10 @@ function importSettings(e){
       if(data.kbdConfig)kbdConfig={...kbdConfig,...data.kbdConfig};
       if(data.layoutConfig)layoutConfig=data.layoutConfig;
       if(data.eventNames)eventNames=data.eventNames;
+      if(data.teams)teams=data.teams;
+      // Drop a matchup pointing at teams that no longer exist after import
+      ['home','away'].forEach(side=>{ if(matchup[side]&&!teams.some(t=>t.id===matchup[side])) matchup[side]=null; });
+      saveMatchup();renderMatchupBar();
       EVENT_DEFS.forEach(def=>{if(!(def.id in kbdConfig))kbdConfig[def.id]=def.defaultKey;});
       EVENT_DEFS.forEach(def=>{delete eventQueues[def.id];delete eventQueuePos[def.id];});
       save();loadConfigUI();buildKbdSettingsGrid();renderSongTable();buildEventButtons();refreshAllPeeks();
@@ -3564,7 +3703,7 @@ window.addEventListener('error',e=>{ if(!window._arenaInitDone) showFatalError('
         '<div style="color:var(--text-muted);font-family:var(--font-ui);font-size:13px;padding:32px;text-align:center">Loading default songs…</div>';
       await loadDefaultSongs();
     }
-    buildKbdSettingsGrid();buildKbdHintStrip();renderSongTable();buildEventButtons();refreshAllPeeks();
+    renderMatchupBar();buildKbdSettingsGrid();buildKbdHintStrip();renderSongTable();buildEventButtons();refreshAllPeeks();
     window._arenaInitDone=true;
   }catch(err){
     showFatalError('init',err);
@@ -3973,9 +4112,13 @@ function asmConfirmAdd(){
   // duration=0 means use global default; only set if user explicitly shortened clip
   const effectiveDur=(duration>0&&Math.abs(duration-Math.round(asmVideoDuration))>2)?duration:0;
 
+  const tagIds=[...document.querySelectorAll('#asm-team-checks input:checked')].map(i=>i.value);
   events.forEach(evId=>{
-    songs.push({id:uid(),title,videoId,event:evId,startAt,duration:effectiveDur});
+    const song={id:uid(),title,videoId,event:evId,startAt,duration:effectiveDur};
+    if(GOAL_SIDE[evId]&&tagIds.length) song.teams=[...tagIds];
+    songs.push(song);
   });
+  if(tagIds.length) invalidateGoalQueues();
   save();renderSongTable();refreshAllPeeks();
   showToast(`✓ Added "${title}" to ${events.length} event${events.length>1?'s':''}`);
 
@@ -3985,6 +4128,7 @@ function asmConfirmAdd(){
   document.getElementById('asm-preview-pane').style.display='none';
   document.getElementById('asm-title').value='';
   buildEventCheckboxes('asm-event-checks',null);
+  document.querySelectorAll('#asm-team-checks input').forEach(i=>i.checked=false);updateAsmTeamRow();
   asmCurrentVideoId=null;asmCurrentTitle='';
   closeAddSongModal();
 }
@@ -4048,7 +4192,7 @@ function updateApiKeyHint(){
 // Close settings modals on Escape
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){
-    ['playback-modal','kbd-modal','api-key-modal','contact-modal','event-names-modal'].forEach(id=>{
+    ['playback-modal','kbd-modal','api-key-modal','contact-modal','event-names-modal','teams-modal'].forEach(id=>{
       document.getElementById(id)?.classList.remove('open');
     });
   }
@@ -4315,6 +4459,90 @@ function resetEventNames(){
   buildFilterDropdown();
   closeEventNamesModal();
   showToast('Event names reset to defaults');
+}
+
+// ══════════════════════════════════════════════════
+//  TEAMS & MATCHUP
+// ══════════════════════════════════════════════════
+function invalidateGoalQueues(){
+  Object.keys(GOAL_SIDE).forEach(eid=>{delete eventQueues[eid];delete eventQueuePos[eid];nextSong[eid]=null;});
+}
+function onMatchupChanged(){
+  invalidateGoalQueues();renderMatchupBar();buildEventButtons();refreshAllPeeks();
+}
+function expireMatchupIfStale(rerender=true){
+  const active=matchup.home||matchup.away;
+  if(active&&matchup.ts&&Date.now()-matchup.ts>MATCHUP_TTL_MS){
+    matchup={home:null,away:null,ts:0};saveMatchup();
+    console.log('[Arena DJ] Matchup expired (6 h since last set/use)');
+    if(rerender&&window._arenaInitDone){onMatchupChanged();showToast('Matchup cleared — 6 h since last goal song');}
+    return true;
+  }
+  return false;
+}
+setInterval(()=>expireMatchupIfStale(true),5*60*1000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)expireMatchupIfStale(true);});
+
+function renderMatchupBar(){
+  const bar=document.getElementById('matchup-bar');if(!bar)return;
+  // Drop references to deleted teams
+  ['home','away'].forEach(side=>{ if(matchup[side]&&!teamById(matchup[side])) matchup[side]=null; });
+  bar.style.display=teams.length?'':'none';
+  const opts=sel=>`<option value="">— none —</option>`+teams.map(t=>`<option value="${t.id}"${t.id===sel?' selected':''}>${esc(t.name)}</option>`).join('');
+  const h=document.getElementById('matchup-home'),a=document.getElementById('matchup-away');
+  if(h)h.innerHTML=opts(matchup.home); if(a)a.innerHTML=opts(matchup.away);
+  const active=!!(matchup.home||matchup.away);
+  bar.classList.toggle('active',active);
+  const clr=document.getElementById('matchup-clear'); if(clr) clr.style.visibility=active?'visible':'hidden';
+}
+function setMatchup(side,teamId){
+  matchup[side]=teamId||null;
+  matchup.ts=(matchup.home||matchup.away)?Date.now():0;
+  saveMatchup();onMatchupChanged();
+  const t=teamById(matchup[side]);
+  if(t&&!teamSongs(t.id).length) showToast(`${t.name} has no team goal songs — using generic ${side} songs`,4500);
+}
+function clearMatchup(){
+  matchup={home:null,away:null,ts:0};saveMatchup();onMatchupChanged();showToast('Matchup cleared');
+}
+
+function openTeamsModal(){renderTeamsList();document.getElementById('teams-modal').classList.add('open');setTimeout(()=>document.getElementById('teams-new-name')?.focus(),100);}
+function closeTeamsModal(){document.getElementById('teams-modal').classList.remove('open');}
+function renderTeamsList(){
+  const el=document.getElementById('teams-list');if(!el)return;
+  if(!teams.length){el.innerHTML='<div style="color:var(--text-muted);font-family:var(--font-ui);font-size:12px;padding:8px 0">No teams yet.</div>';return;}
+  el.innerHTML=teams.map(t=>{
+    const n=teamSongs(t.id).length;
+    return `<div class="team-row">
+      <input type="text" value="${esc(t.name)}" onchange="renameTeam('${t.id}',this.value)" aria-label="Team name">
+      <span class="team-row-count">${n} goal song${n!==1?'s':''}</span>
+      <button class="btn btn-danger btn-sm" onclick="deleteTeam('${t.id}')" title="Delete team">✕</button>
+    </div>`;}).join('');
+}
+function addTeam(){
+  const inp=document.getElementById('teams-new-name');const name=(inp.value||'').trim();
+  if(!name){showToast('Enter a team name');return;}
+  if(teams.some(t=>t.name.toLowerCase()===name.toLowerCase())){showToast('A team with that name already exists');return;}
+  teams.push({id:'t_'+uid(),name});inp.value='';
+  save();renderTeamsList();renderMatchupBar();renderSongTable();inp.focus();
+}
+function renameTeam(id,name){
+  const t=teamById(id);name=(name||'').trim();
+  if(!t)return; if(!name){renderTeamsList();showToast('Name cannot be empty');return;}
+  t.name=name;save();renderTeamsList();renderMatchupBar();renderSongTable();buildEventButtons();refreshAllPeeks();
+}
+function deleteTeam(id){
+  const t=teamById(id);if(!t)return;
+  const n=songs.filter(s=>isTeamTagged(s)&&s.teams.includes(id)).length;
+  if(!window.confirm(`Delete team "${t.name}"?`+(n?`\n\n${n} song${n!==1?'s are':' is'} tagged with this team. The songs stay in your library, just without this tag.`:'')))return;
+  teams=teams.filter(x=>x.id!==id);
+  songs.forEach(s=>{ if(isTeamTagged(s)){ s.teams=s.teams.filter(x=>x!==id); if(!s.teams.length) delete s.teams; } });
+  if(matchup.home===id)matchup.home=null; if(matchup.away===id)matchup.away=null;
+  if(!matchup.home&&!matchup.away)matchup.ts=0;
+  save();saveMatchup();renderTeamsList();onMatchupChanged();renderSongTable();
+}
+function toggleTeamTagEdit(songId,eventId){
+  const w=document.getElementById(`e-teams-wrap-${songId}`);if(w)w.style.display=GOAL_SIDE[eventId]?'':'none';
 }
 
 // ══════════════════════════════════════════════════
