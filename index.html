@@ -1899,6 +1899,28 @@ input[type=number]{width:84px}
 <!-- ══════════════════════════════════════════════════
      EVENT NAMES MODAL
      ══════════════════════════════════════════════════ -->
+<div id="export-name-modal" class="settings-modal-overlay" onclick="handleSettingsOverlayClick(event,'export-name-modal')">
+  <div class="settings-modal-panel" style="max-width:440px">
+    <div class="settings-modal-header">
+      <span class="settings-modal-title">↓ EXPORT SETTINGS</span>
+      <button class="asm-close" onclick="closeExportNameModal()">✕</button>
+    </div>
+    <div class="settings-modal-body">
+      <label class="cfg-label" for="export-name-input" style="display:block;margin-bottom:8px">File name</label>
+      <div style="display:flex;align-items:center;gap:6px">
+        <input type="text" id="export-name-input" autocomplete="off" spellcheck="false" style="flex:1;min-width:0" onkeydown="if(event.key==='Enter'){event.preventDefault();confirmExportDownload();}">
+        <span style="color:var(--text-muted);font-family:monospace;font-size:13px">.json</span>
+      </div>
+      <p class="settings-modal-note" style="margin-top:10px">Saved to your Downloads folder. Tip: in Chrome or Edge on a computer you get a full "Save as" window instead.</p>
+    </div>
+    <div class="settings-modal-footer">
+      <div style="flex:1"></div>
+      <button class="btn btn-secondary" onclick="closeExportNameModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmExportDownload()">↓ EXPORT</button>
+    </div>
+  </div>
+</div>
+
 <div id="teams-modal" class="settings-modal-overlay" onclick="handleSettingsOverlayClick(event,'teams-modal')">
   <div class="settings-modal-panel">
     <div class="settings-modal-header">
@@ -3540,10 +3562,55 @@ async function resetToDefaultSongs(){
   showToast('✓ Song library reset to defaults (' + songs.length + ' songs)');
 }
 
-function exportSettings(){
-  const blob=new Blob([JSON.stringify({songs,globalConfig,kbdConfig,layoutConfig:layoutConfig||DEFAULT_LAYOUT,eventNames,teams,version:CURRENT_VERSION},null,2)],{type:'application/json'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='arena-dj-settings.json';a.click();URL.revokeObjectURL(a.href);
-  showToast('Settings exported (v'+CURRENT_VERSION+')');
+// ── Export ────────────────────────────────────────────────────────────
+// Chrome/Edge desktop: native "Save as" window (choose folder + name).
+// Other browsers / phones: in-app name dialog, then a normal download.
+// The file format itself is unchanged — import still migrates every older version.
+function exportPayload(){
+  return JSON.stringify({songs,globalConfig,kbdConfig,layoutConfig:layoutConfig||DEFAULT_LAYOUT,eventNames,teams,version:CURRENT_VERSION},null,2);
+}
+function defaultExportName(){
+  const d=new Date(),p=n=>String(n).padStart(2,'0');
+  return `arena-dj-settings-${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}.json`;
+}
+function sanitizeFileName(name){
+  name=(name||'').trim().replace(/[\\/:*?"<>|\u0000-\u001f]/g,'-').replace(/^\.+/,'');
+  if(!name) name=defaultExportName();
+  if(!/\.json$/i.test(name)) name+='.json';
+  return name.slice(0,150);
+}
+async function exportSettings(){
+  const json=exportPayload();
+  if(typeof window.showSaveFilePicker==='function'){
+    try{
+      const handle=await window.showSaveFilePicker({
+        suggestedName:defaultExportName(),
+        types:[{description:'Arena DJ settings',accept:{'application/json':['.json']}}]
+      });
+      const w=await handle.createWritable();await w.write(json);await w.close();
+      showToast('✓ Saved '+handle.name);
+      return;
+    }catch(err){
+      if(err&&err.name==='AbortError') return;            // user cancelled the Save window
+      console.warn('[Arena DJ] Save window failed, using download instead:',err);
+    }
+  }
+  openExportNameModal();
+}
+function openExportNameModal(){
+  const inp=document.getElementById('export-name-input');
+  inp.value=defaultExportName().replace(/\.json$/,'');
+  document.getElementById('export-name-modal').classList.add('open');
+  setTimeout(()=>{inp.focus();inp.select();},80);
+}
+function closeExportNameModal(){document.getElementById('export-name-modal').classList.remove('open');}
+function confirmExportDownload(){
+  const name=sanitizeFileName(document.getElementById('export-name-input').value);
+  const blob=new Blob([exportPayload()],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;
+  document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+  closeExportNameModal();
+  showToast('✓ Exported '+name);
 }
 function importSettings(e){
   const file=e.target.files[0];if(!file)return;
@@ -4192,7 +4259,7 @@ function updateApiKeyHint(){
 // Close settings modals on Escape
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){
-    ['playback-modal','kbd-modal','api-key-modal','contact-modal','event-names-modal','teams-modal'].forEach(id=>{
+    ['playback-modal','kbd-modal','api-key-modal','contact-modal','event-names-modal','teams-modal','export-name-modal'].forEach(id=>{
       document.getElementById(id)?.classList.remove('open');
     });
   }
